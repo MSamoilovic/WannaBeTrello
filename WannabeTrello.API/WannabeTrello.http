@@ -1,0 +1,6 @@
+@WannabeTrello_HostAddress = http://localhost:5204
+
+GET {{WannabeTrello_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

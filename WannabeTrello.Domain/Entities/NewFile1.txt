@@ -1,0 +1,3 @@
+﻿Sta treba implementirati 
+BoardMember, ProjectMember vezne tabele
+Task Label treba da dodat

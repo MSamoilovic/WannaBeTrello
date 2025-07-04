@@ -1,0 +1,89 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Programiranje\\C#\\WannabeTrello\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{FD60329E-C4B6-482A-B386-DF309193BB57}|WannabeTrello.Application\\WannabeTrello.Application.csproj|c:\\programiranje\\c#\\wannabetrello\\wannabetrello.application\\features\\auth\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD60329E-C4B6-482A-B386-DF309193BB57}|WannabeTrello.Application\\WannabeTrello.Application.csproj|solutionrelative:wannabetrello.application\\features\\auth\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{614F7203-264D-4456-BFA6-935EAAFE4DE3}|WannabeTrello.API\\WannabeTrello.API.csproj|c:\\programiranje\\c#\\wannabetrello\\wannabetrello.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{614F7203-264D-4456-BFA6-935EAAFE4DE3}|WannabeTrello.API\\WannabeTrello.API.csproj|solutionrelative:wannabetrello.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{614F7203-264D-4456-BFA6-935EAAFE4DE3}|WannabeTrello.API\\WannabeTrello.API.csproj|c:\\programiranje\\c#\\wannabetrello\\wannabetrello.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{614F7203-264D-4456-BFA6-935EAAFE4DE3}|WannabeTrello.API\\WannabeTrello.API.csproj|solutionrelative:wannabetrello.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}|WannabeTrello.Infrastructure\\WannabeTrello.Infrastructure.csproj|c:\\programiranje\\c#\\wannabetrello\\wannabetrello.infrastructure\\configureservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}|WannabeTrello.Infrastructure\\WannabeTrello.Infrastructure.csproj|solutionrelative:wannabetrello.infrastructure\\configureservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.API\\appsettings.json",
+              "RelativeDocumentMoniker": "WannabeTrello.API\\appsettings.json",
+              "ToolTip": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.API\\appsettings.json",
+              "RelativeToolTip": "WannabeTrello.API\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-03T13:14:03.621Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.API\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "WannabeTrello.API\\appsettings.Development.json",
+              "ToolTip": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.API\\appsettings.Development.json",
+              "RelativeToolTip": "WannabeTrello.API\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-03T13:14:04.726Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoginUserCommandHandler.cs",
+              "DocumentMoniker": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.Application\\Features\\Auth\\LoginUser\\LoginUserCommandHandler.cs",
+              "RelativeDocumentMoniker": "WannabeTrello.Application\\Features\\Auth\\LoginUser\\LoginUserCommandHandler.cs",
+              "ToolTip": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.Application\\Features\\Auth\\LoginUser\\LoginUserCommandHandler.cs",
+              "RelativeToolTip": "WannabeTrello.Application\\Features\\Auth\\LoginUser\\LoginUserCommandHandler.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAswBsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-03T13:06:02.123Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ConfigureServices.cs",
+              "DocumentMoniker": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.Infrastructure\\ConfigureServices.cs",
+              "RelativeDocumentMoniker": "WannabeTrello.Infrastructure\\ConfigureServices.cs",
+              "ToolTip": "C:\\Programiranje\\C#\\WannabeTrello\\WannabeTrello.Infrastructure\\ConfigureServices.cs",
+              "RelativeToolTip": "WannabeTrello.Infrastructure\\ConfigureServices.cs",
+              "ViewState": "AgIAADcAAAAAAAAAAAAgwE0AAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-17T09:53:38.945Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

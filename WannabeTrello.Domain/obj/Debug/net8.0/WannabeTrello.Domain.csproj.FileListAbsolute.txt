@@ -1,0 +1,12 @@
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\bin\Debug\net8.0\WannabeTrello.Domain.deps.json
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\bin\Debug\net8.0\WannabeTrello.Domain.dll
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\bin\Debug\net8.0\WannabeTrello.Domain.pdb
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.AssemblyInfoInputs.cache
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.AssemblyInfo.cs
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.csproj.CoreCompileInputs.cache
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.dll
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\refint\WannabeTrello.Domain.dll
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.pdb
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\ref\WannabeTrello.Domain.dll
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.csproj.AssemblyReference.cache
