@@ -1,0 +1,12 @@
+﻿# Rider settings
+.idea/
+
+# Build results
+bin/
+obj/
+
+# Local folders
+global/
+
+# User settings
+*.DotSettings.user
