@@ -13,3 +13,80 @@ global/
 
 # User settings
 *.DotSettings.user
+
+# Standardni .NET Core/Visual Studio ignori
+## Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Aa]rm64/
+[Aa]rm/
+[Xx]64/
+[Xx]86/
+[Aa]nyCPU/
+[Aa]nycpu/
+
+## Packages
+*.nupkg
+*.snupkg
+*.appx
+*.vsix
+.vs/
+packages/
+node_modules/
+
+## Rider
+.idea/
+*.iml
+
+## Visual Studio Code
+.vscode/
+
+## Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Resharper
+*.DotSettings
+*.user
+_ReSharper.*/
+
+## SQL Server files
+*.mdf
+*.ldf
+*.bak
+
+## Other common files
+*.suo
+*.user
+*.userprefs
+*.log
+*.tmp
+*.vspscc
+*.vssscc
+*.vsp
+*.vsw
+*.code-workspace
+
+# Explicitno ignorisanje bin i obj foldera unutar slojeva aplikacije
+# (Ovo je često pokriveno gornjim [Bb]in/ i [Oo]bj/, ali je dodato za eksplicitnost)
+WannabeTrello.WebApi/bin/
+WannabeTrello.WebApi/obj/
+WannabeTrello.Application/bin/
+WannabeTrello.Application/obj/
+WannabeTrello.Domain/bin/
+WannabeTrello.Domain/obj/
+WannabeTrello.Infrastructure/bin/
+WannabeTrello.Infrastructure/obj/
+
+# Dodatna ignorisanja za baze podataka i konfiguracione fajlove
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.json.user
+*.db
+*.sqlite
+*.sqlite3
