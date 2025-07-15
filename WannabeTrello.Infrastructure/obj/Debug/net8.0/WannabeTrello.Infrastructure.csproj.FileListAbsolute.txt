@@ -17,3 +17,4 @@ C:\Programiranje\C#\WannabeTrello\WannabeTrello.Infrastructure\obj\Debug\net8.0\
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Infrastructure\obj\Debug\net8.0\ref\WannabeTrello.Infrastructure.dll
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Infrastructure\bin\Debug\net8.0\WannabeTrello.Application.dll
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Infrastructure\bin\Debug\net8.0\WannabeTrello.Application.pdb
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Infrastructure\obj\Debug\net8.0\WannabeTrello.Infrastructure.sourcelink.json

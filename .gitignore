@@ -8,5 +8,8 @@ obj/
 # Local folders
 global/
 
+#VS settings
+.vs
+
 # User settings
 *.DotSettings.user

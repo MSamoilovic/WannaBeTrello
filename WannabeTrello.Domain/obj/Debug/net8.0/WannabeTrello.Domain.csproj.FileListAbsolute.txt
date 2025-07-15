@@ -10,3 +10,4 @@ C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\refint\W
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.pdb
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\ref\WannabeTrello.Domain.dll
 C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.csproj.AssemblyReference.cache
+C:\Programiranje\C#\WannabeTrello\WannabeTrello.Domain\obj\Debug\net8.0\WannabeTrello.Domain.sourcelink.json

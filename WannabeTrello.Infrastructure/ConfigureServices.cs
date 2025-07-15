@@ -60,11 +60,11 @@ public static class ConfigureServices
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateLifetime = false,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty)),
                     ClockSkew = TimeSpan.Zero
                 };
 
@@ -73,6 +73,7 @@ public static class ConfigureServices
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
                         return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>
