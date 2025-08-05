@@ -10,6 +10,7 @@ public class BoardCreatedEventHandler(IBoardNotificationService notificationServ
 {
     public async Task Handle(BoardCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await notificationService.NotifyBoardCreated(notification.BoardId, notification.BoardName);
+        await notificationService.NotifyBoardCreated(notification.BoardId, notification.BoardName,
+            notification.CreatorUserId);
     }
 }

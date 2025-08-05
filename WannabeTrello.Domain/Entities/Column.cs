@@ -2,7 +2,6 @@
 
 public class Column: AuditableEntity
 {
-    public long Id { get; set; }
     public string Name { get; set; } = null!;
     public int Order { get; set; } 
     public long BoardId { get; set; }

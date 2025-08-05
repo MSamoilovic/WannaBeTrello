@@ -2,7 +2,7 @@
 
 namespace WannabeTrello.Domain.Entities;
 
-public abstract class AuditableEntity
+public abstract class AuditableEntity: BaseEntity<long>
 {
     public DateTime CreatedAt { get; set; }
     public long? CreatedBy { get; set; }

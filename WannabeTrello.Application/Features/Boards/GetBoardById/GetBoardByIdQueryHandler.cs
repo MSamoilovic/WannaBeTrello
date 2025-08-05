@@ -16,8 +16,9 @@ public class GetBoardByIdQueryHandler(IBoardRepository boardRepository, ICurrent
         {
             throw new NotFoundException(nameof(board), request.Id);
         }
-        
-        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue || board.BoardMembers.All(bm => bm.UserId != currentUserService.UserId.Value))
+
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue ||
+            board.BoardMembers.All(bm => bm.UserId != currentUserService.UserId.Value))
         {
             throw new AccessDeniedException("Nemate pristup za pregled ovog boarda.");
         }

@@ -2,7 +2,6 @@
 
 public class Comment: AuditableEntity
 {
-    public long Id { get; set; }
     public string Content { get; set; } = null!;
     public long TaskId { get; set; }
     public BoardTask Task { get; set; } = null!; 

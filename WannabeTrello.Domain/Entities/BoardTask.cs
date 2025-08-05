@@ -6,7 +6,6 @@ namespace WannabeTrello.Domain.Entities;
 
 public class BoardTask: AuditableEntity
 {
-    public long Id { get; private set; }
     public string Title { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public int Position { get; private set; }
