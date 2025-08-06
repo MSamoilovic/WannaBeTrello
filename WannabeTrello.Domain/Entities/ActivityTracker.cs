@@ -4,9 +4,13 @@ namespace WannabeTrello.Domain.Entities;
 
 public class ActivityTracker: AuditableEntity
 {
-    public long Id { get; set; }
-    public ActivityType ActivityType { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public string? OldValue { get; set; }
-    public string? NewValue { get; set; }
+    public ActivityType Type { get; init; }
+    public string Description { get; init; } = null!;
+    public DateTime Timestamp { get; init; }
+    public long UserId { get; init; } 
+    public User? User { get; init; } 
+    public long? RelatedEntityId { get; init; } 
+    public string? RelatedEntityType { get; init; } 
+    public string? OldValue { get; init; }
+    public string? NewValue { get; init; } 
 }
