@@ -16,15 +16,16 @@ public class ApplicationDbContext(
     : IdentityDbContext<User, IdentityRole<long>, long>(options)
 {
     private readonly IMediator? _mediator = mediator;
-
+    
     public DbSet<Board> Boards { get; set; } = null!;
-    public DbSet<BoardTask> Tasks { get; set; } = null!;
+    public DbSet<BoardTask> Tasks { get; init; } = null!;
     public DbSet<Column> Columns { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Comment> Comments { get; set; } = null!;
     public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
     public DbSet<BoardMember> BoardMembers { get; set; } = null!;
+    public DbSet<ActivityTracker> ActivityTrackers { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

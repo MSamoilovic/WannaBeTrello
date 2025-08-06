@@ -10,6 +10,7 @@ public interface IUnitOfWork : IDisposable
     IProjectRepository Projects { get; }
     IUserRepository Users { get; }
     ICommentRepository Comments { get; }
+    IActivityTrackerRepository ActivityTrackers { get; }
     
     Task<int> CompleteAsync(CancellationToken cancellationToken = default); // Čuva promene u bazi podataka
 }

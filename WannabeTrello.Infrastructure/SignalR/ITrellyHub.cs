@@ -22,4 +22,7 @@ public interface ITrellyHub
         Task CommentUpdated(string taskId, string commentId, string content);
         Task CommentDeleted(string taskId, string commentId);
         
+        // Dodatak za praćenje aktivnosti
+        Task ActivityAdded(string boardId, string activityDescription);
+
 }
