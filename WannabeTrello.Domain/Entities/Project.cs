@@ -55,5 +55,15 @@ public class Project : AuditableEntity
         return board;
     }
     
+    public void Archive()
+    {
+        if (IsArchived) return;
+        
+        if(this.Status != ProjectStatus.Active)
+            throw new InvalidOperationException("Only active projects can be archived.");
+        
+        IsArchived = true;
+        AddDomainEvent(new ProjectArchivedEvent(Id));
+    }
     
 }
