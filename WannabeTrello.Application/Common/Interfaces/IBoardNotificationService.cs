@@ -2,6 +2,6 @@
 
 public interface IBoardNotificationService
 {
-    Task NotifyBoardCreated(long createdBoardId, string boardName, long creatorUserId);
+    Task NotifyBoardCreated(long createdBoardId, string? boardName, long creatorUserId);
     Task NotifyBoardUpdated(long createdBoardId, long modifierUserId);
 }

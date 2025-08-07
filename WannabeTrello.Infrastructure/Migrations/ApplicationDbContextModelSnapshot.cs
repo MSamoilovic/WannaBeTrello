@@ -208,7 +208,7 @@ namespace WannabeTrello.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityTracker");
+                    b.ToTable("ActivityTrackers");
                 });
 
             modelBuilder.Entity("WannabeTrello.Domain.Entities.Board", b =>
@@ -418,6 +418,9 @@ namespace WannabeTrello.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -432,7 +435,17 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("IsArchived");
 
                     b.HasIndex("OwnerId");
 

@@ -34,5 +34,16 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithOne(pm => pm.Project)
             .HasForeignKey(pm => pm.ProjectId)
             .OnDelete(DeleteBehavior.NoAction);
+        
+        builder.Property(p => p.Visibility)
+            .HasConversion<string>();
+
+        builder.Property(p => p.Status)
+            .HasConversion<string>();
+
+        builder.HasIndex(p => p.IsArchived);
+        
+        // Filter to exclude archived projects from queries by default
+        builder.HasQueryFilter(p => !p.IsArchived); 
     }
 }

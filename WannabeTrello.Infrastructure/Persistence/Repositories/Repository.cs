@@ -29,7 +29,7 @@ public class Repository<TEntity> where TEntity : class
         await _dbSet.AddAsync(entity);
     }
 
-    public virtual void Update(TEntity entity)
+    protected virtual void Update(TEntity entity)
     {
         _dbSet.Attach(entity);
         _dbContext.Entry(entity).State = EntityState.Modified;
