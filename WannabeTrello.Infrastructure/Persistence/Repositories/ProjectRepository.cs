@@ -9,8 +9,7 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
     {
         await base.AddAsync(project);
     }
-    public override Task<Project?> GetByIdAsync(long id) => base.GetByIdAsync(id);
-    
+
     public async Task UpdateAsync(Project project)
     {
         throw new NotImplementedException();

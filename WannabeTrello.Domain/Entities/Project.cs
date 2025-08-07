@@ -12,8 +12,8 @@ public class Project : AuditableEntity
     public ProjectVisibility Visibility { get; private set; } = ProjectVisibility.Public;
     public bool IsArchived { get; private set; }
     public long OwnerId { get; private set; }
-    public User? Owner { get; } = new();
-    public ICollection<Board?> Boards { get; private set; } = [];
+    public User Owner { get; } = new();
+    public ICollection<Board> Boards { get; private set; } = [];
     public ICollection<ProjectMember> ProjectMembers { get; private set; } = [];
 
     public static Project Create(string? name, string? description, long ownerId)

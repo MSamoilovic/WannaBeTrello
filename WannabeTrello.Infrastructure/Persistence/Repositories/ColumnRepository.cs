@@ -18,7 +18,7 @@ public class ColumnRepository(ApplicationDbContext dbContext) : Repository<Colum
     public async Task AddAsync(Column column) => await base.AddAsync(column);
     public async Task<Column?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
     
-    public async Task UpdateAsync(Column column) => base.Update(column);
+    public async Task UpdateAsync(Column column) =>   base.Update(column);
     
     public async Task DeleteAsync(long id)
     {
