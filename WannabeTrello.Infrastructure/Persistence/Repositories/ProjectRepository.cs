@@ -3,11 +3,13 @@ using WannabeTrello.Domain.Interfaces.Repositories;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
-public class ProjectRepository: Repository<Project>, IProjectRepository
+public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Project>(dbContext), IProjectRepository
 {
-    public ProjectRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public override async Task AddAsync(Project project)
     {
+        await base.AddAsync(project);
     }
+    public override Task<Project?> GetByIdAsync(long id) => base.GetByIdAsync(id);
     
     public async Task UpdateAsync(Project project)
     {

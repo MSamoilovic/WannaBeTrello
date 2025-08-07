@@ -1,11 +1,59 @@
-﻿namespace WannabeTrello.Domain.Entities;
+﻿using WannabeTrello.Domain.Enums;
+using WannabeTrello.Domain.Events.Board_Events;
+using WannabeTrello.Domain.Events.Project_Events;
 
-public class Project: AuditableEntity
+namespace WannabeTrello.Domain.Entities;
+
+public class Project : AuditableEntity
 {
-    public string Name { get; set; } = null!;
-    public string? Description { get; set; }
-    public long OwnerId { get; set; } 
-    public User Owner { get; set; } = null!; 
-    public ICollection<Board?> Boards { get; set; } = [];
-    public ICollection<ProjectMember> ProjectMembers { get; set; } = [];
+    public string? Name { get; private init; }
+    public string? Description { get; private set; }
+    public ProjectStatus Status { get; private set; } = ProjectStatus.Active;
+    public ProjectVisibility Visibility { get; private set; } = ProjectVisibility.Public;
+    public bool IsArchived { get; private set; }
+    public long OwnerId { get; private set; }
+    public User? Owner { get; } = new();
+    public ICollection<Board?> Boards { get; private set; } = [];
+    public ICollection<ProjectMember> ProjectMembers { get; private set; } = [];
+
+    public static Project Create(string? name, string? description, long ownerId)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Project Name cannot be empty", nameof(name));
+
+        var project = new Project
+        {
+            Name = name,
+            Description = description,
+            OwnerId = ownerId,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = ownerId,
+            IsArchived = false,
+        };
+        
+        project.ProjectMembers.Add(new ProjectMember
+        {
+            UserId = ownerId,
+            ProjectId = project.Id,
+            Role = ProjectRole.Owner,
+        });
+        
+        project.AddDomainEvent(new ProjectCreatedEvent(project.Id, project.Name, ownerId));
+        
+        return project;
+    }
+    
+    public Board CreateBoard(string? name, string? description, long creatorUserId)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Board name cannot be empty.", nameof(name));
+        
+        var board = Board.Create(name, description, Id, creatorUserId);
+        Boards.Add(board);
+        AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, creatorUserId));
+        
+        return board;
+    }
+    
+    
 }
