@@ -16,6 +16,7 @@ public class Board: AuditableEntity
     
     private Board() { }
     
+    //TODO: Razmotriti da li je bolje koristiti factory metodu ili konstruktor i prebaciti logiku u Project klasu
     public static Board Create(string name, string? description, long? projectId, long creatorUserId)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -47,16 +48,15 @@ public class Board: AuditableEntity
         if (string.IsNullOrWhiteSpace(newName))
             throw new ArgumentException("Naziv table ne može biti prazan.", nameof(newName));
 
-        bool changed = false;
+        var changed = false;
         if (Name != newName) { Name = newName; changed = true; }
         if (Description != newDescription) { Description = newDescription; changed = true; }
 
-        if (changed)
-        {
-            LastModifiedAt = DateTime.UtcNow;
-            LastModifiedBy = modifierUserId;
-            AddDomainEvent(new BoardUpdatedEvent(Id, modifierUserId)); // Aktiviraj događaj za ažuriranje table
-        }
+        if (!changed) return;
+        
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+        AddDomainEvent(new BoardUpdatedEvent(Id, modifierUserId)); // Aktiviraj događaj za ažuriranje table
     }
     
     public Column AddColumn(string columnName, int order, long creatorUserId)

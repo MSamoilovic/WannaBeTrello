@@ -1,11 +1,14 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Events.Board_Events;
+using WannabeTrello.Domain.Interfaces.Repositories;
 
 
 namespace WannabeTrello.Application.Features.Events;
 
-public class BoardCreatedEventHandler(IBoardNotificationService notificationService)
+public class BoardCreatedEventHandler(
+    IBoardNotificationService notificationService,
+    IActivityTrackerRepository activityTrackerRepository)
     : INotificationHandler<BoardCreatedEvent>
 {
     public async Task Handle(BoardCreatedEvent notification, CancellationToken cancellationToken)
