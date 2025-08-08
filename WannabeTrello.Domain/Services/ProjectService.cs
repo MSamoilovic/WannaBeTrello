@@ -10,7 +10,7 @@ public class ProjectService(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork)
 {
-    public async Task<Project> CreateProjectAsync(string name, string? description, long creatorUserId)
+    public async Task<Project> CreateProjectAsync(string? name, string? description, long creatorUserId)
     {
         var user = await userRepository.GetByIdAsync(creatorUserId);
         if (user == null)
@@ -18,7 +18,7 @@ public class ProjectService(
             throw new NotFoundException(nameof(User), creatorUserId);
         }
 
-        var project = Project.Create(name, description, creatorUserId);
+        var project = Project.Create(name, description, user.Id);
 
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync(); 

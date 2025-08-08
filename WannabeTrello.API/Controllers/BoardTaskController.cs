@@ -11,15 +11,8 @@ namespace WannabeTrello.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TasksController : ControllerBase
+    public class TasksController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public TasksController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         /// <summary>
         /// Kreira novi zadatak u određenoj koloni.
         /// </summary>
@@ -33,10 +26,9 @@ namespace WannabeTrello.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskCommand command)
         {
-            var taskId = await _mediator.Send(command);
-            // U idealnom scenariju, ovde bi bio GetTaskByIdQuery za CreatedAtAction
+            var taskId = await mediator.Send(command);
             return CreatedAtAction(nameof(MoveTask), new { id = taskId },
-                taskId); // Koristimo MoveTask kao placeholder za rute
+                taskId);
         }
 
         /// <summary>
@@ -57,7 +49,7 @@ namespace WannabeTrello.Controllers
                 return BadRequest("ID zadatka u URL-u mora se podudarati sa ID-om zadatka u telu zahteva.");
             }
 
-            await _mediator.Send(command);
+            await mediator.Send(command);
             return NoContent();
         }
         
@@ -79,7 +71,7 @@ namespace WannabeTrello.Controllers
             {
                 return BadRequest("ID zadatka u URL-u mora se podudarati sa ID-om zadatka u telu zahteva.");
             }
-            await _mediator.Send(command);
+            await mediator.Send(command);
             return StatusCode(StatusCodes.Status201Created); 
         }
         
@@ -94,7 +86,7 @@ namespace WannabeTrello.Controllers
         public async Task<IActionResult> GetTaskById(long id)
         {
             var query = new GetTaskByIdQuery { Id = id };
-            var task = await _mediator.Send(query);
+            var task = await mediator.Send(query);
             return Ok(task);
         }
 
@@ -110,7 +102,7 @@ namespace WannabeTrello.Controllers
         public async Task<IActionResult> GetTasksByBoardId(long boardId)
         {
             var query = new GetTasksByBoardIdQuery { BoardId = boardId };
-            var tasks = await _mediator.Send(query);
+            var tasks = await mediator.Send(query);
             return Ok(tasks);
         }
         

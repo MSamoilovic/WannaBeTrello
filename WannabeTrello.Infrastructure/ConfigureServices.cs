@@ -96,6 +96,7 @@ public static class ConfigureServices
 
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
+        services.AddScoped<IProjectNotificationService, ProjectNotificationService>();
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

@@ -22,6 +22,7 @@ public static class ConfigureServices
         //Domenski Servisi
         services.AddScoped<BoardService>();
         services.AddScoped<BoardTaskService>();
+        services.AddScoped<ProjectService>();
 
         return services;
     }

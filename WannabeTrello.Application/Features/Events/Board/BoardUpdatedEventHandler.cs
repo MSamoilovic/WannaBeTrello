@@ -2,8 +2,7 @@
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Events;
 
-
-namespace WannabeTrello.Application.Features.Events;
+namespace WannabeTrello.Application.Features.Events.Board;
 
 public class BoardUpdatedEventHandler(IBoardNotificationService notificationService)
     : INotificationHandler<BoardUpdatedEvent>
