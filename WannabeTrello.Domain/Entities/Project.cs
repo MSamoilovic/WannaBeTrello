@@ -12,7 +12,7 @@ public class Project : AuditableEntity
     public ProjectVisibility Visibility { get; private set; } = ProjectVisibility.Public;
     public bool IsArchived { get; private set; }
     public long OwnerId { get; private set; }
-    public User Owner { get; } = new();
+    public User? Owner { get; private set; } // Initialized in the repository or service layer
     public ICollection<Board> Boards { get; private set; } = [];
     public ICollection<ProjectMember> ProjectMembers { get; private set; } = [];
 
@@ -55,5 +55,15 @@ public class Project : AuditableEntity
         return board;
     }
     
+    public void Archive()
+    {
+        if (IsArchived) return;
+        
+        if(this.Status != ProjectStatus.Active)
+            throw new InvalidOperationException("Only active projects can be archived.");
+        
+        IsArchived = true;
+        AddDomainEvent(new ProjectArchivedEvent(Id));
+    }
     
 }
