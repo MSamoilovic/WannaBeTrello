@@ -10,4 +10,9 @@ public class ProjectNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCo
     {
         await hubContext.Clients.All.ProjectCreated(createdProjectId, projectName, creatorUserId);
     }
+
+    public async Task NotifyProjectUpdated(long modifiedProjectId, long modifierUserId)
+    {
+        await hubContext.Clients.All.ProjectUpdated(modifiedProjectId, modifierUserId);
+    }
 }
