@@ -23,6 +23,7 @@ public interface ITrellyHub
         Task CommentDeleted(string taskId, string commentId);
         
         Task ProjectCreated(long projectId, string? projectName, long creatorUserId);
+        Task ProjectUpdated(long projectId, long creatorUserId);
         
         // Dodatak za praćenje aktivnosti
         Task ActivityAdded(string boardId, string activityDescription);
