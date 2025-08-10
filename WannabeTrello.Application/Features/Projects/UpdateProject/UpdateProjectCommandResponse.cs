@@ -1,6 +1,10 @@
-﻿namespace WannabeTrello.Application.Features.Projects.UpdateProject;
+﻿using WannabeTrello.Domain.Enums;
 
-public class UpdateProjectCommandResponse
-{
-    
-}
+namespace WannabeTrello.Application.Features.Projects.UpdateProject;
+
+public record UpdateProjectCommandResponse(
+    string? Name,
+    string? Description,
+    ProjectVisibility Visibility,
+    ProjectStatus Status,
+    bool? IsArchived);
