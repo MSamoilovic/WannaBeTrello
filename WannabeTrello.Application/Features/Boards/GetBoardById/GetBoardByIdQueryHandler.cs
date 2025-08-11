@@ -10,6 +10,7 @@ public class GetBoardByIdQueryHandler(IBoardRepository boardRepository, ICurrent
 {
     public async Task<GetBoardByIdQueryResponse> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
+        //TODO: Odradi refactor da se zove Board service
         var board = await boardRepository.GetBoardWithDetailsAsync(request.Id);
 
         if (board == null)

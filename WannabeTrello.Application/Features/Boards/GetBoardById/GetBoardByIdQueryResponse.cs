@@ -6,7 +6,7 @@ namespace WannabeTrello.Application.Features.Boards.GetBoardById;
 public class GetBoardByIdQueryResponse
 {
         public long Id { get; set; }
-        public string Name { get; set; } = null!;
+        public string? Name { get; set; } = null!;
         public string? Description { get; set; }
         public long ProjectId { get; set; }
         public DateTime CreatedAt { get; set; }
