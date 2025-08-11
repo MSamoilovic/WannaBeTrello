@@ -46,4 +46,15 @@ public class ProjectService(
         
         return project;
     }
+    
+    public async Task<Project> GetProjectByIdAsync(long id)
+    {
+        var project = await projectRepository.GetByIdAsync(id);
+        if (project is null)
+            throw new NotFoundException(nameof(Project), id);
+        
+        //TODO: Dodati dodatne validacije
+
+        return project;
+    }
 }
