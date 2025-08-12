@@ -47,14 +47,28 @@ public class ProjectService(
         return project;
     }
     
-    public async Task<Project> GetProjectByIdAsync(long id)
+    public async Task<Project> GetProjectByIdAsync(long id, long currentUserId)
     {
         var project = await projectRepository.GetByIdAsync(id);
         if (project is null)
             throw new NotFoundException(nameof(Project), id);
         
-        //TODO: Dodati dodatne validacije
-
+        if (project.ProjectMembers.All(x => x.UserId != currentUserId))
+            throw new AccessDeniedException("You don't have access to this project");
+        
         return project;
     }
+
+    public async Task ArchiveProjectAsync(long id, long currentUserId)
+    {
+        var project = await projectRepository.GetByIdAsync(id);
+        if (project is null)
+            throw new NotFoundException(nameof(Project), id);
+        
+        project.Archive(currentUserId);
+        
+        await projectRepository.UpdateAsync(project);
+    }
+    
+    
 }

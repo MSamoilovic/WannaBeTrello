@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Projects.CreateProject;
+using WannabeTrello.Application.Features.Projects.GetProjectById;
 using WannabeTrello.Application.Features.Projects.UpdateProject;
 
 namespace WannabeTrello.Controllers;
@@ -42,5 +43,14 @@ public class ProjectController(IMediator mediator) : ControllerBase
         }
         
         return Ok(await mediator.Send(command));
+    }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProjectById(long id)
+    {
+        var response = await mediator.Send(new GetProjectByIdQuery(id));
+        return Ok(response);
     }
 }

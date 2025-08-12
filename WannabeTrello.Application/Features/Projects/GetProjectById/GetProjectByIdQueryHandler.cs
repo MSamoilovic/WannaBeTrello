@@ -15,7 +15,7 @@ internal class GetProjectByIdQueryHandler(ProjectService projectService, ICurren
             throw new AccessDeniedException("Nemate pristup za pregled ovog boarda.");
         }
         
-        var project = await projectService.GetProjectByIdAsync(request.ProjectId);
+        var project = await projectService.GetProjectByIdAsync(request.ProjectId, currentUserService.UserId.Value);
         
         return GetProjectByIdQueryResponse.FromEntity(project);
     }
