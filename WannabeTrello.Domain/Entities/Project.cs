@@ -98,14 +98,23 @@ public class Project : AuditableEntity
         return board;
     }
 
-    public void Archive()
+    public void Archive(long archiverUserId)
     {
-        if (IsArchived) return;
+        var member = ProjectMembers.FirstOrDefault(pm => pm.UserId == archiverUserId);
 
+        if (member == null || (member.Role != ProjectRole.Owner && member.Role != ProjectRole.Admin))
+        {
+            throw new UnauthorizedAccessException("Only Owner or Admin can archive this project");
+        }
+        
+        if (IsArchived) return;
         if (this.Status != ProjectStatus.Active)
             throw new InvalidOperationException("Only active projects can be archived.");
-
+        
         IsArchived = true;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = archiverUserId;
+    
         AddDomainEvent(new ProjectArchivedEvent(Id));
     }
 }
