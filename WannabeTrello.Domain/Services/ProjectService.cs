@@ -59,7 +59,7 @@ public class ProjectService(
         return project;
     }
 
-    public async Task ArchiveProjectAsync(long id, long currentUserId)
+    public async Task<long> ArchiveProjectAsync(long id, long currentUserId)
     {
         var project = await projectRepository.GetByIdAsync(id);
         if (project is null)
@@ -68,6 +68,8 @@ public class ProjectService(
         project.Archive(currentUserId);
         
         await projectRepository.UpdateAsync(project);
+
+        return project.Id;
     }
     
     

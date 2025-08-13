@@ -20,7 +20,7 @@ public class ActivityTrackerRepository(ApplicationDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<ActivityTracker>> GetActivityProjectAsync(long projectId,
+    public async Task<IEnumerable<ActivityTracker>> GetActivityForProjectAsync(long projectId,
         CancellationToken cancellationToken)
     {
         return await _dbSet.Where(at => at.RelatedEntityId == projectId && at.RelatedEntityType == nameof(Project))
