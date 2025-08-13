@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WannabeTrello.Application.Features.Projects.ArchiveProject;
 using WannabeTrello.Application.Features.Projects.CreateProject;
 using WannabeTrello.Application.Features.Projects.GetProjectById;
 using WannabeTrello.Application.Features.Projects.UpdateProject;
@@ -51,6 +52,16 @@ public class ProjectController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetProjectById(long id)
     {
         var response = await mediator.Send(new GetProjectByIdQuery(id));
+        return Ok(response);
+    }
+
+    [HttpPost("/archive/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ArchiveProject(long id)
+    {
+        var response = await mediator.Send(new ArchiveProjectCommand(id));
         return Ok(response);
     }
 }
