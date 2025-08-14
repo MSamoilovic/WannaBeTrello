@@ -44,7 +44,7 @@ public class Project : AuditableEntity
     }
 
     public void Update(string? name, string? description, ProjectStatus? status, ProjectVisibility? visibility,
-        bool archieved, long updatedBy)
+        bool archived, long updatedBy)
     {
         var changed = false;
 
@@ -72,9 +72,9 @@ public class Project : AuditableEntity
             changed = true;
         }
 
-        if (archieved != IsArchived)
+        if (archived != IsArchived)
         {
-            IsArchived = archieved;
+            IsArchived = archived;
             changed = true;
         }
 
@@ -108,7 +108,7 @@ public class Project : AuditableEntity
         }
         
         if (IsArchived) return;
-        if (this.Status != ProjectStatus.Active)
+        if (Status != ProjectStatus.Active)
             throw new InvalidOperationException("Only active projects can be archived.");
         
         IsArchived = true;
@@ -116,5 +116,31 @@ public class Project : AuditableEntity
         LastModifiedBy = archiverUserId;
     
         AddDomainEvent(new ProjectArchivedEvent(Id));
+    }
+
+    public void AddMember(long newMemberId, ProjectRole role, long inviterUserId)
+    {
+        var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);
+        if (inviter is null || (inviter.Role != role && inviter.Role != ProjectRole.Admin))
+        {
+            throw new UnauthorizedAccessException("Only Admin or Project can be archived.");
+        }
+        
+        if(ProjectMembers.Any(pm => pm.UserId == newMemberId))
+        {
+            throw new  InvalidOperationException("User already exists in the project");
+        }
+
+        ProjectMembers.Add(new ProjectMember
+        {
+            UserId = newMemberId,
+            ProjectId = Id,
+            Role = role,
+        });
+        
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = inviterUserId;
+
+        AddDomainEvent(new ProjectMemberAddedEvent(Id,  newMemberId, role, inviterUserId));
     }
 }
