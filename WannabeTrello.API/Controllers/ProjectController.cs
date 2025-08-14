@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WannabeTrello.Application.Features.Projects.AddProjectMember;
 using WannabeTrello.Application.Features.Projects.ArchiveProject;
 using WannabeTrello.Application.Features.Projects.CreateProject;
 using WannabeTrello.Application.Features.Projects.GetProjectById;
@@ -16,7 +17,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Creates a new project within the application.
     /// </summary>
-    /// <param name="command">Command that contains details for project</param>
+    /// <param name="command">Command that contains details for a project</param>
     /// <returns>ID of newly created board</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -55,7 +56,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("/archive/{id}")]
+    [HttpPost("{id}/archive")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -63,5 +64,17 @@ public class ProjectController(IMediator mediator) : ControllerBase
     {
         var response = await mediator.Send(new ArchiveProjectCommand(id));
         return Ok(response);
+    }
+
+    [HttpPost("{id}/add-member")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddProjectMember(long id, [FromBody] AddProjectMemberCommand command)
+    {
+        if (id != command.ProjectId)
+            return BadRequest("Bad Id in request");
+        
+        return Ok(await mediator.Send(command));
     }
 }
