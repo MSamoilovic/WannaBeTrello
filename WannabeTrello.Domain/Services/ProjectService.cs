@@ -80,6 +80,11 @@ public class ProjectService(
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
         
+        var projectMember = project.ProjectMembers.SingleOrDefault(x =>
+            x.UserId == inviterUserId && x.Role is ProjectRole.Admin or ProjectRole.Owner);
+
+        if (projectMember is null) throw new AccessDeniedException("You don't have access to this project");
+        
         project.AddMember(newMemberId, role, inviterUserId);
         
         await projectRepository.UpdateAsync(project);
