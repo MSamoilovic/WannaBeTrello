@@ -6,5 +6,6 @@ public interface IProjectNotificationService
    public Task NotifyProjectUpdated(long modifiedProjectId, long modifierUserId);
    public Task NotifyProjectArchived(long projectId, long modifierUserId);
    public Task NotifyProjectMemberAdded(long projectId, long newMemberId, string? projectName, long inviterUserId);
+   public Task NotifyProjectMemberRemoved(long projectId, long memberId, long modifierUserId);
    
 }

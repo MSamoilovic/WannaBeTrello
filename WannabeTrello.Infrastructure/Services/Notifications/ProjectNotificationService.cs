@@ -25,4 +25,9 @@ public class ProjectNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCo
     {
         await hubContext.Clients.All.AddedProjectMember(projectId, newMemberId,  inviterUserId);
     }
+
+    public async Task NotifyProjectMemberRemoved(long projectId, long memberId, long modifierUserId)
+    {
+        await hubContext.Clients.All.RemovedProjectMember(projectId, memberId, modifierUserId);
+    }
 }

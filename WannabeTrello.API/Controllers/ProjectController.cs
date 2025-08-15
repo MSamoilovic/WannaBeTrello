@@ -6,6 +6,7 @@ using WannabeTrello.Application.Features.Projects.ArchiveProject;
 using WannabeTrello.Application.Features.Projects.CreateProject;
 using WannabeTrello.Application.Features.Projects.GetProjectById;
 using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
+using WannabeTrello.Application.Features.Projects.RemoveProjectMember;
 using WannabeTrello.Application.Features.Projects.UpdateProject;
 
 namespace WannabeTrello.Controllers;
@@ -44,7 +45,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
         {
             return BadRequest("ID u URL-u mora se podudarati sa ID-om u telu zahteva.");
         }
-        
+
         return Ok(await mediator.Send(command));
     }
 
@@ -75,7 +76,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
     {
         if (id != command.ProjectId)
             return BadRequest("Bad Id in request");
-        
+
         return Ok(await mediator.Send(command));
     }
 
@@ -87,5 +88,11 @@ public class ProjectController(IMediator mediator) : ControllerBase
     {
         return Ok(await mediator.Send(new GetProjectMembersByIdQuery(id)));
     }
-    
+
+    [HttpDelete("{id:long}/members/{memberId:long}")]
+    [ProducesResponseType(typeof(RemoveProjectMemberCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RemoveProjectMember(long id, long memberId)
+        => Ok(await mediator.Send(new RemoveProjectMemberCommand(id, memberId)));
 }

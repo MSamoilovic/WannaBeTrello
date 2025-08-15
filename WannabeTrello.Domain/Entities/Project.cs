@@ -123,7 +123,7 @@ public class Project : AuditableEntity
         var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);
         if (inviter is null || (inviter.Role != role && inviter.Role != ProjectRole.Admin))
         {
-            throw new UnauthorizedAccessException("Only Admin or Project can be archived.");
+            throw new UnauthorizedAccessException("Only Owner or Admin can add this member");
         }
         
         if(ProjectMembers.Any(pm => pm.UserId == newMemberId))
@@ -142,5 +142,25 @@ public class Project : AuditableEntity
         LastModifiedBy = inviterUserId;
 
         AddDomainEvent(new ProjectMemberAddedEvent(Id,  newMemberId, role, inviterUserId));
+    }
+
+    public void RemoveMember(long removedMemberId, long removerUserId)
+    {
+        var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == removerUserId);
+        if (inviter is null || (inviter.Role != ProjectRole.Owner && inviter.Role != ProjectRole.Admin))
+        {
+            throw new UnauthorizedAccessException("Only Admin or Owner can remove this member.");
+        }
+
+        var memberToRemove = ProjectMembers.FirstOrDefault(pm => pm.UserId == removedMemberId);
+        if (memberToRemove is null)
+            return;
+        
+        ProjectMembers.Remove(memberToRemove);
+        
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = removerUserId;
+        
+        AddDomainEvent(new ProjectMemberRemovedEvent(Id,removedMemberId, removerUserId));
     }
 }

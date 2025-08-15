@@ -80,15 +80,22 @@ public class ProjectService(
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
         
-        var projectMember = project.ProjectMembers.SingleOrDefault(x =>
-            x.UserId == inviterUserId && x.Role is ProjectRole.Admin or ProjectRole.Owner);
-
-        if (projectMember is null) throw new AccessDeniedException("You don't have access to this project");
         
         project.AddMember(newMemberId, role, inviterUserId);
         
         await projectRepository.UpdateAsync(project);
         
         return project.Id;
+    }
+
+    public async Task RemoveProjectMember(long projectId,long removedUserId, long removerUserId)
+    {
+        var project = await projectRepository.GetByIdAsync(projectId);
+        if (project is null)
+            throw new NotFoundException(nameof(Project), projectId);
+        
+        project.RemoveMember(removedUserId, removerUserId);
+        
+        await projectRepository.UpdateAsync(project);
     }
 }
