@@ -1,4 +1,5 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
@@ -23,5 +24,14 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
     public async Task<IEnumerable<Project>> GetProjectsByUserIdAsync(long userId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<List<ProjectMember>> GetProjectMembersByIdAsync(long projectId)
+    {
+        return await _dbSet
+            .Where(p => p.Id == projectId)
+            .SelectMany(p => p.ProjectMembers)
+            .Include(p => p.User)
+            .ToListAsync();
     }
 }

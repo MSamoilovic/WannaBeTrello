@@ -115,7 +115,7 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = archiverUserId;
     
-        AddDomainEvent(new ProjectArchivedEvent(Id));
+        AddDomainEvent(new ProjectArchivedEvent(Id, archiverUserId));
     }
 
     public void AddMember(long newMemberId, ProjectRole role, long inviterUserId)

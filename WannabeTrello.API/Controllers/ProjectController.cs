@@ -5,6 +5,7 @@ using WannabeTrello.Application.Features.Projects.AddProjectMember;
 using WannabeTrello.Application.Features.Projects.ArchiveProject;
 using WannabeTrello.Application.Features.Projects.CreateProject;
 using WannabeTrello.Application.Features.Projects.GetProjectById;
+using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
 using WannabeTrello.Application.Features.Projects.UpdateProject;
 
 namespace WannabeTrello.Controllers;
@@ -66,7 +67,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("{id}/add-member")]
+    [HttpPost("{id:long}/add-member")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -77,4 +78,14 @@ public class ProjectController(IMediator mediator) : ControllerBase
         
         return Ok(await mediator.Send(command));
     }
+
+    [HttpGet("{id:long}/members")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetProjectMembersBy(long id)
+    {
+        return Ok(await mediator.Send(new GetProjectMembersByIdQuery(id)));
+    }
+    
 }

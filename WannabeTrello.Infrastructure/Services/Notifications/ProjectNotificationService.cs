@@ -15,4 +15,14 @@ public class ProjectNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCo
     {
         await hubContext.Clients.All.ProjectUpdated(modifiedProjectId, modifierUserId);
     }
+
+    public async Task NotifyProjectArchived(long projectId, long modifierUserId)
+    {
+        await hubContext.Clients.All.ProjectArchived(projectId, modifierUserId);
+    }
+
+    public async Task NotifyProjectMemberAdded(long projectId, long newMemberId, string? projectName, long inviterUserId)
+    {
+        await hubContext.Clients.All.AddedProjectMember(projectId, newMemberId,  inviterUserId);
+    }
 }
