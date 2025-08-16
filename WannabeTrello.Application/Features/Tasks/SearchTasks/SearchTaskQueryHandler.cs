@@ -12,9 +12,8 @@ namespace WannabeTrello.Application.Features.Tasks.SearchTasks
             {
                 throw new UnauthorizedAccessException("Korisnik nije autentifikovan.");
             }
-
-
-            return taskRepository.SearchTask().Select(SearchTaskQueryResponse.FromEntity).AsQueryable();
+            
+            return taskRepository.SearchTask().AsEnumerable().Select(SearchTaskQueryResponse.FromEntity).AsQueryable();
         }
     }
 }
