@@ -20,6 +20,9 @@ public class Project : AuditableEntity
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Project Name cannot be empty", nameof(name));
+        
+        if(ownerId <= 0) 
+            throw new ArgumentException("Project OwnerId cannot be zero or negative", nameof(ownerId));
 
         var project = new Project
         {
