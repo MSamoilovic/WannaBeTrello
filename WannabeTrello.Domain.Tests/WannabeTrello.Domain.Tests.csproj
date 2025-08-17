@@ -20,4 +20,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\WannabeTrello.Domain\WannabeTrello.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
