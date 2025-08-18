@@ -13,14 +13,11 @@ public class CreateProjectCommandHandlerTests
     [Fact]
     public async Task Handle_AuthenticatedUser_ReturnsProjectId()
     {
-        // ARRANGE (Priprema)
-        
-        // Mock-uj ICurrentUserService da simulira autentifikovanog korisnika
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         currentUserServiceMock.Setup(x => x.UserId).Returns(123);
 
-        // Mock-uj ProjectService da simulira uspesno kreiranje projekta
+        
         var projectServiceMock = new Mock<IProjectService>();
         
         var createdProject = new Project();
@@ -30,7 +27,7 @@ public class CreateProjectCommandHandlerTests
             .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
             .ReturnsAsync(createdProject);
 
-        // Kreiraj instancu handlera sa mock-ovima
+       
         var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
         var command = new CreateProjectCommand("New Test Project", "Description");
         
@@ -71,9 +68,7 @@ public class CreateProjectCommandHandlerTests
     [Fact]
     public async Task Handle_ProjectServiceThrowsException_ThrowsException()
     {
-        // ARRANGE (Priprema)
-        
-        // Mock-uj ICurrentUserService da simulira autentifikovanog korisnika
+       
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         currentUserServiceMock.Setup(x => x.UserId).Returns(123);
@@ -84,7 +79,7 @@ public class CreateProjectCommandHandlerTests
             .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
             .ThrowsAsync(new DataException("Database connection error.")); 
 
-        // Kreiraj instancu handlera sa mock-ovima
+       
         var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
         var command = new CreateProjectCommand("Failing Project", "Description");
         
