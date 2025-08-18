@@ -1,4 +1,5 @@
 ﻿using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Events.Project_Events;
 
 namespace WannabeTrello.Domain.Tests.Entities;
 
@@ -21,6 +22,12 @@ public class ProjectTests
         Assert.Equal(description, project.Description);
         Assert.Equal(creatorUserId, project.CreatedBy);
         Assert.True(project.CreatedAt <= DateTime.UtcNow);
+        
+        Assert.Single(project.DomainEvents);
+        var domainEvent = Assert.IsType<ProjectCreatedEvent>(project.DomainEvents.First());
+        Assert.Equal(project.Id, domainEvent.ProjectId);
+        Assert.Equal(projectName, domainEvent.ProjectName);
+        Assert.Equal(creatorUserId, domainEvent.OwnerId);
     }
     
     [Fact]
@@ -46,5 +53,22 @@ public class ProjectTests
         const int creatorUserId = 0; 
         
         Assert.Throws<ArgumentException>(() => Project.Create(projectName, description, creatorUserId));
+    }
+    
+    [Theory]
+    [InlineData("New Project Name", null)]
+    [InlineData("Another Project", "")]
+    [InlineData("Third Project", "   ")]
+    [InlineData("Fourth Project", "This is a description")]
+    public void Create_WithVariousDescriptionInputs_SetsDescriptionCorrectly(string name, string description)
+    {
+        const int ownerId = 123;
+        
+        var project = Project.Create(name, description, ownerId);
+        
+        Assert.Equal(description, project.Description);
+        
+        Assert.Equal(name, project.Name);
+        Assert.Single(project.ProjectMembers);
     }
 }

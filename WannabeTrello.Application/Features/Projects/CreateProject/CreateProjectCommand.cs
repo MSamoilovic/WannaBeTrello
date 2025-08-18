@@ -2,9 +2,4 @@
 
 namespace WannabeTrello.Application.Features.Projects.CreateProject;
 
-public class CreateProjectCommand: IRequest<long>
-{
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    
-}
+public record CreateProjectCommand(string? Name, string? Description) : IRequest<long>;

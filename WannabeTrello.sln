@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Domain.Tests", "WannabeTrello.Domain.Tests\WannabeTrello.Domain.Tests.csproj", "{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Appilcation.Tests", "WannabeTrello.Appilcation.Tests\WannabeTrello.Appilcation.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Application.Tests", "WannabeTrello.Application.Tests\WannabeTrello.Application.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

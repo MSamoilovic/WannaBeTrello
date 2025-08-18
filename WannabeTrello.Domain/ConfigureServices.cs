@@ -1,0 +1,15 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using WannabeTrello.Domain.Interfaces.Services;
+using WannabeTrello.Domain.Services;
+
+namespace WannabeTrello.Domain;
+
+public static class ConfigureServices
+{
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
+    {
+        services.AddScoped<IProjectService, ProjectService>();
+        
+        return services;
+    }
+}
