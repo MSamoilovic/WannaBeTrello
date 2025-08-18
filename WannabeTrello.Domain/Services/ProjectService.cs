@@ -3,13 +3,14 @@ using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Domain.Services;
 
 public class ProjectService(
     IProjectRepository projectRepository,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork): IProjectService
 {
     public async Task<Project> CreateProjectAsync(string? name, string? description, long creatorUserId)
     {

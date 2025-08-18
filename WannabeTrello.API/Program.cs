@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using WannabeTrello.Application;
+using WannabeTrello.Domain;
 using WannabeTrello.Extensions;
 using WannabeTrello.Infrastructure;
 using WannabeTrello.Infrastructure.SignalR;
@@ -44,6 +45,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddDomainServices();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddPresentation();
