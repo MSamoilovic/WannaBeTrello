@@ -6,5 +6,6 @@ public enum ProjectStatus
     Archived,
     Completed,
     Cancelled,
-    OnHold
+    OnHold,
+    Closed
 }

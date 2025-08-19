@@ -10,7 +10,6 @@ public class CreateProjectCommandHandler(ICurrentUserService currentUserService,
 {
     public async Task<long> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        //Testing workflow
         if (!currentUserService.IsAuthenticated)
         {
             throw new UnauthorizedAccessException("User is not authenticated.");
