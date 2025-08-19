@@ -21,10 +21,11 @@ public class ProjectService(
         }
 
         var project = Project.Create(name, description, user.Id);
-
+        
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync();
-
+        
+        
         return project;
     }
 
@@ -81,7 +82,6 @@ public class ProjectService(
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
         
-        
         project.AddMember(newMemberId, role, inviterUserId);
         
         await projectRepository.UpdateAsync(project);
@@ -96,6 +96,17 @@ public class ProjectService(
             throw new NotFoundException(nameof(Project), projectId);
         
         project.RemoveMember(removedUserId, removerUserId);
+        
+        await projectRepository.UpdateAsync(project);
+    }
+
+    public async Task UpdateProjectMember(long projectId, long updateMemberId, ProjectRole role, long inviterUserId)
+    {
+        var project = await projectRepository.GetByIdAsync(projectId);
+        if (project is null)
+            throw new NotFoundException(nameof(Project), projectId);
+        
+        project.UpdateMember(updateMemberId, role, inviterUserId);
         
         await projectRepository.UpdateAsync(project);
     }

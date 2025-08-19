@@ -8,6 +8,7 @@ using WannabeTrello.Application.Features.Projects.GetProjectById;
 using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
 using WannabeTrello.Application.Features.Projects.RemoveProjectMember;
 using WannabeTrello.Application.Features.Projects.UpdateProject;
+using WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
 
 namespace WannabeTrello.Controllers;
 
@@ -95,4 +96,22 @@ public class ProjectController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveProjectMember(long id, long memberId)
         => Ok(await mediator.Send(new RemoveProjectMemberCommand(id, memberId)));
+
+    [HttpPut("{id:long}/members/{memberId:long}")]
+    [ProducesResponseType(typeof(UpdateProjectMemberRoleCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateProjectMemberRole(long id, long memberId,
+        [FromBody] UpdateProjectMemberRoleCommand command)
+    {
+        if (id != command.ProjectId)
+            return BadRequest("Bad ProjectId in request");
+
+        if (memberId != command.MemberId)
+        {
+            return BadRequest("Bad MemberId in request");
+        }
+        
+        return Ok(await mediator.Send(command));
+    }
 }
