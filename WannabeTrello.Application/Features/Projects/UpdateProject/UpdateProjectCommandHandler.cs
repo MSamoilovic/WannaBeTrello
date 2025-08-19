@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Services;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Projects.UpdateProject;
 
-public class UpdateProjectCommandHandler(ProjectService projectService, ICurrentUserService currentUserService)
+public class UpdateProjectCommandHandler(IProjectService projectService, ICurrentUserService currentUserService)
     : IRequestHandler<UpdateProjectCommand, UpdateProjectCommandResponse>
 {
     public async Task<UpdateProjectCommandResponse> Handle(UpdateProjectCommand request,

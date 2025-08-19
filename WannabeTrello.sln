@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Domain", "Wan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Infrastructure", "WannabeTrello.Infrastructure\WannabeTrello.Infrastructure.csproj", "{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Domain.Tests", "WannabeTrello.Domain.Tests\WannabeTrello.Domain.Tests.csproj", "{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Application.Tests", "WannabeTrello.Application.Tests\WannabeTrello.Application.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
