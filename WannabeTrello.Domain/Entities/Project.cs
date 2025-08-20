@@ -1,4 +1,5 @@
 ﻿using WannabeTrello.Domain.Enums;
+using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
 using WannabeTrello.Domain.Events.Project_Events;
 
@@ -33,13 +34,9 @@ public class Project : AuditableEntity
             CreatedBy = ownerId,
             IsArchived = false,
         };
-
-        project.ProjectMembers.Add(new ProjectMember
-        {
-            UserId = ownerId,
-            ProjectId = project.Id,
-            Role = ProjectRole.Owner,
-        });
+        
+        var newProjectMember = ProjectMember.Create(ownerId, project.Id, ProjectRole.Owner);
+        project.ProjectMembers.Add(newProjectMember);
 
         project.AddDomainEvent(new ProjectCreatedEvent(project.Id, project.Name, ownerId));
 
@@ -126,24 +123,60 @@ public class Project : AuditableEntity
         var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);
         if (inviter is null || (inviter.Role != role && inviter.Role != ProjectRole.Admin))
         {
-            throw new UnauthorizedAccessException("Only Admin or Project can be archived.");
+            throw new UnauthorizedAccessException("Only Owner or Admin can add this member");
         }
         
         if(ProjectMembers.Any(pm => pm.UserId == newMemberId))
         {
             throw new  InvalidOperationException("User already exists in the project");
         }
-
-        ProjectMembers.Add(new ProjectMember
-        {
-            UserId = newMemberId,
-            ProjectId = Id,
-            Role = role,
-        });
+        
+        var newMember = ProjectMember.Create(newMemberId,Id, role);
+        ProjectMembers.Add(newMember);
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
 
         AddDomainEvent(new ProjectMemberAddedEvent(Id,  newMemberId, role, inviterUserId));
+    }
+
+    public void RemoveMember(long removedMemberId, long removerUserId)
+    {
+        var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == removerUserId);
+        if (inviter is null || (inviter.Role != ProjectRole.Owner && inviter.Role != ProjectRole.Admin))
+        {
+            throw new UnauthorizedAccessException("Only Admin or Owner can remove this member.");
+        }
+
+        var memberToRemove = ProjectMembers.FirstOrDefault(pm => pm.UserId == removedMemberId);
+        if (memberToRemove is null)
+            return;
+        
+        ProjectMembers.Remove(memberToRemove);
+        
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = removerUserId;
+        
+        AddDomainEvent(new ProjectMemberRemovedEvent(Id,removedMemberId, removerUserId));
+    }
+
+    public void UpdateMember(long updatedMemberId, ProjectRole role, long inviterUserId)
+    {
+        var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);
+        if (inviter is null || (inviter.Role != ProjectRole.Owner && inviter.Role != ProjectRole.Admin))
+        {
+            throw new UnauthorizedAccessException("Only Admin or Owner can update this member's role.");
+        }
+        
+        var memberToUpdate = ProjectMembers.FirstOrDefault(pm => pm.UserId == updatedMemberId);
+        if (memberToUpdate is null)
+            return;
+        
+        memberToUpdate.UpdateRole(role);
+        
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = inviterUserId;
+        
+        AddDomainEvent(new ProjectMemberUpdatedEvent(Id,  updatedMemberId, role, inviterUserId));
     }
 }

@@ -26,6 +26,7 @@ public interface ITrellyHub
         Task ProjectUpdated(long projectId, long creatorUserId);
         Task ProjectArchived(long projectId, long creatorUserId);
         Task AddedProjectMember(long projectId, long projectMemberId, long creatorUserId);
+        Task RemovedProjectMember(long projectId, long removedUserId, long removerUserId);
         
         // Dodatak za praćenje aktivnosti
         Task ActivityAdded(string boardId, string activityDescription);
