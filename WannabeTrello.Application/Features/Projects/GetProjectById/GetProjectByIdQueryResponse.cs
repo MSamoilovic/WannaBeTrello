@@ -5,6 +5,7 @@ namespace WannabeTrello.Application.Features.Projects.GetProjectById;
 
 public class GetProjectByIdQueryResponse
 {
+    public long? Id { get; private set; }
     public string? Name { get; private set; }
     public string? Description { get; private set; }
     public ProjectVisibility? Visibility { get; private set; }
@@ -15,6 +16,7 @@ public class GetProjectByIdQueryResponse
     {
         return new GetProjectByIdQueryResponse
         {
+            Id = entity?.Id,
             Name = entity?.Name,
             Description = entity?.Description,
             Visibility = entity?.Visibility,
