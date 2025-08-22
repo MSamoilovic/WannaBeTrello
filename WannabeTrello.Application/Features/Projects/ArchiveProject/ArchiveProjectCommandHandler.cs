@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
+using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Projects.ArchiveProject;
 
-internal class ArchiveProjectCommandHandler(
-    ProjectService service,
+public class ArchiveProjectCommandHandler(
+    IProjectService service,
     ICurrentUserService currentUserService
 ): IRequestHandler<ArchiveProjectCommand, ArchiveProjectCommandResponse>
 {

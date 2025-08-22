@@ -2,4 +2,4 @@
 
 namespace WannabeTrello.Application.Features.Projects.ArchiveProject;
 
-public record ArchiveProjectCommandResponse(Result<long> result);
+public record ArchiveProjectCommandResponse(Result<long> Result);

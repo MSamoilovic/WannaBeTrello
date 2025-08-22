@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
+using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Projects.AddProjectMember;
 
-internal class AddProjectMemberCommandHandler(
-    ProjectService projectService,
+public class AddProjectMemberCommandHandler(
+    IProjectService projectService,
     ICurrentUserService currentUserService
 ) : IRequestHandler<AddProjectMemberCommand, AddProjectMemberCommandResponse>
 {

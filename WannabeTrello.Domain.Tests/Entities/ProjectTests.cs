@@ -76,11 +76,11 @@ public class ProjectTests
     {
         // ARRANGE
         var project = CreateTestProject(
-            1, 
-            "Old Name", 
-            "Old Description", 
-            ProjectStatus.Active, 
-            ProjectVisibility.Public, 
+            1,
+            "Old Name",
+            "Old Description",
+            ProjectStatus.Active,
+            ProjectVisibility.Public,
             false);
 
         const int updatedBy = 123;
@@ -109,12 +109,10 @@ public class ProjectTests
         var domainEvent = Assert.IsType<ProjectUpdatedEvent>(project.DomainEvents.First());
         Assert.Equal(project.Id, domainEvent.Id);
     }
-    
+
     [Fact]
     public void Update_WithNoChanges_DoesNotUpdateAndDoesNotRaiseEvent()
     {
-        
-
         var project = CreateTestProject(
             1,
             "Existing Name",
@@ -126,21 +124,21 @@ public class ProjectTests
 
         var initialModifiedAt = project.LastModifiedAt;
         var initialModifiedBy = project.LastModifiedBy;
-    
+
         // ACT
-        project.Update("Existing Name", "Existing Description", ProjectStatus.Active, ProjectVisibility.Public, false, 123);
+        project.Update("Existing Name", "Existing Description", ProjectStatus.Active, ProjectVisibility.Public, false,
+            123);
 
         // ASSERT
         Assert.Equal(initialModifiedAt, project.LastModifiedAt);
         Assert.Equal(initialModifiedBy, project.LastModifiedBy);
-        
+
         Assert.Empty(project.DomainEvents);
     }
-    
+
     [Fact]
     public void Update_WithPartialChanges_UpdatesOnlySpecifiedProperties()
     {
-        
         var project = CreateTestProject(
             1,
             "Old Name",
@@ -152,20 +150,137 @@ public class ProjectTests
 
         var initialStatus = project.Status;
         const int updatedBy = 123;
-    
+
         // ACT
-        
+
         project.Update("New Name", null, null, ProjectVisibility.Private, false, updatedBy);
 
         // ASSERT
         Assert.Equal("New Name", project.Name);
         Assert.Equal("Old Description", project.Description);
-        Assert.Equal(initialStatus, project.Status); 
+        Assert.Equal(initialStatus, project.Status);
         Assert.Equal(ProjectVisibility.Private, project.Visibility);
-    
+
         Assert.NotNull(project.LastModifiedAt);
         Assert.Equal(updatedBy, project.LastModifiedBy);
         Assert.Single(project.DomainEvents);
+    }
+
+    [Fact]
+    public void Archive_UserIsAdmin_ArchivesProjectAndRaisesEvent()
+    {
+        const int projectId = 1;
+        const int adminUserId = 123;
+
+        var project = CreateTestProject(
+            projectId,
+            "Project Name",
+            "Project Description",
+            ProjectStatus.Active,
+            ProjectVisibility.Public,
+            false
+        );
+
+        var members = CreateTestProjectMember(adminUserId, projectId, ProjectRole.Owner);
+        project.ProjectMembers.Add(members[0]);
+
+        // ACT
+        project.Archive(adminUserId);
+
+        Assert.True(project.IsArchived);
+
+        Assert.NotNull(project.LastModifiedAt);
+        Assert.Equal(adminUserId, project.LastModifiedBy);
+
+        Assert.Single(project.DomainEvents);
+        var domainEvent = Assert.IsType<ProjectArchivedEvent>(project.DomainEvents.First());
+        Assert.Equal(projectId, domainEvent.ProjectId);
+    }
+
+    [Theory]
+    [InlineData(ProjectRole.Contributor, "Only Owner or Admin can archive this project")]
+    public void Archive_UnauthorizedUser_ThrowsUnauthorizedAccessException(
+        ProjectRole unauthorizedRole, string expectedErrorMessage)
+    {
+        const int projectId = 1;
+        const int unauthorizedUserId = 999;
+        const int adminUserId = 123;
+
+        var project = CreateTestProject(
+            projectId,
+            "Project Name",
+            "Project Description",
+            ProjectStatus.Active,
+            ProjectVisibility.Public,
+            false
+        );
+
+        var members = CreateTestProjectMember(adminUserId, projectId, unauthorizedRole);
+        project.ProjectMembers.Add(members[0]);
+
+        // ACT & ASSERT
+        var ex = Assert.Throws<UnauthorizedAccessException>(() => project.Archive(unauthorizedUserId));
+        Assert.Equal(expectedErrorMessage, ex.Message);
+
+        Assert.False(project.IsArchived);
+        Assert.Empty(project.DomainEvents);
+    }
+    
+    
+
+    [Theory]
+    [InlineData(ProjectStatus.Closed)]
+    [InlineData(ProjectStatus.OnHold)]
+    public void Archive_NonActiveProject_ThrowsInvalidOperationException(ProjectStatus status)
+    {
+        // ARRANGE
+        const int ownerUserId = 123;
+        
+        var project = CreateTestProject(
+            1,
+            "Project Name",
+            "Project Description",
+            status,
+            ProjectVisibility.Public,
+            false
+        );
+
+        var members = CreateTestProjectMember(ownerUserId, 1, ProjectRole.Owner);
+        project.ProjectMembers.Add(members[0]);
+
+
+        // ACT & ASSERT
+        Assert.Throws<InvalidOperationException>(() => project.Archive(ownerUserId));
+        Assert.False(project.IsArchived);
+        Assert.Empty(project.DomainEvents);
+    }
+    
+    [Fact]
+    public void Archive_AlreadyArchivedProject_DoesNothing()
+    {
+        // ARRANGE
+        const int ownerUserId = 123;
+        var project = CreateTestProject(
+            1,
+            "Project Name",
+            "Project Description",
+            ProjectStatus.Archived,
+            ProjectVisibility.Public,
+            true
+        );
+
+        var members = CreateTestProjectMember(ownerUserId, 1, ProjectRole.Owner);
+        project.ProjectMembers.Add(members[0]);
+
+        var initialModifiedAt = project.LastModifiedAt;
+
+        
+        project.Archive(ownerUserId);
+
+        
+        Assert.Equal(initialModifiedAt, project.LastModifiedAt);
+        
+        Assert.Empty(project.DomainEvents);
     }
 
 
@@ -182,6 +297,15 @@ public class ProjectTests
         SetPrivatePropertyValue(project, "IsArchived", isArchived);
 
         return project;
+    }
+
+    private static List<ProjectMember> CreateTestProjectMember(long memberId, long projectId, ProjectRole role)
+    {
+        var members = new List<ProjectMember>() ?? [];
+        var member = ProjectMember.Create(memberId, projectId, role);
+        members.Add(member);
+
+        return members;
     }
 
     private static void SetPrivatePropertyValue<T>(T obj, string propertyName, object value)
