@@ -30,8 +30,9 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
     {
         return await _dbSet
             .Where(p => p.Id == projectId)
+            .Include(p => p.ProjectMembers)
+            .ThenInclude(pm => pm.User)
             .SelectMany(p => p.ProjectMembers)
-            .Include(p => p.User)
             .ToListAsync();
     }
 }

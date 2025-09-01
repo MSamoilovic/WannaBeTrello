@@ -282,8 +282,207 @@ public class ProjectTests
         
         Assert.Empty(project.DomainEvents);
     }
+    
+    //Tests for Adding Project Member
+    [Fact]
+    public void AddMember_OwnerAddsNewMember_AddsMemberAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long newMemberId = 2;
+        var projectId = 1;
+
+        // Kreiramo projekat bez članova
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        
+        // Ručno dodajemo vlasnika projekta
+        var ownerMembers = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", ownerMembers);
+        
+        // ACT
+        project.AddMember(newMemberId, ProjectRole.Contributor, ownerId);
+
+        // ASSERT
+        var newMember = project.ProjectMembers.FirstOrDefault(m => m.UserId == newMemberId);
+        Assert.NotNull(newMember);
+        Assert.Equal(ProjectRole.Contributor, newMember.Role);
+        Assert.Single(project.DomainEvents.OfType<ProjectMemberAddedEvent>());
+    }
+
+    [Fact]
+    public void AddMember_AdminAddsNewMember_AddsMemberAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long adminId = 2;
+        const long newMemberId = 3;
+        var projectId = 1;
+
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        
+        // Ručno dodajemo vlasnika i admina
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(adminId, projectId, ProjectRole.Admin));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        // ACT
+        project.AddMember(newMemberId, ProjectRole.Contributor, adminId);
+
+        // ASSERT
+        var newMember = project.ProjectMembers.FirstOrDefault(m => m.UserId == newMemberId);
+        Assert.NotNull(newMember);
+        Assert.Equal(ProjectRole.Contributor, newMember.Role);
+        Assert.Single(project.DomainEvents.OfType<ProjectMemberAddedEvent>());
+    }
+
+    [Fact]
+    public void AddMember_UserIsAlreadyMember_ThrowsUnauthorizedAccessException()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const int projectId = 1;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT & ASSERT
+        Assert.Throws<UnauthorizedAccessException>(() => 
+            project.AddMember(ownerId, ProjectRole.Contributor, ownerId));
+    }
 
 
+    [Fact]
+    public void AddMember_NonAdminOrOwnerAddsNewMember_ThrowsUnauthorizedAccessException()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long nonAdminMemberId = 2;
+        const long newMemberId = 3;
+        var projectId = 1;
+
+        // Kreiramo projekat bez članova
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+    
+        // Ručno dodajemo vlasnika i korisnika sa ulogom Contributor
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(nonAdminMemberId, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+    
+        // ACT & ASSERT
+        // Pokušavamo da dodamo novog člana sa ID-jem korisnika koji nije ni Owner ni Admin
+        Assert.Throws<UnauthorizedAccessException>(() => 
+            project.AddMember(newMemberId, ProjectRole.Contributor, nonAdminMemberId));
+        
+        Assert.DoesNotContain(project.ProjectMembers, m => m.UserId == newMemberId);
+        
+        Assert.Empty(project.DomainEvents);
+    }
+    
+     // --- TESTOVI ZA REMOVEMEMBER ---
+
+    [Fact]
+    public void RemoveMember_OwnerRemovesMember_RemovesMemberAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long memberIdToRemove = 2;
+        var projectId = 1;
+        
+        // Kreiramo projekat sa vlasnikom i dodatnim članom
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(memberIdToRemove, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT
+        project.RemoveMember(memberIdToRemove, ownerId);
+
+        // ASSERT
+        // Proveravamo da član više nije u projektu
+        Assert.DoesNotContain(project.ProjectMembers, m => m.UserId == memberIdToRemove);
+        // Proveravamo da je događaj pokrenut
+        var domainEvent = project.DomainEvents.OfType<ProjectMemberRemovedEvent>().FirstOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(memberIdToRemove, domainEvent.RemovedUserId);
+        Assert.Equal(ownerId, domainEvent.RemovingUserId);
+    }
+    
+    [Fact]
+    public void RemoveMember_AdminRemovesMember_RemovesMemberAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long adminId = 2;
+        const long memberIdToRemove = 3;
+        var projectId = 1;
+        
+        // Kreiramo projekat sa vlasnikom, adminom i članom koji se uklanja
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(adminId, projectId, ProjectRole.Admin));
+        members.AddRange(CreateTestProjectMember(memberIdToRemove, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT
+        project.RemoveMember(memberIdToRemove, adminId);
+
+        // ASSERT
+        Assert.DoesNotContain(project.ProjectMembers, m => m.UserId == memberIdToRemove);
+        var domainEvent = project.DomainEvents.OfType<ProjectMemberRemovedEvent>().FirstOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(memberIdToRemove, domainEvent.RemovedUserId);
+        Assert.Equal(adminId, domainEvent.RemovingUserId);
+    }
+    
+    [Fact]
+    public void RemoveMember_NonAdminOrOwnerRemovesMember_ThrowsUnauthorizedAccessException()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long nonAdminMemberId = 2;
+        const long memberIdToRemove = 3;
+        var projectId = 1;
+        
+        // Kreiramo projekat sa vlasnikom, članom sa ulogom Contributor i članom za uklanjanje
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(nonAdminMemberId, projectId, ProjectRole.Contributor));
+        members.AddRange(CreateTestProjectMember(memberIdToRemove, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT & ASSERT
+        Assert.Throws<UnauthorizedAccessException>(() => 
+            project.RemoveMember(memberIdToRemove, nonAdminMemberId));
+        
+        // Proveravamo da član nije uklonjen
+        Assert.Contains(project.ProjectMembers, m => m.UserId == memberIdToRemove);
+    }
+    
+    [Fact]
+    public void RemoveMember_MemberDoesNotExist_DoesNothingAndDoesNotRaiseEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long nonExistentMemberId = 99;
+        var projectId = 1;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        // Zapamćujemo početni broj članova i događaja
+        var initialMemberCount = project.ProjectMembers.Count;
+        var initialDomainEventsCount = project.DomainEvents.Count;
+
+        // ACT
+        project.RemoveMember(nonExistentMemberId, ownerId);
+
+        // ASSERT
+        // Proveravamo da broj članova ostaje isti
+        Assert.Equal(initialMemberCount, project.ProjectMembers.Count);
+        // Proveravamo da nije pokrenut nikakav događaj
+        Assert.Equal(initialDomainEventsCount, project.DomainEvents.Count);
+    }
+    
     private static Project CreateTestProject(long id, string name, string description, ProjectStatus status,
         ProjectVisibility visibility, bool isArchived)
     {
@@ -298,10 +497,129 @@ public class ProjectTests
 
         return project;
     }
+    
+    // --- TESTOVI ZA UPDATEMEMBER ---
+
+    [Fact]
+    public void UpdateMember_OwnerUpdatesMemberRole_UpdatesRoleAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long memberToUpdateId = 2;
+        var projectId = 1;
+
+        // Kreiramo projekat sa vlasnikom i članom
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(memberToUpdateId, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT
+        project.UpdateMember(memberToUpdateId, ProjectRole.Admin, ownerId);
+
+        // ASSERT
+        var updatedMember = project.ProjectMembers.FirstOrDefault(m => m.UserId == memberToUpdateId);
+        Assert.NotNull(updatedMember);
+        Assert.Equal(ProjectRole.Admin, updatedMember.Role);
+        
+        var domainEvent = project.DomainEvents.OfType<ProjectMemberUpdatedEvent>().FirstOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(memberToUpdateId, domainEvent.UpdatedMemberId);
+        Assert.Equal(ProjectRole.Admin, domainEvent.Role);
+    }
+    
+    [Fact]
+    public void UpdateMember_AdminUpdatesMemberRole_UpdatesRoleAndRaisesEvent()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long adminId = 2;
+        const long memberToUpdateId = 3;
+        var projectId = 1;
+
+        // Kreiramo projekat sa vlasnikom, adminom i članom za ažuriranje
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(adminId, projectId, ProjectRole.Admin));
+        members.AddRange(CreateTestProjectMember(memberToUpdateId, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT
+        project.UpdateMember(memberToUpdateId, ProjectRole.Contributor, adminId);
+
+        // ASSERT
+        var updatedMember = project.ProjectMembers.FirstOrDefault(m => m.UserId == memberToUpdateId);
+        Assert.NotNull(updatedMember);
+        Assert.Equal(ProjectRole.Contributor, updatedMember.Role);
+
+        var domainEvent = project.DomainEvents.OfType<ProjectMemberUpdatedEvent>().FirstOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(memberToUpdateId, domainEvent.UpdatedMemberId);
+        Assert.Equal(ProjectRole.Contributor, domainEvent.Role);
+    }
+    
+    [Fact]
+    public void UpdateMember_NonAdminOrOwnerUpdatesMemberRole_ThrowsUnauthorizedAccessException()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long nonAdminMemberId = 2;
+        const long memberToUpdateId = 3;
+        var projectId = 1;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        members.AddRange(CreateTestProjectMember(nonAdminMemberId, projectId, ProjectRole.Contributor));
+        members.AddRange(CreateTestProjectMember(memberToUpdateId, projectId, ProjectRole.Contributor));
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+
+        // ACT & ASSERT
+        Assert.Throws<UnauthorizedAccessException>(() =>
+            project.UpdateMember(memberToUpdateId, ProjectRole.Admin, nonAdminMemberId));
+        
+        var member = project.ProjectMembers.FirstOrDefault(m => m.UserId == memberToUpdateId);
+        Assert.Equal(ProjectRole.Contributor, member?.Role);
+    }
+
+    [Fact]
+    public void UpdateMember_MemberDoesNotExist_DoesNothing()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        const long nonExistentMemberId = 99;
+        var projectId = 1;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        var initialModifiedAt = project.LastModifiedAt;
+
+        // ACT
+        project.UpdateMember(nonExistentMemberId, ProjectRole.Admin, ownerId);
+
+        // ASSERT
+        Assert.Equal(initialModifiedAt, project.LastModifiedAt);
+        Assert.Empty(project.DomainEvents);
+    }
+    
+    [Fact]
+    public void UpdateMember_OwnerTriesToUpdateTheirOwnRole_ThrowsInvalidOperationException()
+    {
+        // ARRANGE
+        const long ownerId = 1;
+        var projectId = 1;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        // ACT & ASSERT
+        Assert.Throws<InvalidOperationException>(() =>
+            project.UpdateMember(ownerId, ProjectRole.Contributor, ownerId));
+    }
+    
 
     private static List<ProjectMember> CreateTestProjectMember(long memberId, long projectId, ProjectRole role)
     {
-        var members = new List<ProjectMember>() ?? [];
+        var members = new List<ProjectMember>();
         var member = ProjectMember.Create(memberId, projectId, role);
         members.Add(member);
 
