@@ -1,7 +1,6 @@
 ﻿using Moq;
 using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
 using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Interfaces.Repositories;
 
 namespace WannabeTrello.Appilcation.Tests.Features.Projects;
