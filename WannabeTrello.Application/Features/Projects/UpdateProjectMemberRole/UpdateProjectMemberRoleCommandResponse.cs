@@ -2,4 +2,4 @@
 
 namespace WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
 
-public record UpdateProjectMemberRoleCommandResponse(Result<long> result);
+public record UpdateProjectMemberRoleCommandResponse(Result<long> Result);
