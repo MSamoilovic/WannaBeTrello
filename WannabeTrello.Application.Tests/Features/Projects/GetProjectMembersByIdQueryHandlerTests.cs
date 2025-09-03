@@ -3,7 +3,7 @@ using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Appilcation.Tests.Features.Projects;
+namespace WannabeTrello.Application.Tests.Features.Projects;
 
 public class GetProjectMembersByIdQueryHandlerTests
 {
