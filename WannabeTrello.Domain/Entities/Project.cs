@@ -121,7 +121,7 @@ public class Project : AuditableEntity
     public void AddMember(long newMemberId, ProjectRole role, long inviterUserId)
     {
         var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);
-        if (inviter is null || (inviter.Role != role && inviter.Role != ProjectRole.Admin))
+        if (inviter is null || (inviter.Role != ProjectRole.Owner && inviter.Role != ProjectRole.Admin))
         {
             throw new UnauthorizedAccessException("Only Owner or Admin can add this member");
         }
@@ -166,6 +166,11 @@ public class Project : AuditableEntity
         if (inviter is null || (inviter.Role != ProjectRole.Owner && inviter.Role != ProjectRole.Admin))
         {
             throw new UnauthorizedAccessException("Only Admin or Owner can update this member's role.");
+        }
+        
+        if (inviterUserId == updatedMemberId && inviter.Role == ProjectRole.Owner)
+        {
+            throw new InvalidOperationException("Owner cannot change their own role.");
         }
         
         var memberToUpdate = ProjectMembers.FirstOrDefault(pm => pm.UserId == updatedMemberId);
