@@ -346,7 +346,7 @@ public class ProjectTests
         SetPrivatePropertyValue(project, "ProjectMembers", members);
 
         // ACT & ASSERT
-        Assert.Throws<UnauthorizedAccessException>(() => 
+        Assert.Throws<InvalidOperationException>(() => 
             project.AddMember(ownerId, ProjectRole.Contributor, ownerId));
     }
 
