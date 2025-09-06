@@ -2,6 +2,7 @@
 
 public enum ActivityType
 {
+    ProjectCreated,
     TaskCreated,
     TaskMoved,
     TaskCompleted,
@@ -14,5 +15,5 @@ public enum ActivityType
     ColumnDeleted,
     UserInvited,
     UserJoinedBoard,
-    UserRemovedFromBoard
+    UserRemovedFromBoard,
 }

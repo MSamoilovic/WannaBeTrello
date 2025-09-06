@@ -21,7 +21,7 @@ public class BoardService(
             }
 
             //Proveriti validacije za Role
-            var projectMember = project.ProjectMembers.SingleOrDefault(pm => pm.UserId == creatorUserId && (pm.Role == ProjectRole.Admin || pm.Role == ProjectRole.Owner));
+            var projectMember = project.ProjectMembers.SingleOrDefault(pm => pm.UserId == creatorUserId && pm.Role is ProjectRole.Admin or ProjectRole.Owner);
             if (projectMember == null)
             {
                 throw new AccessDeniedException("Samo administratori ili vlasnici projekta mogu kreirati table.");
