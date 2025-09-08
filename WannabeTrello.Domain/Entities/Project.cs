@@ -47,35 +47,48 @@ public class Project : AuditableEntity
         bool archived, long updatedBy)
     {
         var changed = false;
+        
+        var oldValues = new Dictionary<string, object?>();
+        var newValues = new Dictionary<string, object?>();
 
         if (!string.IsNullOrWhiteSpace(name) && name != Name)
         {
+            oldValues.Add("Name", name);
             Name = name;
             changed = true;
+            newValues.Add("Name", name);
         }
 
         if (description != null && description != Description)
         {
+            oldValues.Add("Description", description);
             Description = description;
             changed = true;
+            newValues.Add("Description", Description);
         }
 
         if (status.HasValue && status.Value != Status)
         {
+            oldValues.Add("Status", status.Value);
             Status = status.Value;
             changed = true;
+            newValues.Add("Status", Status);
         }
 
         if (visibility.HasValue && visibility.Value != Visibility)
         {
+            oldValues.Add("Visibility", visibility.Value);
             Visibility = visibility.Value;
             changed = true;
+            newValues.Add("Visibility", Visibility);
         }
 
         if (archived != IsArchived)
         {
+            oldValues.Add("IsArchived", IsArchived);
             IsArchived = archived;
             changed = true;
+            newValues.Add("IsArchived", IsArchived);
         }
 
         if (!changed) return;
@@ -83,7 +96,7 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = updatedBy;
 
-        AddDomainEvent(new ProjectUpdatedEvent(Id, Name, updatedBy));
+        AddDomainEvent(new ProjectUpdatedEvent(Id, Name, updatedBy, oldValues, newValues));
     }
 
     public Board CreateBoard(string? name, string? description, long creatorUserId)

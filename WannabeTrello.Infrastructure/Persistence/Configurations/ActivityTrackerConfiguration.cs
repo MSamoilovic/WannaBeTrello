@@ -36,14 +36,13 @@ public class ActivityTrackerConfiguration: IEntityTypeConfiguration<ActivityTrac
         builder.Property(al => al.RelatedEntityType)
             .HasMaxLength(100)
             .IsRequired(false);
-
         
         builder.Property(al => al.OldValue)
-            .HasMaxLength(1000)
+            .HasColumnType("jsonb")
             .IsRequired(false);
 
         builder.Property(al => al.NewValue)
-            .HasMaxLength(1000)
+            .HasColumnType("jsonb")
             .IsRequired(false);
     }
 }

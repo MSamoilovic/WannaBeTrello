@@ -53,12 +53,10 @@ public class ApplicationDbContext(
             {
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.UtcNow;
-                    //Dodati logiku za CreatedBy, sa currentUserService
                     entry.Entity.CreatedBy = currentUserService?.UserId;
                     break;
                 case EntityState.Modified:
                     entry.Entity.LastModifiedAt = DateTime.UtcNow;
-                    // Isto za LastModifiedBy
                     entry.Entity.LastModifiedBy = currentUserService?.UserId;
                     break;
             }
