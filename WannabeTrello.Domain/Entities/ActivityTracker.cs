@@ -11,12 +11,12 @@ public class ActivityTracker : AuditableEntity
     public User? User { get; init; }
     public long? RelatedEntityId { get; init; }
     public string? RelatedEntityType { get; init; }
-    public string? OldValue { get; init; }
-    public string? NewValue { get; init; }
+    public Dictionary<string, object?> OldValue { get; init; } = new();
+    public Dictionary<string, object?> NewValue { get; init; } = new();
 
     public static ActivityTracker Create(ActivityType type, string description, long userId,
-        long? relatedEntityId = null, string? relatedEntityType = null, string? oldValue = null,
-        string? newValue = null)
+        long? relatedEntityId = null, string? relatedEntityType = null, Dictionary<string, object?>? oldValue = null,
+        Dictionary<string, object?>? newValue = null)
     {
         return new ActivityTracker
         {
@@ -26,8 +26,8 @@ public class ActivityTracker : AuditableEntity
             UserId = userId,
             RelatedEntityId = relatedEntityId,
             RelatedEntityType = relatedEntityType,
-            OldValue = oldValue,
-            NewValue = newValue
+            OldValue = oldValue ?? new Dictionary<string, object?>(),
+            NewValue = newValue ?? new Dictionary<string, object?>()
         };
     }
 }
