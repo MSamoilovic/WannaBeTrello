@@ -38,7 +38,7 @@ public class Project : AuditableEntity
         var newProjectMember = ProjectMember.Create(ownerId, project.Id, ProjectRole.Owner);
         project.ProjectMembers.Add(newProjectMember);
 
-        project.AddDomainEvent(new ProjectCreatedEvent(project.Id, project.Name, ownerId));
+        project.AddDomainEvent(new ProjectCreatedEvent(project.Id, project.Name, ownerId, project.Description));
 
         return project;
     }
@@ -128,7 +128,7 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = archiverUserId;
     
-        AddDomainEvent(new ProjectArchivedEvent(Id, archiverUserId));
+        AddDomainEvent(new ProjectArchivedEvent(Id, Name, archiverUserId));
     }
 
     public void AddMember(long newMemberId, ProjectRole role, long inviterUserId)
@@ -150,7 +150,7 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
 
-        AddDomainEvent(new ProjectMemberAddedEvent(Id,  newMemberId, role, inviterUserId));
+        AddDomainEvent(new ProjectMemberAddedEvent(Id, Name,  newMemberId, role, inviterUserId));
     }
 
     public void RemoveMember(long removedMemberId, long removerUserId)
@@ -165,12 +165,14 @@ public class Project : AuditableEntity
         if (memberToRemove is null)
             return;
         
+        var role = memberToRemove.Role;
+        
         ProjectMembers.Remove(memberToRemove);
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = removerUserId;
         
-        AddDomainEvent(new ProjectMemberRemovedEvent(Id,removedMemberId, removerUserId));
+        AddDomainEvent(new ProjectMemberRemovedEvent(Id,removedMemberId, role, removerUserId));
     }
 
     public void UpdateMember(long updatedMemberId, ProjectRole role, long inviterUserId)
@@ -190,11 +192,13 @@ public class Project : AuditableEntity
         if (memberToUpdate is null)
             return;
         
+        var oldRole = memberToUpdate.Role;
+        
         memberToUpdate.UpdateRole(role);
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
         
-        AddDomainEvent(new ProjectMemberUpdatedEvent(Id,  updatedMemberId, role, inviterUserId));
+        AddDomainEvent(new ProjectMemberUpdatedEvent(Id, Name, updatedMemberId, oldRole, role, inviterUserId));
     }
 }

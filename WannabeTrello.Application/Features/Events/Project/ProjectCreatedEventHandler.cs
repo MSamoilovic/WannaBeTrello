@@ -7,20 +7,33 @@ using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Events.Project;
 
-public class ProjectCreatedEventHandler(IProjectNotificationService projectNotificationService, IActivityTrackerService activityTrackerService)
+public class ProjectCreatedEventHandler(
+    IProjectNotificationService projectNotificationService,
+    IActivityTrackerService activityTrackerService)
     : INotificationHandler<ProjectCreatedEvent>
 {
     public async Task Handle(ProjectCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await projectNotificationService.NotifyProjectCreated(notification.ProjectId, 
+        await projectNotificationService.NotifyProjectCreated(notification.ProjectId,
             notification.ProjectName, notification.OwnerId);
         
+        var initialValues = new Dictionary<string, object?>
+        {
+            { "Name", notification.ProjectName },
+            { "Description", notification.ProjectDescription },
+            { "OwnerId", notification.OwnerId },
+            { "ProjectStatus", ProjectStatus.Active },
+            { "IsArchived", false }
+        };
+
         var activity = ActivityTracker.Create(
             type: ActivityType.ProjectCreated,
-            description: $"Projekat '{notification.ProjectName}' je kreiran.",
+            description: $"Project '{notification.ProjectName}' is created.",
             userId: notification.OwnerId,
             relatedEntityId: notification.ProjectId,
-            relatedEntityType: nameof(WannabeTrello.Domain.Entities.Project));
+            relatedEntityType: nameof(WannabeTrello.Domain.Entities.Project),
+            newValue: initialValues
+        );
 
         await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
