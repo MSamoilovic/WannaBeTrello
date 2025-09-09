@@ -1,8 +1,9 @@
 ﻿namespace WannabeTrello.Domain.Events.Project_Events;
 
-public class ProjectCreatedEvent(long projectId, string? projectName, long ownerId): DomainEvent
+public class ProjectCreatedEvent(long projectId, string? projectName, long ownerId, string? projectDescription): DomainEvent
 {
-    public long ProjectId { get; } = projectId;
-    public string? ProjectName { get; } = projectName;
-    public long OwnerId { get; } = ownerId;
+    public long ProjectId => projectId;
+    public string? ProjectName => projectName;
+    public long OwnerId => ownerId;
+    public string? ProjectDescription => projectDescription;
 }

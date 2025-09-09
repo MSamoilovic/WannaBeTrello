@@ -4,6 +4,10 @@ public enum ActivityType
 {
     ProjectCreated,
     ProjectUpdated,
+    ProjectArchived,
+    ProjectMemberAdded,
+    ProjectMemberRoleUpdated,
+    ProjectMemberRemoved,
     TaskCreated,
     TaskMoved,
     TaskCompleted,

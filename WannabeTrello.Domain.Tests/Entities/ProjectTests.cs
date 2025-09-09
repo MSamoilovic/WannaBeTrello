@@ -525,7 +525,7 @@ public class ProjectTests
         var domainEvent = project.DomainEvents.OfType<ProjectMemberUpdatedEvent>().FirstOrDefault();
         Assert.NotNull(domainEvent);
         Assert.Equal(memberToUpdateId, domainEvent.UpdatedMemberId);
-        Assert.Equal(ProjectRole.Admin, domainEvent.Role);
+        Assert.Equal(ProjectRole.Admin, domainEvent.NewRole);
     }
     
     [Fact]
@@ -555,7 +555,7 @@ public class ProjectTests
         var domainEvent = project.DomainEvents.OfType<ProjectMemberUpdatedEvent>().FirstOrDefault();
         Assert.NotNull(domainEvent);
         Assert.Equal(memberToUpdateId, domainEvent.UpdatedMemberId);
-        Assert.Equal(ProjectRole.Contributor, domainEvent.Role);
+        Assert.Equal(ProjectRole.Contributor, domainEvent.NewRole);
     }
     
     [Fact]
