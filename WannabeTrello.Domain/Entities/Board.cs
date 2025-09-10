@@ -15,30 +15,32 @@ public class Board: AuditableEntity
     public ICollection<BoardMember> BoardMembers { get; private set; } = [];
     
     private Board() { }
+
+    private Board(string name, string? description, long projectId)
+    {
+        Name = name;
+        Description = description;
+        ProjectId = projectId;
+    }
     
-    //TODO: Razmotriti da li je bolje koristiti factory metodu ili konstruktor i prebaciti logiku u Project klasu
     public static Board Create(string name, string? description, long? projectId, long creatorUserId)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Naziv borda ne može biti prazan.", nameof(name));
+            throw new ArgumentException("Board Name Cannot be empty", nameof(name));
         if (projectId is null)
-            throw new ArgumentException("Bord mora pripadati projektu.", nameof(projectId));
+            throw new ArgumentException("Board must be part of the project", nameof(projectId));
 
-        var board = new Board
+        var board = new Board(name, description, projectId.Value)
         {
-            Name = name,
-            Description = description,
-            ProjectId = projectId ?? default(long),
             CreatedAt = DateTime.UtcNow,
             CreatedBy = creatorUserId
         };
 
-        
         board.AddColumn("To Do", 1, creatorUserId);
         board.AddColumn("In Progress", 2, creatorUserId);
         board.AddColumn("Done", 3, creatorUserId);
         
-        board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, creatorUserId));
+        board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId));
 
         return board;
     }
@@ -56,7 +58,7 @@ public class Board: AuditableEntity
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
-        AddDomainEvent(new BoardUpdatedEvent(Id, modifierUserId)); // Aktiviraj događaj za ažuriranje table
+        AddDomainEvent(new BoardUpdatedEvent(Id, modifierUserId)); 
     }
     
     public Column AddColumn(string columnName, int order, long creatorUserId)
@@ -100,7 +102,7 @@ public class Board: AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
 
-        //Dodaj UserInvitedToBoardEvent
+        
     }
     
     public void RemoveMember(long userId, long removerUserId)

@@ -3,6 +3,7 @@ using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Domain.Services;
 
@@ -10,27 +11,26 @@ public class BoardService(
     IBoardRepository boardRepository,
     IProjectRepository projectRepository,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork) : IBoardService
 {
-    public async Task<Board> CreateBoardAsync(long projectId, string name, string? description, long creatorUserId)
+    public async Task<Board> CreateBoardAsync(long projectId, string name, string? description, long creatorUserId, CancellationToken cancellationToken)
         {
             var project = await projectRepository.GetByIdAsync(projectId);
             if (project == null)
             {
                 throw new NotFoundException(nameof(Project), projectId);
             }
-
-            //Proveriti validacije za Role
+            
             var projectMember = project.ProjectMembers.SingleOrDefault(pm => pm.UserId == creatorUserId && pm.Role is ProjectRole.Admin or ProjectRole.Owner);
             if (projectMember == null)
             {
-                throw new AccessDeniedException("Samo administratori ili vlasnici projekta mogu kreirati table.");
+                throw new AccessDeniedException("Only Project Owner or Admin can create a Board");
             }
 
             var board = Board.Create(name, description, projectId, creatorUserId);
 
             await boardRepository.AddAsync(board);
-            await unitOfWork.CompleteAsync(); // Ovo će automatski dispečovati domenske događaje
+            await unitOfWork.CompleteAsync(cancellationToken); 
 
             return board;
         }

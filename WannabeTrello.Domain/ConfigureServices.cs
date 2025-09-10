@@ -9,6 +9,7 @@ public static class ConfigureServices
     public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IBoardService, BoardService>();
         services.AddScoped<IActivityTrackerService, ActivityTrackerService>();
         
         return services;
