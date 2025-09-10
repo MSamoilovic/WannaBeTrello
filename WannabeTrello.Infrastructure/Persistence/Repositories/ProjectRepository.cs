@@ -11,6 +11,12 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
         await base.AddAsync(project);
     }
 
+    public override async Task<Project?> GetByIdAsync(long id)
+    {
+        return await _dbSet.Include(p => p.ProjectMembers)
+            .SingleOrDefaultAsync(p => p.Id == id);
+    }
+
     public async Task UpdateAsync(Project project)
     {
         throw new NotImplementedException();

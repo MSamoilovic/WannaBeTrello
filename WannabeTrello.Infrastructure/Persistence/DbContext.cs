@@ -47,7 +47,6 @@ public class ApplicationDbContext(
         foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
         {
             
-            // if(entry.Entity is User) continue;
             
             switch (entry.State)
             {

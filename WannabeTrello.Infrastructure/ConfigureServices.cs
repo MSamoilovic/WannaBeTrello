@@ -1,10 +1,12 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces;
@@ -18,16 +20,21 @@ namespace WannabeTrello.Infrastructure;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, WebApplicationBuilder builder)
     {
         
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        dataSourceBuilder.EnableDynamicJson();
+        
+        var dataSource = dataSourceBuilder.Build();
+        
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(dataSource, 
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         
-        services.AddIdentity<User, IdentityRole<long>>(options => // Koristi vaš User entitet i long za ključeve
+        services.AddIdentity<User, IdentityRole<long>>(options => 
             {
-                // Konfiguracija lozinki (za razvoj/testiranje)
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;

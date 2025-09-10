@@ -21,7 +21,7 @@ public class BoardService(
                 throw new NotFoundException(nameof(Project), projectId);
             }
             
-            var projectMember = project.ProjectMembers.SingleOrDefault(pm => pm.UserId == creatorUserId && pm.Role is ProjectRole.Admin or ProjectRole.Owner);
+            var projectMember = project.ProjectMembers.SingleOrDefault(pm => pm.UserId == creatorUserId);
             if (projectMember == null)
             {
                 throw new AccessDeniedException("Only Project Owner or Admin can create a Board");

@@ -31,9 +31,12 @@ public class CreateProjectCommandHandlerTests
         var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
         var command = new CreateProjectCommand("New Test Project", "Description");
 
-        var projectId = await handler.Handle(command, CancellationToken.None);
+        var response = await handler.Handle(command, CancellationToken.None);
 
-        Assert.Equal(createdProject.Id, projectId);
+        Assert.NotNull(response);
+        Assert.True(response.Result.IsSuccess);
+        Assert.Equal(createdProject.Id, response.Result.Value);
+        Assert.Equal("Project Created Successfully",response.Result.Message);
 
         projectServiceMock.Verify(x => x.CreateProjectAsync(
             "New Test Project",

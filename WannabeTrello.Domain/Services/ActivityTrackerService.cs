@@ -11,6 +11,5 @@ public class ActivityTrackerService(IActivityTrackerRepository activityTrackerRe
     public async Task AddActivityAsync(ActivityTracker activity, CancellationToken cancellationToken = default)
     {
         await activityTrackerRepository.AddAsync(activity, cancellationToken);
-        await unitOfWork.CompleteAsync(cancellationToken);
     }
 }
