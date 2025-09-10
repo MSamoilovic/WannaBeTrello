@@ -46,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDomainServices();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder);
 builder.Services.AddApplication();
 builder.Services.AddPresentation();
 

@@ -25,7 +25,6 @@ public class ProjectService(
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync();
         
-        
         return project;
     }
 

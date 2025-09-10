@@ -1,14 +1,15 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Projects.CreateProject;
 
 public class CreateProjectCommandHandler(ICurrentUserService currentUserService, IProjectService projectService )
-    : IRequestHandler<CreateProjectCommand, long>
+    : IRequestHandler<CreateProjectCommand, CreateProjectCommandResponse>
 {
-    public async Task<long> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<CreateProjectCommandResponse> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         if (!currentUserService.IsAuthenticated)
         {
@@ -20,7 +21,9 @@ public class CreateProjectCommandHandler(ICurrentUserService currentUserService,
             request.Description,
             currentUserService.UserId ?? 0
         );
-
-        return project.Id;
+        
+        var result = Result<long>.Success(project.Id, "Project Created Successfully");
+        
+        return new CreateProjectCommandResponse(result);
     }
 }

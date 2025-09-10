@@ -16,7 +16,7 @@ public class ProjectCreatedEventHandler(
     {
         await projectNotificationService.NotifyProjectCreated(notification.ProjectId,
             notification.ProjectName, notification.OwnerId);
-        
+
         var initialValues = new Dictionary<string, object?>
         {
             { "Name", notification.ProjectName },
@@ -25,7 +25,7 @@ public class ProjectCreatedEventHandler(
             { "ProjectStatus", ProjectStatus.Active },
             { "IsArchived", false }
         };
-
+        
         var activity = ActivityTracker.Create(
             type: ActivityType.ProjectCreated,
             description: $"Project '{notification.ProjectName}' is created.",
@@ -34,7 +34,7 @@ public class ProjectCreatedEventHandler(
             relatedEntityType: nameof(WannabeTrello.Domain.Entities.Project),
             newValue: initialValues
         );
-
+        
         await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
 }
