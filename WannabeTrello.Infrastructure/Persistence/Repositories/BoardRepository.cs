@@ -33,4 +33,9 @@ public class BoardRepository(ApplicationDbContext dbContext) : Repository<Board>
             .AsSplitQuery()
             .FirstOrDefaultAsync(b => b.Id == boardId);
     }
+
+    public Task<List<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken cancellationToken)
+    {
+        return _dbSet.Where(b => b.ProjectId == projectId).ToListAsync(cancellationToken);
+    }
 }

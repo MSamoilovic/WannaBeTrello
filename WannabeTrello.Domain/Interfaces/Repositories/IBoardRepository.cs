@@ -11,4 +11,6 @@ public interface IBoardRepository
     Task UpdateAsync(Board board);
     Task DeleteAsync(long id);
     Task<Board?> GetBoardWithDetailsAsync(long boardId);
+    
+    Task<List<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken  cancellationToken);
 }

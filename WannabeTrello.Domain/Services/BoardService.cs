@@ -35,7 +35,23 @@ public class BoardService(
             return board;
         }
 
-        public async Task<Board> UpdateBoardDetailsAsync(long boardId, string newName, string? newDescription, long modifierUserId)
+    public async Task<List<Board>> GetBoardByProjectIdAsync(long projectId, long userId, CancellationToken cancellationToken)
+    {
+        var project = await projectRepository.GetByIdAsync(projectId);
+        if (project == null)
+        {
+            throw new NotFoundException(nameof(Project), projectId);
+        }
+
+        if (!project.IsMember(userId))
+        {
+            throw new ArgumentException("User is not member of the project");
+        }
+        
+        return await boardRepository.GetBoardsByProjectIdAsync(projectId, cancellationToken);
+    }
+
+    public async Task<Board> UpdateBoardDetailsAsync(long boardId, string newName, string? newDescription, long modifierUserId)
         {
             var board = await boardRepository.GetByIdAsync(boardId);
             if (board == null)

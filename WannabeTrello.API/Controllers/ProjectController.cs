@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WannabeTrello.Application.Features.Projects.GetBoardsByProjectId;
 using WannabeTrello.Application.Features.Projects.AddProjectMember;
 using WannabeTrello.Application.Features.Projects.ArchiveProject;
 using WannabeTrello.Application.Features.Projects.CreateProject;
@@ -113,5 +114,15 @@ public class ProjectController(IMediator mediator) : ControllerBase
         }
         
         return Ok(await mediator.Send(command));
+    }
+    
+    [HttpGet("{id:long}/boards")]
+    [ProducesResponseType(typeof(List<GetBoardsByProjectIdQueryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetBoardsByProjectId(long id)
+    {
+        var response = await mediator.Send(new GetBoardsByProjectIdQuery(id));
+        return Ok(response);
     }
 }
