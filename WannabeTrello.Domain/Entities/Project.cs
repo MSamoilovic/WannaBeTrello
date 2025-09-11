@@ -201,4 +201,9 @@ public class Project : AuditableEntity
         
         AddDomainEvent(new ProjectMemberUpdatedEvent(Id, Name, updatedMemberId, oldRole, role, inviterUserId));
     }
+
+    public bool IsMember(long memberId)
+    {
+        return ProjectMembers.Any(pm => pm.UserId == memberId);
+    }
 }

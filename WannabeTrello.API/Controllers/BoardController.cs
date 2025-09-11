@@ -5,6 +5,8 @@ using WannabeTrello.Application.Features.Boards.CreateBoard;
 using WannabeTrello.Application.Features.Boards.GetBoardById;
 using WannabeTrello.Application.Features.Boards.UpdateBoard;
 
+namespace WannabeTrello.Controllers;
+
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
@@ -66,6 +68,3 @@ public class BoardsController(IMediator mediator) : ControllerBase
     }
 }
 
-namespace WannabeTrello.Controllers
-{
-}
