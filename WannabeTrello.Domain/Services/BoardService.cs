@@ -51,6 +51,18 @@ public class BoardService(
         return await boardRepository.GetBoardsByProjectIdAsync(projectId, cancellationToken);
     }
 
+    public async Task<Board> GetBoardByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    {
+        var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
+        if(board is null)
+            throw new NotFoundException(nameof(Board), boardId);
+        
+        if(!board.IsMember(boardId))
+            throw new AccessDeniedException("You don't have access to this board");
+        
+        return board;
+    }
+
     public async Task<Board> UpdateBoardDetailsAsync(long boardId, string newName, string? newDescription, long modifierUserId)
         {
             var board = await boardRepository.GetByIdAsync(boardId);

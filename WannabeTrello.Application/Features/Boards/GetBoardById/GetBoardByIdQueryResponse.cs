@@ -14,8 +14,7 @@ public class GetBoardByIdQueryResponse
 
         public ICollection<ColumnResponse> Columns { get; set; } = new List<ColumnResponse>();
         public ICollection<BoardMemberResponse> BoardMembers { get; set; } = new List<BoardMemberResponse>();
-
-        // Statička fabrika metoda za ručno mapiranje iz domenskog entiteta
+        
         public static GetBoardByIdQueryResponse FromEntity(Board board)
         {
             return new GetBoardByIdQueryResponse
@@ -92,8 +91,8 @@ public class GetBoardByIdQueryResponse
             return new UserResponse
             {
                 Id = user.Id,
-                Username = user.UserName,
-                Email = user.Email
+                Username = user?.UserName!,
+                Email = user?.Email!
             };
         }
     }

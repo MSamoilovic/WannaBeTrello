@@ -19,7 +19,7 @@ public class BoardRepository(ApplicationDbContext dbContext) : Repository<Board>
         }
     }
 
-    public async Task<Board?> GetBoardWithDetailsAsync(long boardId)
+    public async Task<Board?> GetBoardWithDetailsAsync(long boardId, CancellationToken cancellationToken)
     {
         return await _dbSet
             .Include(b => b.Columns.OrderBy(c => c.Order))
@@ -31,7 +31,7 @@ public class BoardRepository(ApplicationDbContext dbContext) : Repository<Board>
             .Include(b => b.BoardMembers)
             .ThenInclude(bm => bm.User)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(b => b.Id == boardId);
+            .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
     }
 
     public Task<List<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken cancellationToken)

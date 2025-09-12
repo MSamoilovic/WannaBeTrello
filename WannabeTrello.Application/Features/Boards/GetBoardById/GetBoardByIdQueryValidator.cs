@@ -6,7 +6,10 @@ public class GetBoardByIdQueryValidator : AbstractValidator<GetBoardByIdQuery>
 {
     public GetBoardByIdQueryValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID boarda je obavezan.");
+        RuleFor(x => x.BoardId)
+            .NotNull()
+            .GreaterThan(0)
+            .NotEmpty()
+            .WithMessage("BoardId must be greater than zero");
     }
 }
