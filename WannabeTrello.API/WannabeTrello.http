@@ -1,6 +1,217 @@
 @WannabeTrello_HostAddress = http://localhost:5204
-
-GET {{WannabeTrello_HostAddress}}/weatherforecast/
-Accept: application/json
+@token = BEARER_TOKEN_HERE
+@projectId = 1
+@memberId = 1
+@boardId = 1
+@taskId = 1
+@columnId = 1
 
 ###
+# ===================================================
+# Auth Endpoints
+# ===================================================
+
+### 1. Register a new user
+# Creates a new user account.
+POST {{WannabeTrello_HostAddress}}/api/Auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!",
+  "firstName": "Pera",
+  "lastName": "Peric"
+}
+
+### 2. Login a user
+# Authenticates a user and returns a JWT token.
+POST {{WannabeTrello_HostAddress}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+
+###
+# ===================================================
+# Project Endpoints
+# ===================================================
+
+### 3. Create a new project
+# Creates a new project. Returns the ID of the new project.
+POST {{WannabeTrello_HostAddress}}/api/Project
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Novi Projekat Alpha",
+  "description": "Opis za novi projekat Alpha."
+}
+
+### 4. Get a project by its ID
+# Fetches the details for a single project.
+GET {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 5. Update an existing project
+# Updates the name and/or description of a project.
+PUT {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "projectId": {{projectId}},
+  "name": "Novi Projekat Alpha (Updated)",
+  "description": "Ažurirani opis za projekat Alpha."
+}
+
+### 6. Archive a project
+# Archives a project, making it read-only.
+POST {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/archive
+Authorization: Bearer {{token}}
+
+
+###
+# ===================================================
+# Project Member Endpoints
+# ===================================================
+
+### 7. Add a member to a project
+# Adds a user to a specific project with a defined role.
+POST {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/add-member
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "projectId": {{projectId}},
+  "memberId": 2,
+  "role": "Developer"
+}
+
+### 8. Get all members of a project
+# Retrieves a list of all members for a specific project.
+GET {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/members
+Accept: application/json
+Authorization: Bearer {{token}}
+
+
+### 9. Update a project member's role
+# Changes the role of an existing member within a project.
+PUT {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/members/{{memberId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "projectId": {{projectId}},
+  "memberId": {{memberId}},
+  "newRole": "QA"
+}
+
+### 10. Remove a member from a project
+# Removes a user from a specific project.
+DELETE {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/members/{{memberId}}
+Authorization: Bearer {{token}}
+
+
+###
+# ===================================================
+# Project Boards Endpoints
+# ===================================================
+
+### 11. Get all boards for a project
+# Retrieves a list of all boards associated with a specific project.
+GET {{WannabeTrello_HostAddress}}/api/Project/{{projectId}}/boards
+Accept: application/json
+Authorization: Bearer {{token}}
+
+
+###
+# ===================================================
+# Board Endpoints
+# ===================================================
+
+### 12. Create a new board
+# Creates a new board for a specific project.
+POST {{WannabeTrello_HostAddress}}/api/Boards
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "projectId": {{projectId}},
+  "name": "Sprint 1 Board",
+  "description": "Board for the first sprint."
+}
+
+### 13. Get a board by its ID
+# Fetches the details for a single board.
+GET {{WannabeTrello_HostAddress}}/api/Boards/{{boardId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 14. Update an existing board
+# Updates the name and/or description of a board.
+PUT {{WannabeTrello_HostAddress}}/api/Boards/{{boardId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": {{boardId}},
+  "name": "Sprint 1 Board (Updated)",
+  "description": "An updated description for the board."
+}
+
+###
+# ===================================================
+# Task Endpoints
+# ===================================================
+
+### 15. Create a new task
+# Creates a new task in a specific column.
+POST {{WannabeTrello_HostAddress}}/api/Tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "columnId": {{columnId}},
+  "title": "Implement Login Feature",
+  "description": "User should be able to log in using email and password.",
+  "priority": "High"
+}
+
+### 16. Get a task by its ID
+# Fetches the details for a single task.
+GET {{WannabeTrello_HostAddress}}/api/Tasks/{{taskId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 17. Get all tasks for a board
+# Retrieves a list of all tasks for a specific board.
+GET {{WannabeTrello_HostAddress}}/api/Tasks/board/{{boardId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 18. Move a task to another column
+# Moves a task from its current column to a new one.
+PUT {{WannabeTrello_HostAddress}}/api/Tasks/{{taskId}}/move
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "taskId": {{taskId}},
+  "newColumnId": 2
+}
+
+### 19. Add a comment to a task
+# Adds a new comment to a specific task.
+POST {{WannabeTrello_HostAddress}}/api/Tasks/{{taskId}}/comments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "taskId": {{taskId}},
+  "content": "This feature is blocked by the API team."
+}
+
