@@ -2,27 +2,22 @@
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Boards.GetBoardById;
 
-public class GetBoardByIdQueryHandler(IBoardRepository boardRepository, ICurrentUserService currentUserService)
+public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService)
     : IRequestHandler<GetBoardByIdQuery, GetBoardByIdQueryResponse>
 {
     public async Task<GetBoardByIdQueryResponse> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
     {
-        //TODO: Odradi refactor da se zove Board service
-        var board = await boardRepository.GetBoardWithDetailsAsync(request.Id);
-
-        if (board == null)
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
         {
-            throw new NotFoundException(nameof(board), request.Id);
+            throw new AccessDeniedException("User is not authenticated");
         }
-
-        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue ||
-            board.BoardMembers.All(bm => bm.UserId != currentUserService.UserId.Value))
-        {
-            throw new AccessDeniedException("Nemate pristup za pregled ovog boarda.");
-        }
+        
+        var userId = currentUserService.UserId.Value;
+        var board = await boardService.GetBoardByIdAsync(request.BoardId, userId,  cancellationToken);
 
         return GetBoardByIdQueryResponse.FromEntity(board);
     }

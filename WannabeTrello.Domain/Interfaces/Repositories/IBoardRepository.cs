@@ -10,7 +10,7 @@ public interface IBoardRepository
     Task AddAsync(Board board);
     Task UpdateAsync(Board board);
     Task DeleteAsync(long id);
-    Task<Board?> GetBoardWithDetailsAsync(long boardId);
+    Task<Board?> GetBoardWithDetailsAsync(long boardId, CancellationToken cancellationToken=default);
     
     Task<List<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken  cancellationToken);
 }

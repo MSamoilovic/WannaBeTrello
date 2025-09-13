@@ -118,4 +118,9 @@ public class Board: AuditableEntity
 
         AddDomainEvent(new BoardMemberRemovedEvent(Id, userId, removerUserId));
     }
+    
+    public bool IsMember(long userId)
+    {
+        return BoardMembers.Any(bm => bm.UserId == userId);
+    }
 }

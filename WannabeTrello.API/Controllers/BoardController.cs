@@ -19,7 +19,7 @@ public class BoardsController(IMediator mediator) : ControllerBase
     /// <returns>ID novoformiranog boarda.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,11 +60,6 @@ public class BoardsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetBoardById(long id)
-    {
-        var query = new GetBoardByIdQuery { Id = id };
-        var board = await mediator.Send(query);
-        return Ok(board);
-    }
+    public async Task<IActionResult> GetBoardById(long id) => 
+        Ok(await mediator.Send(new GetBoardByIdQuery(id)));
 }
-

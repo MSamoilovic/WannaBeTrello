@@ -7,13 +7,15 @@ public class CreateBoardCommandValidator: AbstractValidator<CreateBoardCommand>
     public CreateBoardCommandValidator()
     {
         RuleFor(v => v.Name)
-            .NotEmpty().WithMessage("Naziv je obavezan.")
-            .MaximumLength(100).WithMessage("Naziv ne sme prelaziti 100 karaktera.");
+            .NotEmpty().WithMessage("Name is required")
+            .MaximumLength(100).WithMessage("Name cannot exceed 100 characters.");
 
         RuleFor(v => v.Description)
-            .MaximumLength(500).WithMessage("Opis ne sme prelaziti 500 karaktera.");
+            .MaximumLength(500)
+            .WithMessage("Description cannot exceed 500 characters.");
 
         RuleFor(v => v.ProjectId)
-            .NotEmpty().WithMessage("ID projekta je obavezan.");
+            .NotEmpty()
+            .WithMessage("ProjectId is required.");
     }
 }
