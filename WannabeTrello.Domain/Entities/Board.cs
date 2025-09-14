@@ -45,20 +45,37 @@ public class Board: AuditableEntity
         return board;
     }
     
-    public void UpdateDetails(string newName, string? newDescription, long modifierUserId)
+    public void UpdateDetails(string? newName, string? newDescription, long modifierUserId)
     {
         if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentException("Naziv table ne može biti prazan.", nameof(newName));
+            throw new ArgumentException("Board Name cannot be empty.", nameof(newName));
 
         var changed = false;
-        if (Name != newName) { Name = newName; changed = true; }
-        if (Description != newDescription) { Description = newDescription; changed = true; }
+        
+        var oldValues = new Dictionary<string, object?>();
+        var newValues = new Dictionary<string, object?>();
+
+        if (Name != newName)
+        {
+            oldValues.Add("Name", newName);
+            Name = newName; 
+            changed = true;
+            newValues.Add("Name", newName);
+        }
+
+        if (Description != newDescription)
+        {
+            oldValues.Add("Description", newDescription);
+            Description = newDescription; 
+            changed = true;
+            newValues.Add("Description", newDescription);
+        }
 
         if (!changed) return;
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
-        AddDomainEvent(new BoardUpdatedEvent(Id, modifierUserId)); 
+        AddDomainEvent(new BoardUpdatedEvent(Id, oldValues, newValues, modifierUserId)); 
     }
     
     public Column AddColumn(string columnName, int order, long creatorUserId)
