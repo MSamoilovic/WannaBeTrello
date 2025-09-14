@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Boards.UpdateBoard;
 
-public class UpdateBoardCommandHandler(BoardService boardService, ICurrentUserService currentUserService)
+public class UpdateBoardCommandHandler(IBoardService boardService, ICurrentUserService currentUserService)
     : IRequestHandler<UpdateBoardCommand, UpdateBoardCommandResponse>
 {
     
@@ -12,7 +13,7 @@ public class UpdateBoardCommandHandler(BoardService boardService, ICurrentUserSe
     {
         if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
         {
-            throw new UnauthorizedAccessException("Korisnik nije autentifikovan.");
+            throw new UnauthorizedAccessException("User is not authenticated.");
         }
 
         var updatedBoard = await boardService.UpdateBoardDetailsAsync(
@@ -22,7 +23,6 @@ public class UpdateBoardCommandHandler(BoardService boardService, ICurrentUserSe
             currentUserService.UserId.Value
         );
         
-        // Koristimo statičku metodu za ručno mapiranje umesto AutoMappera
         return UpdateBoardCommandResponse.FromEntity(updatedBoard);
     }
 }
