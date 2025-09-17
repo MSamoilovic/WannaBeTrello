@@ -13,6 +13,7 @@ public class Board: AuditableEntity
     public Project? Project { get; private set; } 
     public ICollection<Column> Columns { get; private set; } = [];
     public ICollection<BoardMember> BoardMembers { get; private set; } = [];
+    public bool IsArchived { get; private set; }
     
     private Board() { }
 
@@ -77,6 +78,20 @@ public class Board: AuditableEntity
         LastModifiedBy = modifierUserId;
         AddDomainEvent(new BoardUpdatedEvent(Id, oldValues, newValues, modifierUserId)); 
     }
+
+    public void Archive(long modifierUserId)
+    {
+        var member = BoardMembers.FirstOrDefault(pm => pm.UserId == modifierUserId);
+        if (member is not { Role: BoardRole.Admin })
+            throw new UnauthorizedAccessException("Only Owner or Admin can archive the board.");
+
+        if (IsArchived) return;
+        
+        IsArchived = true;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+        AddDomainEvent(new BoardArchivedEvent(Id, modifierUserId));
+    }
     
     public Column AddColumn(string columnName, int order, long creatorUserId)
     {
@@ -118,7 +133,6 @@ public class Board: AuditableEntity
         });
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
-
         
     }
     
@@ -140,4 +154,6 @@ public class Board: AuditableEntity
     {
         return BoardMembers.Any(bm => bm.UserId == userId);
     }
+    
+    
 }

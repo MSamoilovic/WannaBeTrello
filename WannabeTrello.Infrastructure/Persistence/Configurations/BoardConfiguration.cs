@@ -35,5 +35,7 @@ public class BoardConfiguration : IEntityTypeConfiguration<Board>
             .HasForeignKey(b => b.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict); // Ne brisem projekat ako bord postoji
+        
+        builder.HasIndex(p => p.IsArchived);
     }
 }

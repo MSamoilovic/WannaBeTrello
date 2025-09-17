@@ -11,4 +11,6 @@ public class BoardMember
     public User? User { get; set; }
     
     public BoardRole Role { get; set; } 
+    
+    
 }

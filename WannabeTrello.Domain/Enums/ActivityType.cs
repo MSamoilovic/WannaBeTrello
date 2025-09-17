@@ -10,6 +10,8 @@ public enum ActivityType
     ProjectMemberRemoved,
     BoardCreated,
     BoardUpdated,
+    BoardArchived,
+    BoardRestored,
     TaskCreated,
     TaskMoved,
     TaskCompleted,

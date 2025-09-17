@@ -6,7 +6,7 @@ namespace WannabeTrello.Infrastructure.Services.Notifications;
 
 public class BoardNotificationService(IHubContext<TrellyHub, ITrellyHub> hubContext): IBoardNotificationService
 {
-    public async Task NotifyBoardCreated(long createdBoardId, string boardName, long createdUserId)
+    public async Task NotifyBoardCreated(long createdBoardId, string? boardName, long createdUserId)
     {
         await hubContext.Clients.All.BoardCreated(createdBoardId, boardName, createdUserId);
     }
@@ -14,5 +14,10 @@ public class BoardNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCont
     public async Task NotifyBoardUpdated(long createdBoardId, long modifierUserId)
     {
         await hubContext.Clients.All.BoardUpdated(createdBoardId, modifierUserId);
+    }
+
+    public async Task NotifyBoardArchived(long archivedBoardId, long modifierUserId)
+    {
+        await hubContext.Clients.All.BoardArchived(archivedBoardId, modifierUserId);
     }
 }

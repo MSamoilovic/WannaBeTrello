@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WannabeTrello.Application.Features.Boards.ArchiveBoard;
 using WannabeTrello.Application.Features.Boards.CreateBoard;
 using WannabeTrello.Application.Features.Boards.GetBoardById;
 using WannabeTrello.Application.Features.Boards.UpdateBoard;
@@ -37,9 +38,6 @@ public class BoardsController(IMediator mediator) : ControllerBase
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateBoard(long id, [FromBody] UpdateBoardCommand command)
     {
         if (id != command.Id)
@@ -62,4 +60,17 @@ public class BoardsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetBoardById(long id) => 
         Ok(await mediator.Send(new GetBoardByIdQuery(id)));
+    
+    /// <summary>
+    /// Arhivira specifičan board po ID-u.
+    /// </summary>
+    /// <param name="id">ID boarda.</param>
+    /// <returns>Resultat akcije.</returns>
+    [HttpPost("{id:long}/archive")]
+    [ProducesResponseType(typeof(ArchiveBoardCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ArchiveBoard(long id) => 
+        Ok(await mediator.Send(new ArchiveBoardCommand(id)));
+    
 }
