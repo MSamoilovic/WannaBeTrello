@@ -8,4 +8,6 @@ public interface IBoardService
     Task<List<Board>> GetBoardByProjectIdAsync(long projectId, long userId, CancellationToken cancellationToken);
     Task<Board> GetBoardByIdAsync(long boardId, long userId, CancellationToken cancellationToken);
     Task<Board> UpdateBoardDetailsAsync(long boardId, string? name, string? description, long userId);
+    Task<long> ArchiveBoardAsync(long boardId, long userId);
+    
 }

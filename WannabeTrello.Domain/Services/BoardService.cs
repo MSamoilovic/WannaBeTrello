@@ -89,6 +89,18 @@ public class BoardService(
         return board;
     }
 
+    public async Task<long> ArchiveBoardAsync(long boardId, long userId)
+    {
+        var board =  await boardRepository.GetByIdAsync(boardId);
+        if(board is null)
+            throw new NotFoundException(nameof(Board), boardId);
+        
+        board.Archive(userId);
+        
+        await boardRepository.UpdateAsync(board);
+        return board.Id;
+    }
+
     public async Task AddBoardMemberAsync(long boardId, long userId, BoardRole role, long inviterUserId)
     {
         var board = await boardRepository.GetBoardWithDetailsAsync(boardId);
