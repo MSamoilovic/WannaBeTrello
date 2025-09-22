@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Boards.ArchiveBoard;
 using WannabeTrello.Application.Features.Boards.CreateBoard;
 using WannabeTrello.Application.Features.Boards.GetBoardById;
+using WannabeTrello.Application.Features.Boards.RestoreBoard;
 using WannabeTrello.Application.Features.Boards.UpdateBoard;
 
 namespace WannabeTrello.Controllers;
@@ -73,4 +74,15 @@ public class BoardsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ArchiveBoard(long id) => 
         Ok(await mediator.Send(new ArchiveBoardCommand(id)));
     
+    
+    /// <summary>
+    /// Vraca vec arhivirani board po ID-u.
+    /// </summary>
+    /// <param name="id">ID boarda.</param>
+    /// <returns>Resultat akcije.</returns>
+    [HttpPost("{id:long}/restore")]
+    [ProducesResponseType(typeof(RestoreBoardCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RestoreBoard(long id) =>
+        Ok(await mediator.Send(new RestoreBoardCommand(id)));
 }
