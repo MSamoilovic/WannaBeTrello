@@ -5,6 +5,7 @@ public interface ITrellyHub
         Task BoardCreated(long boardId, string? boardName, long userId);
         Task BoardUpdated(long boardId, long modifierUserId);
         Task BoardArchived(long boardId, long modifierUserId);
+        Task BoardRestored(long boardId, long modifierUserId);
         Task BoardMemberAdded(string boardId, string userId, string role);
         Task BoardMemberRemoved(string boardId, string userId);
 

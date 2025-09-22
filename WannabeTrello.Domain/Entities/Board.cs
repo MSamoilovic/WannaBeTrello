@@ -92,6 +92,21 @@ public class Board: AuditableEntity
         LastModifiedBy = modifierUserId;
         AddDomainEvent(new BoardArchivedEvent(Id, modifierUserId));
     }
+
+    public void Restore(long modifierUserId)
+    {
+        var member = BoardMembers.FirstOrDefault(pm => pm.UserId == modifierUserId);
+        if (member is not { Role: BoardRole.Admin })
+            throw new UnauthorizedAccessException("Only Owner or Admin can archive the board.");
+        
+        if(IsArchived) return;
+        IsArchived = false;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+        
+        //Add DomainEvent
+        AddDomainEvent(new BoardRestoredEvent(Id, modifierUserId));
+    }
     
     public Column AddColumn(string columnName, int order, long creatorUserId)
     {

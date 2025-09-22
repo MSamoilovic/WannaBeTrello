@@ -20,4 +20,9 @@ public class BoardNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCont
     {
         await hubContext.Clients.All.BoardArchived(archivedBoardId, modifierUserId);
     }
+
+    public async Task NotifyBoardRestored(long restoredBoardId, long modifierUserId)
+    {
+        await hubContext.Clients.All.BoardRestored(restoredBoardId, modifierUserId);
+    }
 }
