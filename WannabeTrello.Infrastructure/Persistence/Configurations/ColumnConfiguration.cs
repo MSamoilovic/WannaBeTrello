@@ -29,5 +29,7 @@ public class ColumnConfiguration : IEntityTypeConfiguration<Column>
             .WithOne(t => t.Column)
             .HasForeignKey(t => t.ColumnId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Property(c => c.WipLimit).HasDefaultValue(0);
     }
 }
