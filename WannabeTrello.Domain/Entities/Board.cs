@@ -116,7 +116,7 @@ public class Board: AuditableEntity
         if (Columns.Any(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationDomainException($"Kolona sa imenom '{columnName}' već postoji na ovoj tabli.");
 
-        var newColumn = new Column(columnName, Id, order);
+        var newColumn = new Column(columnName, Id, order, creatorUserId);
         
         Columns.Add(newColumn);
         LastModifiedAt = DateTime.UtcNow;
