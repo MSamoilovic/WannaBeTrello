@@ -15,8 +15,8 @@ public class Column: AuditableEntity
     public IReadOnlyCollection<BoardTask> Tasks => _tasks.AsReadOnly();
     
     private Column () {}
-    
-    internal Column(string name, long boardId, int order)
+
+    internal Column(string name, long boardId, int order, long userId)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new BusinessRuleValidationException("Column name cannot be empty.");
@@ -26,7 +26,9 @@ public class Column: AuditableEntity
         Name = name;
         BoardId = boardId;
         Order = order;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = userId;
     }
-    
-    
+
+
 }
