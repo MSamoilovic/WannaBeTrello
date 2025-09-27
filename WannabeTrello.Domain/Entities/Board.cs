@@ -11,7 +11,9 @@ public class Board: AuditableEntity
     public string? Description { get; private set; }
     public long ProjectId { get; private set; } 
     public Project? Project { get; private set; } 
-    public ICollection<Column> Columns { get; private set; } = [];
+    
+    private readonly List<Column> _columns = [];
+    public IReadOnlyCollection<Column> Columns => _columns.AsReadOnly();
     public ICollection<BoardMember> BoardMembers { get; private set; } = [];
     public bool IsArchived { get; private set; }
     
@@ -37,13 +39,19 @@ public class Board: AuditableEntity
             CreatedBy = creatorUserId
         };
 
-        board.AddColumn("To Do", 1, creatorUserId);
-        board.AddColumn("In Progress", 2, creatorUserId);
-        board.AddColumn("Done", 3, creatorUserId);
+        board.AddDefaultColumns(creatorUserId);
         
         board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId));
 
         return board;
+    }
+    
+    private void AddDefaultColumns(long creatorUserId)
+    {
+        
+        _columns.Add(new Column("To Do", Id, 1, creatorUserId));
+        _columns.Add(new Column("In Progress", Id, 2, creatorUserId));
+        _columns.Add(new Column("Done", Id, 3, creatorUserId));
     }
     
     public void UpdateDetails(string? newName, string? newDescription, long modifierUserId)
@@ -58,7 +66,7 @@ public class Board: AuditableEntity
 
         if (Name != newName)
         {
-            oldValues.Add("Name", newName);
+            oldValues.Add("Name", Name);
             Name = newName; 
             changed = true;
             newValues.Add("Name", newName);
@@ -66,7 +74,7 @@ public class Board: AuditableEntity
 
         if (Description != newDescription)
         {
-            oldValues.Add("Description", newDescription);
+            oldValues.Add("Description", Description);
             Description = newDescription; 
             changed = true;
             newValues.Add("Description", newDescription);
@@ -108,22 +116,22 @@ public class Board: AuditableEntity
         AddDomainEvent(new BoardRestoredEvent(Id, modifierUserId));
     }
     
-    public Column AddColumn(string columnName, int order, long creatorUserId)
+    public void AddColumn(string columnName, long creatorUserId)
     {
+        
         if (string.IsNullOrWhiteSpace(columnName))
-            throw new ArgumentException("Naziv kolone ne može biti prazan.", nameof(columnName));
+            throw new BusinessRuleValidationException("Column name cannot be empty.");
+    
+        if (_columns.Any(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
+            throw new BusinessRuleValidationException($"A column with the name '{columnName}' already exists on this board.");
         
-        if (Columns.Any(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
-            throw new InvalidOperationDomainException($"Kolona sa imenom '{columnName}' već postoji na ovoj tabli.");
-
+        var order = _columns.Count != 0 ? _columns.Max(c => c.Order) + 1 : 1;
         var newColumn = new Column(columnName, Id, order, creatorUserId);
-        
-        Columns.Add(newColumn);
-        LastModifiedAt = DateTime.UtcNow;
-        LastModifiedBy = creatorUserId;
-        
+    
+        _columns.Add(newColumn);
+    
         AddDomainEvent(new ColumnAddedEvent(Id, newColumn.Id, newColumn.Name, creatorUserId));
-        return newColumn;
+    
     }
     
     public void AddMember(User user, BoardRole role, long inviterUserId)
