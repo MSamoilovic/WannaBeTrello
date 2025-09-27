@@ -163,7 +163,7 @@ public class BoardService(
         var nextOrder = board.Columns.Count != 0 ? board.Columns.Max(c => c.Order) + 1 : 1;
 
 
-        board.AddColumn(columnName, nextOrder, creatorUserId);
+        board.AddColumn(columnName, creatorUserId);
 
         await boardRepository.UpdateAsync(board);
         await unitOfWork.CompleteAsync();

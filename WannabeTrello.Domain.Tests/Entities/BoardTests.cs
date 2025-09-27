@@ -1,5 +1,7 @@
 ﻿using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
+using WannabeTrello.Domain.Tests.Utils;
 
 namespace WannabeTrello.Domain.Tests.Entities;
 
@@ -17,9 +19,7 @@ public class BoardTests
 
         // Act
         var board = Board.Create(validName, validDescription, validProjectId, creatorUserId);
-
-        // Assert
-        // 1. Provera osnovnih propertija
+        
         Assert.NotNull(board);
         Assert.Equal(validName, board.Name);
         Assert.Equal(validDescription, board.Description);
@@ -68,5 +68,135 @@ public class BoardTests
         var exception = Assert.Throws<ArgumentException>(act);
         Assert.Equal("projectId", exception.ParamName);
         Assert.Equal("Board must be part of the project (Parameter 'projectId')", exception.Message);
+    }
+    
+    [Fact]
+    public void UpdateDetails_WhenOnlyNameChanges_ShouldUpdateNameAndRaiseEventWithCorrectValues()
+    {
+        // Arrange
+        var initialName = "Original Board Name";
+        var initialDescription = "Original Description";
+        var newName = "Updated Board Name";
+        var modifierUserId = 123L;
+
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
+
+        // Act
+        board.UpdateDetails(newName, initialDescription, modifierUserId);
+
+        // Assert
+        Assert.Equal(newName, board.Name);
+        Assert.Equal(initialDescription, board.Description);
+
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var boardUpdatedEvent = Assert.IsType<BoardUpdatedEvent>(domainEvent);
+        
+        Assert.True(boardUpdatedEvent.OldValue.ContainsKey("Name"));
+        Assert.Equal(initialName, boardUpdatedEvent.OldValue["Name"]);
+        
+        Assert.True(boardUpdatedEvent.NewValue.ContainsKey("Name"));
+        Assert.Equal(newName, boardUpdatedEvent.NewValue["Name"]);
+        
+        Assert.False(boardUpdatedEvent.OldValue.ContainsKey("Description"));
+    }
+    
+    [Fact]
+    public void UpdateDetails_WhenOnlyDescriptionChanges_ShouldUpdateDescriptionAndRaiseEvent()
+    {
+        // Arrange
+        var initialName = "Original Board Name";
+        var initialDescription = "Original Description";
+        var newDescription = "Updated Description";
+        var modifierUserId = 123L;
+
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
+
+        // Act
+        board.UpdateDetails(initialName, newDescription, modifierUserId);
+
+        // Assert
+        Assert.Equal(initialName, board.Name);
+        Assert.Equal(newDescription, board.Description);
+        
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var boardUpdatedEvent = Assert.IsType<BoardUpdatedEvent>(domainEvent);
+        
+        Assert.False(boardUpdatedEvent.OldValue.ContainsKey("Name"));
+        Assert.True(boardUpdatedEvent.OldValue.ContainsKey("Description"));
+        Assert.Equal(initialDescription, boardUpdatedEvent.OldValue["Description"]);
+    }
+    
+    [Fact]
+    public void UpdateDetails_WhenNothingChanges_ShouldNotRaiseAnyEvent()
+    {
+        // Arrange
+        var initialName = "Original Board Name";
+        var initialDescription = "Original Description";
+        var modifierUserId = 123L;
+
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
+
+        // Act
+        board.UpdateDetails(initialName, initialDescription, modifierUserId);
+
+        // Assert
+        Assert.Empty(board.DomainEvents);
+    }
+    
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithInvalidName_ShouldThrowArgumentException(string invalidName)
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), "Initial Name");
+
+        // Act
+        var exception = Assert.Throws<ArgumentException>(() => 
+            board.UpdateDetails(invalidName, "Some Description", 123L));
+
+        // Assert
+        Assert.Equal("newName", exception.ParamName);
+        Assert.Empty(board.DomainEvents);
+    }
+    
+    [Fact]
+    public void UpdateDetails_WhenBothValuesChange_ShouldRaiseEventWithBothValues()
+    {
+        // Arrange
+        var initialName = "Original Name";
+        var initialDescription = "Original Desc";
+        var newName = "New Name";
+        var newDescription = "New Desc";
+        var modifierUserId = 123L;
+
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
+
+        // Act
+        board.UpdateDetails(newName, newDescription, modifierUserId);
+
+        // Assert
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var boardUpdatedEvent = Assert.IsType<BoardUpdatedEvent>(domainEvent);
+        
+        Assert.True(boardUpdatedEvent.OldValue.ContainsKey("Name"));
+        Assert.True(boardUpdatedEvent.OldValue.ContainsKey("Description"));
+        Assert.Equal(initialName, boardUpdatedEvent.OldValue["Name"]);
+        Assert.Equal(initialDescription, boardUpdatedEvent.OldValue["Description"]);
     }
 }
