@@ -12,8 +12,8 @@ public class GetBoardByIdQueryResponse
         public DateTime CreatedAt { get; set; }
         public long? CreatedBy { get; set; }
 
-        public ICollection<ColumnResponse> Columns { get; set; } = new List<ColumnResponse>();
-        public ICollection<BoardMemberResponse> BoardMembers { get; set; } = new List<BoardMemberResponse>();
+        // public ICollection<ColumnResponse> Columns { get; set; } = new List<ColumnResponse>();
+        // public ICollection<BoardMemberResponse> BoardMembers { get; set; } = new List<BoardMemberResponse>();
         
         public static GetBoardByIdQueryResponse FromEntity(Board board)
         {
@@ -25,8 +25,9 @@ public class GetBoardByIdQueryResponse
                 ProjectId = board.ProjectId,
                 CreatedAt = board.CreatedAt,
                 CreatedBy = board.CreatedBy,
-                Columns = board.Columns?.Select(ColumnResponse.FromEntity).ToList() ?? new List<ColumnResponse>(),
-                BoardMembers = board.BoardMembers?.Select(BoardMemberResponse.FromEntity).ToList() ?? new List<BoardMemberResponse>()
+                //TODO: RESI OVO KASNIJE
+                // Columns = board.Columns?.Select(ColumnResponse.FromEntity).ToList() ?? new List<ColumnResponse>(),
+                // BoardMembers = board.BoardMembers?.Select(BoardMemberResponse.FromEntity).ToList() ?? new List<BoardMemberResponse>()
             };
         }
     }
