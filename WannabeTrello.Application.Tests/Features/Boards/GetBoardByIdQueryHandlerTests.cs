@@ -23,6 +23,22 @@ public class GetBoardByIdQueryHandlerTests
         property?.SetValue(obj, value, null);
     }
     
+    private static void SetPrivateFieldValue<T>(T obj, string fieldName, object value)
+    {
+        var field = typeof(T).GetField(
+            fieldName,
+            System.Reflection.BindingFlags.NonPublic | 
+            System.Reflection.BindingFlags.Instance
+        );
+
+        if (field == null)
+        {
+            throw new InvalidOperationException($"Private field '{fieldName}' not found on type '{typeof(T).Name}'.");
+        }
+        
+        field.SetValue(obj, value);
+    }
+    
     private static T CreateInstanceWithoutConstructor<T>() where T : class
     {
         return (T)FormatterServices.GetUninitializedObject(typeof(T));
@@ -45,6 +61,7 @@ public class GetBoardByIdQueryHandlerTests
         SetPrivatePropertyValue(boardFromService, nameof(Board.Id), boardId);
         SetPrivatePropertyValue(boardFromService, nameof(Board.Name), "Test Board");
         
+        SetPrivateFieldValue(boardFromService, "_columns", new List<Column>());
 
         boardServiceMock
             .Setup(s => s.GetBoardByIdAsync(boardId, userId, It.IsAny<CancellationToken>()))

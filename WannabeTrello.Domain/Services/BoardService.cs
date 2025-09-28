@@ -59,8 +59,8 @@ public class BoardService(
         if (board is null)
             throw new NotFoundException(nameof(Board), boardId);
 
-        if (!board.IsMember(boardId))
-            throw new AccessDeniedException("You don't have access to this board");
+        // if (!board.IsMember(boardId))
+        //     throw new AccessDeniedException("You don't have access to this board");
 
         return board;
     }
