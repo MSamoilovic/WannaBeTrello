@@ -14,6 +14,7 @@ public class Board: AuditableEntity
     
     private readonly List<Column> _columns = [];
     public IReadOnlyCollection<Column> Columns => _columns.AsReadOnly();
+   
     public ICollection<BoardMember> BoardMembers { get; private set; } = [];
     public bool IsArchived { get; private set; }
     

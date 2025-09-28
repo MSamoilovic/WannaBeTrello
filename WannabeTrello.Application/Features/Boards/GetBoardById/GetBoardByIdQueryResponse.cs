@@ -11,8 +11,8 @@ public class GetBoardByIdQueryResponse
         public long ProjectId { get; set; }
         public DateTime CreatedAt { get; set; }
         public long? CreatedBy { get; set; }
-
-        // public ICollection<ColumnResponse> Columns { get; set; } = new List<ColumnResponse>();
+        
+        public ICollection<ColumnResponse> Columns { get; set; } = [];
         // public ICollection<BoardMemberResponse> BoardMembers { get; set; } = new List<BoardMemberResponse>();
         
         public static GetBoardByIdQueryResponse FromEntity(Board board)
@@ -26,7 +26,7 @@ public class GetBoardByIdQueryResponse
                 CreatedAt = board.CreatedAt,
                 CreatedBy = board.CreatedBy,
                 //TODO: RESI OVO KASNIJE
-                // Columns = board.Columns?.Select(ColumnResponse.FromEntity).ToList() ?? new List<ColumnResponse>(),
+                Columns = board.Columns?.Select(ColumnResponse.FromEntity).ToList() ?? [],
                 // BoardMembers = board.BoardMembers?.Select(BoardMemberResponse.FromEntity).ToList() ?? new List<BoardMemberResponse>()
             };
         }
@@ -37,7 +37,7 @@ public class GetBoardByIdQueryResponse
         public long Id { get; set; }
         public string Name { get; set; } = null!;
         public int Order { get; set; }
-        public ICollection<SearchTaskResponse> Tasks { get; set; } = new List<SearchTaskResponse>();
+        // public ICollection<SearchTaskResponse> Tasks { get; set; } = new List<SearchTaskResponse>();
 
         public static ColumnResponse FromEntity(Column column)
         {
@@ -46,7 +46,7 @@ public class GetBoardByIdQueryResponse
                 Id = column.Id,
                 Name = column.Name,
                 Order = column.Order,
-                Tasks = column.Tasks?.Select(SearchTaskResponse.FromEntity).ToList() ?? new List<SearchTaskResponse>()
+                // Tasks = column.Tasks?.Select(SearchTaskResponse.FromEntity).ToList() ?? new List<SearchTaskResponse>()
             };
         }
     }
