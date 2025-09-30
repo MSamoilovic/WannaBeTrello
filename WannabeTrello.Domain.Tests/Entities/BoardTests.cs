@@ -1,6 +1,8 @@
 ﻿using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
+using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Tests.Utils;
 
 namespace WannabeTrello.Domain.Tests.Entities;
@@ -176,11 +178,11 @@ public class BoardTests
     public void UpdateDetails_WhenBothValuesChange_ShouldRaiseEventWithBothValues()
     {
         // Arrange
-        var initialName = "Original Name";
-        var initialDescription = "Original Desc";
-        var newName = "New Name";
-        var newDescription = "New Desc";
-        var modifierUserId = 123L;
+        const string initialName = "Original Name";
+        const string initialDescription = "Original Desc";
+        const string newName = "New Name";
+        const string newDescription = "New Desc";
+        const long modifierUserId = 123L;
 
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
@@ -198,5 +200,259 @@ public class BoardTests
         Assert.True(boardUpdatedEvent.OldValue.ContainsKey("Description"));
         Assert.Equal(initialName, boardUpdatedEvent.OldValue["Name"]);
         Assert.Equal(initialDescription, boardUpdatedEvent.OldValue["Description"]);
+    }
+    
+    [Fact]
+    public void Archive_WhenCalledByAdmin_ShouldArchiveBoardAndRaiseEvent()
+    {
+        // Arrange
+        const long adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), false);
+
+        // Act
+        board.Archive(adminUserId);
+
+        // Assert
+        Assert.True(board.IsArchived);
+        
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var archivedEvent = Assert.IsType<BoardArchivedEvent>(domainEvent);
+        Assert.Equal(adminUserId, archivedEvent.ModifierUserId);
+    }
+
+    [Fact]
+    public void Archive_WhenCalledByNonAdminMember_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var memberUserId = 2L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var member = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.UserId), memberUserId);
+        DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.Role), BoardRole.Editor); 
+        
+        var members = new List<BoardMember> { member };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), false);
+
+        // Act & Assert
+        var exception = Assert.Throws<UnauthorizedAccessException>(() => board.Archive(memberUserId));
+        Assert.Equal("Only Owner or Admin can archive the board.", exception.Message);
+        Assert.False(board.IsArchived);
+        Assert.Empty(board.DomainEvents);
+    }
+
+    [Fact]
+    public void Archive_WhenBoardIsAlreadyArchived_ShouldDoNothing()
+    {
+        // Arrange
+        var adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), true); 
+
+        // Act
+        board.Archive(adminUserId);
+
+        // Assert
+        Assert.True(board.IsArchived); 
+        Assert.Empty(board.DomainEvents); 
+    }
+    
+    [Fact]
+    public void Archive_WhenCalledByNonMember_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var nonMemberUserId = 999L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        // Tabla nema članova ili dati korisnik nije među njima
+        var members = new List<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), false);
+
+        // Act & Assert
+        var exception = Assert.Throws<UnauthorizedAccessException>(() => board.Archive(nonMemberUserId));
+        Assert.Equal("Only Owner or Admin can archive the board.", exception.Message);
+    }
+    
+    [Fact]
+    public void Restore_WhenCalledByAdminOnArchivedBoard_ShouldRestoreBoardAndRaiseEvent()
+    {
+        // Arrange
+        const long adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), true); 
+
+        // Act
+        board.Restore(adminUserId);
+
+        // Assert
+        Assert.False(board.IsArchived); 
+        
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var restoredEvent = Assert.IsType<BoardRestoredEvent>(domainEvent);
+        Assert.Equal(adminUserId, restoredEvent.ModifierUserId);
+    }
+
+    [Fact]
+    public void Restore_WhenCalledByNonAdminMember_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var memberUserId = 2L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var member = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.UserId), memberUserId);
+        DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.Role), BoardRole.Editor);
+        
+        var members = new List<BoardMember> { member };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), true);
+
+        // Act & Assert
+        var exception = Assert.Throws<UnauthorizedAccessException>(() => board.Restore(memberUserId));
+        Assert.Equal("Only Owner or Admin can restore the board.", exception.Message);
+        Assert.True(board.IsArchived);
+        Assert.Empty(board.DomainEvents);
+    }
+
+    [Fact]
+    public void Restore_WhenBoardIsNotArchived_ShouldDoNothing()
+    {
+        // Arrange
+        var adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), false); // Tabla NIJE arhivirana
+
+        // Act
+        board.Restore(adminUserId);
+
+        // Assert
+        Assert.False(board.IsArchived);
+        
+    }
+
+    [Fact]
+    public void Restore_WhenCalledByNonMember_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var nonMemberUserId = 999L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        var members = new List<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), true);
+
+        // Act & Assert
+        var exception = Assert.Throws<UnauthorizedAccessException>(() => board.Restore(nonMemberUserId));
+        Assert.Equal("Only Owner or Admin can restore the board.", exception.Message);
+    }
+    
+
+    [Fact]
+    public void AddColumn_WithValidName_ShouldAddColumnWithCorrectOrderAndRaiseEvent()
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        
+        // Postavljamo postojeću kolonu da bismo testirali logiku za redosled
+        var existingColumn = DomainTestUtils.CreateInstanceWithoutConstructor<Column>();
+        DomainTestUtils.SetPrivatePropertyValue(existingColumn, nameof(Column.Name), "Existing Column"); // ISPRAVKA: Dodato ime
+        DomainTestUtils.SetPrivatePropertyValue(existingColumn, nameof(Column.Order), 1);
+        var initialColumns = new List<Column> { existingColumn };
+        DomainTestUtils.SetPrivatePropertyValue(board, "_columns", initialColumns);
+        
+        var newColumnName = "In Review";
+        var creatorUserId = 123L;
+
+        // Act
+        board.AddColumn(newColumnName, creatorUserId);
+
+        // Assert
+        Assert.Equal(2, board.Columns.Count);
+        var addedColumn = board.Columns.Last();
+        Assert.Equal(newColumnName, addedColumn.Name);
+        Assert.Equal(2, addedColumn.Order); // Redosled treba da bude 1 (postojeća) + 1 = 2
+        
+        var domainEvent = Assert.Single(board.DomainEvents);
+        var columnAddedEvent = Assert.IsType<ColumnAddedEvent>(domainEvent);
+        Assert.Equal(newColumnName, columnAddedEvent.ColumnName);
+        Assert.Equal(creatorUserId, columnAddedEvent.CreatorUserId);
+    }
+    
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void AddColumn_WithInvalidName_ShouldThrowBusinessRuleValidationException(string invalidName)
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_columns", new List<Column>());
+
+        // Act & Assert
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => board.AddColumn(invalidName, 123L));
+        Assert.Equal("Column name cannot be empty.", exception.Message);
+        Assert.Empty(board.Columns);
+        Assert.Empty(board.DomainEvents);
+    }
+    
+    [Fact]
+    public void AddColumn_WhenColumnNameAlreadyExists_ShouldThrowBusinessRuleValidationException()
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+
+        var existingColumnName = "To Do";
+        var existingColumn = DomainTestUtils.CreateInstanceWithoutConstructor<Column>();
+        DomainTestUtils.SetPrivatePropertyValue(existingColumn, nameof(Column.Name), existingColumnName);
+        var initialColumns = new List<Column> { existingColumn };
+        DomainTestUtils.SetPrivatePropertyValue(board, "_columns", initialColumns);
+
+       
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => board.AddColumn("to do", 123L));
+        Assert.Equal($"A column with the name 'to do' already exists on this board.", exception.Message);
+        Assert.Single(board.Columns);
+        Assert.Empty(board.DomainEvents);
     }
 }
