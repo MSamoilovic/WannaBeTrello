@@ -106,9 +106,8 @@ public class Board: AuditableEntity
     {
         var member = BoardMembers.FirstOrDefault(pm => pm.UserId == modifierUserId);
         if (member is not { Role: BoardRole.Admin })
-            throw new UnauthorizedAccessException("Only Owner or Admin can archive the board.");
+            throw new UnauthorizedAccessException("Only Owner or Admin can restore the board.");
         
-        if(IsArchived) return;
         IsArchived = false;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
@@ -123,7 +122,7 @@ public class Board: AuditableEntity
         if (string.IsNullOrWhiteSpace(columnName))
             throw new BusinessRuleValidationException("Column name cannot be empty.");
     
-        if (_columns.Any(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
+        if (_columns.Any(c => c.Name!.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
             throw new BusinessRuleValidationException($"A column with the name '{columnName}' already exists on this board.");
         
         var order = _columns.Count != 0 ? _columns.Max(c => c.Order) + 1 : 1;
@@ -131,7 +130,7 @@ public class Board: AuditableEntity
     
         _columns.Add(newColumn);
     
-        AddDomainEvent(new ColumnAddedEvent(Id, newColumn.Id, newColumn.Name, creatorUserId));
+        AddDomainEvent(new ColumnAddedEvent(Id, newColumn.Id, newColumn.Name!, creatorUserId));
     
     }
     

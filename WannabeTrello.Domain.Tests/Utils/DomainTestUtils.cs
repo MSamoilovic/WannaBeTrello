@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
+using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Events;
 
 namespace WannabeTrello.Domain.Tests.Utils;
 
@@ -38,5 +40,11 @@ public static class DomainTestUtils
             }
             field?.SetValue(obj, value);
         }
+    }
+    
+    public static void InitializeDomainEvents(AuditableEntity entity)
+    {
+        var domainEventsList = new List<DomainEvent>();
+        SetPrivatePropertyValue(entity, "_domainEvents", domainEventsList);
     }
 }
