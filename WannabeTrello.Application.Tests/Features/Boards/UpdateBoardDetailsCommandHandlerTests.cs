@@ -7,7 +7,7 @@ using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Appilcation.Tests.Features.Boards;
+namespace WannabeTrello.Application.Tests.Features.Boards;
 
 public class UpdateBoardDetailsCommandHandlerTests
 {
