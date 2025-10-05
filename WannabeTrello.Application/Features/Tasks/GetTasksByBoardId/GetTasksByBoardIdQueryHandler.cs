@@ -2,6 +2,7 @@
 using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Boards.GetBoardById;
+using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Repositories;
 
@@ -28,8 +29,8 @@ public class GetTasksByBoardIdQueryHandler(
         }
 
         var allTasks = new List<GetTaskByBoardIdQueryResponse>();
-        
-        var columns = await columnRepository.GetColumnsByBoardIdAsync(request.BoardId);
+
+        var columns = new List<Column>();
 
         foreach (var column in columns)
         {
