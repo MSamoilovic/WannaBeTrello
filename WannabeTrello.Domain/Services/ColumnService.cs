@@ -36,12 +36,7 @@ public class ColumnService(
 
         return column;
     }
-
-    public Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public Task<Column> GetColumnByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();

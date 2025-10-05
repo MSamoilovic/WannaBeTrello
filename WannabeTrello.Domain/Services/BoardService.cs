@@ -113,6 +113,18 @@ public class BoardService(
        return board.Id;
     }
 
+    public async Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    {
+        var board = await boardRepository.GetByIdAsync(boardId);
+        if (board is null)
+            throw new NotFoundException(nameof(Board), boardId);
+        
+        if (!board.IsMember(userId)) 
+            throw new ArgumentException("User is not member of the board");
+        
+        return await boardRepository.GetColumnsByBoardIdAsync(boardId, cancellationToken);
+    }
+
     public async Task AddBoardMemberAsync(long boardId, long userId, BoardRole role, long inviterUserId)
     {
         var board = await boardRepository.GetBoardWithDetailsAsync(boardId);

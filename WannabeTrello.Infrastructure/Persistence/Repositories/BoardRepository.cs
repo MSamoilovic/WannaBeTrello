@@ -38,4 +38,14 @@ public class BoardRepository(ApplicationDbContext dbContext) : Repository<Board>
     {
         return _dbSet.Where(b => b.ProjectId == projectId).ToListAsync(cancellationToken);
     }
+    
+    public async Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Columns
+            .Include(c => c.Tasks.OrderBy(t => t.CreatedAt))
+                .ThenInclude(t => t.Assignee)
+            .Where(c => c.BoardId == boardId)
+            .OrderBy(c => c.Order)
+            .ToListAsync(cancellationToken);
+    }
 }
