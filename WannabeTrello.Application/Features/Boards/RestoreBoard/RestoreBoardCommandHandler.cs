@@ -16,7 +16,7 @@ public class RestoreBoardCommandHandler(IBoardService boardService, ICurrentUser
             throw new UnauthorizedAccessException("User is not authenticated");
         }
         
-        var boardId = await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value);
+        var boardId = await boardService.RestoreBoardAsync(request.BoardId, currentUserService.UserId.Value);
         var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now restored.");
         
         return new RestoreBoardCommandResponse(result);

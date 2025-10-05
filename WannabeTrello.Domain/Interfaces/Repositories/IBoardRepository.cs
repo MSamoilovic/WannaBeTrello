@@ -13,4 +13,6 @@ public interface IBoardRepository
     Task<Board?> GetBoardWithDetailsAsync(long boardId, CancellationToken cancellationToken=default);
     
     Task<List<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken  cancellationToken);
+    
+    Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, CancellationToken cancellationToken);
 }

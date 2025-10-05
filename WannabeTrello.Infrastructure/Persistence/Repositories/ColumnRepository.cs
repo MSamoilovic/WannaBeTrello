@@ -6,15 +6,6 @@ namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
 public class ColumnRepository(ApplicationDbContext dbContext) : Repository<Column>(dbContext), IColumnRepository
 {
-    public async Task<IEnumerable<Column>> GetColumnsByBoardIdAsync(long boardId)
-    {
-        return await _dbSet
-            .Where(c => c.BoardId == boardId)
-            .OrderBy(c => c.Order) 
-            .ToListAsync();
-    }
-
-   
     public async Task AddAsync(Column column) => await base.AddAsync(column);
     public async Task<Column?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
     

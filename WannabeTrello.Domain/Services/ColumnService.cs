@@ -10,8 +10,7 @@ namespace WannabeTrello.Domain.Services;
 public class ColumnService(
     IColumnRepository columnRepository,
     IBoardRepository boardRepository,
-    IUnitOfWork unitOfWork,
-    IUserRepository userRepository) : IColumnService
+    IUnitOfWork unitOfWork) : IColumnService
 {
     public async Task<Column> CreateColumnAsync(long boardId, string? name, int order, long userId,
         CancellationToken cancellationToken)
@@ -36,14 +35,10 @@ public class ColumnService(
 
         return column;
     }
-
-    public Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    
+    public async Task<Column> GetColumnByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<Column> GetColumnByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+        var column = await columnRepository.GetByIdAsync(boardId);
+        return column ?? throw new NotFoundException(nameof(Column), boardId);
     }
 }
