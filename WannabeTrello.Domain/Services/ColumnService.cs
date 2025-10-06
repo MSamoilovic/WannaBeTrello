@@ -41,4 +41,29 @@ public class ColumnService(
         var column = await columnRepository.GetByIdAsync(boardId);
         return column ?? throw new NotFoundException(nameof(Column), boardId);
     }
+
+    public async Task<Column> UpdateColumnAsync(long columnId, string? newName, int? wipLimit, long userId, CancellationToken cancellationToken)
+    {
+        var column = await columnRepository.GetByIdWithBoardsAndMembersAsync(columnId, cancellationToken);
+        if (column == null)
+            throw new NotFoundException(nameof(Column), columnId);
+        
+        var member = column.Board.BoardMembers.FirstOrDefault(m => m.UserId == userId);
+        if (member is not { Role: BoardRole.Admin })
+            throw new AccessDeniedException("Only a Board Admin can update a column's details.");
+        
+        if (newName != null)
+        {
+            column.ChangeName(newName);
+        }
+        
+        if (wipLimit.HasValue)
+        {
+            column.SetWipLimit(wipLimit.Value);
+        }
+        
+        await unitOfWork.CompleteAsync(cancellationToken);
+        
+        return column;
+    }
 }
