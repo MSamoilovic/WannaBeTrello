@@ -2,6 +2,7 @@
 using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
+using WannabeTrello.Domain.Events.Column_Events;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Tests.Utils;
 

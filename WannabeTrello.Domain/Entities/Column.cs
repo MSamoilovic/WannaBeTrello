@@ -30,5 +30,51 @@ public class Column: AuditableEntity
         CreatedBy = userId;
     }
 
+    public void ChangeName(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new BusinessRuleValidationException("New column name cannot be empty.");
+        Name = newName;
+    }
 
+    public void ChangeOrder(int newOrder)
+    {
+        if (newOrder <= 0)
+            throw new BusinessRuleValidationException("New column order must be a positive number.");
+        Order = newOrder;
+    }
+
+    public void SetWipLimit(int? limit)
+    {
+        if (limit.HasValue && limit.Value <= 0)
+            throw new BusinessRuleValidationException("WIP limit must be a positive number.");
+        WipLimit = limit;
+    }
+    
+    internal void AddTask(BoardTask task)
+    {
+        if (IsWipLimitReached())
+            throw new BusinessRuleValidationException($"WIP limit for column '{Name}' has been reached.");
+        _tasks.Add(task);
+    }
+
+    internal BoardTask RemoveTask(long taskId)
+    {
+        var taskToRemove = _tasks.FirstOrDefault(t => t.Id == taskId);
+        if (taskToRemove == null)
+            throw new NotFoundException(nameof(BoardTask), taskId);
+        _tasks.Remove(taskToRemove);
+        return taskToRemove;
+    }
+
+    internal bool HasTask(long taskId)
+    {
+        return _tasks.Any(t => t.Id == taskId);
+    }
+
+    private bool IsWipLimitReached()
+    {
+        if (!WipLimit.HasValue) return false;
+        return _tasks.Count >= WipLimit.Value;
+    }
 }
