@@ -7,6 +7,7 @@ using WannabeTrello.Application.Features.Boards.GetBoardById;
 using WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
 using WannabeTrello.Application.Features.Boards.RestoreBoard;
 using WannabeTrello.Application.Features.Boards.UpdateBoard;
+using WannabeTrello.Application.Features.Columns.ReorderColumn;
 
 namespace WannabeTrello.Controllers;
 
@@ -92,4 +93,14 @@ public class BoardsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetColumnsByBoardId(long id) =>
         Ok(await mediator.Send(new GetColumnsByBoardIdQuery(id)));
+    
+    [HttpPut("{boardId:long}/columns/reorder")]
+    [ProducesResponseType(typeof(ReorderColumnCommandResponse), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReorderColumns(long boardId, [FromBody] ReorderColumnCommand command)
+    {
+        command.BoardId = boardId;
+        return Ok(await mediator.Send(command));
+    }
 }
