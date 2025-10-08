@@ -11,4 +11,5 @@ public interface IBoardService
     Task<long> ArchiveBoardAsync(long boardId, long userId);
     Task<long> RestoreBoardAsync(long boardId, long userId);
     Task<List<Column>> GetColumnsByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken);
+    Task ReorderColumnsAsync(long boardId, Dictionary<long, int> columnOrders, long userId, CancellationToken cancellationToken);
 }
