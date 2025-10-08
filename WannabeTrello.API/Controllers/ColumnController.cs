@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Columns.CreateColumn;
+using WannabeTrello.Application.Features.Columns.DeleteColumn;
 using WannabeTrello.Application.Features.Columns.GetColumn;
 using WannabeTrello.Application.Features.Columns.UpdateColumn;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Controllers;
 
@@ -40,4 +39,11 @@ public class ColumnController(IMediator mediator): ControllerBase
 
         return Ok(await mediator.Send(updateColumn));
     }
+    
+    [HttpDelete("{id:long}")]
+    [ProducesResponseType(typeof(DeleteColumnCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteColumn(long id) => 
+        Ok(await mediator.Send(new DeleteColumnCommand(id)));
 }

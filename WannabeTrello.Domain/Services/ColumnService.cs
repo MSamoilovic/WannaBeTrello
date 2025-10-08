@@ -66,4 +66,39 @@ public class ColumnService(
         
         return column;
     }
+
+    public async Task<long> DeleteColumnAsync(long columnId, long? userId, CancellationToken cancellationToken)
+    {
+        var column  = await columnRepository.GetByIdWithBoardsAndMembersAsync(columnId, cancellationToken);
+        if (column == null)
+            throw new NotFoundException(nameof(Column), columnId);
+        
+        var member = column.Board.BoardMembers.FirstOrDefault(m => m.UserId == userId);
+        if (member is not { Role: BoardRole.Admin })
+            throw new AccessDeniedException("Only a Board Admin can delete a column.");
+        
+        await columnRepository.DeleteAsync(column.Id);
+        await unitOfWork.CompleteAsync(cancellationToken);
+        
+        return column.Id;
+    }
+
+    public async Task ReorderColumnsAsync(long boardId, Dictionary<long, int> columnOrders, long userId, CancellationToken cancellationToken)
+    {
+        var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
+        if (board == null)
+            throw new NotFoundException(nameof(Board), boardId);
+
+        var member = board.BoardMembers.FirstOrDefault(m => m.UserId == userId);
+        if (member is not { Role: BoardRole.Admin })
+            throw new AccessDeniedException("Only a Board Admin can reorder columns.");
+
+        foreach (var orderInfo in columnOrders)
+        {
+            var columnToUpdate = board.Columns.FirstOrDefault(c => c.Id == orderInfo.Key);
+            columnToUpdate?.ChangeOrder(orderInfo.Value);
+        }
+
+        await unitOfWork.CompleteAsync(cancellationToken); 
+    }
 }
