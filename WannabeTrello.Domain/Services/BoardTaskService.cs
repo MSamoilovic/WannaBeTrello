@@ -93,8 +93,8 @@ public class BoardTaskService(
                 throw new AccessDeniedException("Nemate dozvolu za premeštanje zadataka na ovoj tabli.");
             }
 
-            // Delegiranje logike premeštanja entitetu
-            task.Move(newColumn, performingUserId); 
+           
+            task.MoveToColumn(newColumn.Id, performingUserId); 
 
             await boardTaskRepository.UpdateAsync(task);
             await unitOfWork.CompleteAsync();
@@ -147,7 +147,7 @@ public class BoardTaskService(
             }
 
            
-            task.AssignToUser(assignee, performingUserId);
+            task.AssignToUser(assigneeId!.Value, performingUserId);
 
             await boardTaskRepository.UpdateAsync(task);
             await unitOfWork.CompleteAsync();

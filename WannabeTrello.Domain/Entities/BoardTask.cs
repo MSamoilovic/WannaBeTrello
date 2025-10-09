@@ -38,9 +38,7 @@ public class BoardTask: AuditableEntity
             DueDate = dueDate,
             Position = position,
             ColumnId = columnId,
-            AssigneeId = assigneeId,
-            CreatedAt = DateTime.UtcNow,
-            CreatedBy = creatorUserId
+            AssigneeId = assigneeId
         };
 
         
@@ -60,50 +58,61 @@ public class BoardTask: AuditableEntity
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Naslov taska ne može biti prazan.", nameof(newTitle));
         
-        var changed = false;
+        if (string.IsNullOrWhiteSpace(newTitle))
+            throw new BusinessRuleValidationException("Task title cannot be empty.");
         
-        if (Title != newTitle) { Title = newTitle; changed = true; }
-        if (Description != newDescription) { Description = newDescription; changed = true; }
-        if (Priority != newPriority) { Priority = newPriority; changed = true; }
-        if (DueDate != newDueDate) { DueDate = newDueDate; changed = true; }
+        var changed = false;
+        var oldValues = new Dictionary<string, object?>();
+        var newValues = new Dictionary<string, object?>();
+
+        if (Title != newTitle) 
+        {
+            oldValues[nameof(Title)] = Title;
+            newValues[nameof(Title)] = newTitle;
+            Title = newTitle; 
+            changed = true;
+        }
+        if (Description != newDescription) 
+        {
+            oldValues[nameof(Description)] = Description;
+            newValues[nameof(Description)] = newDescription;
+            Description = newDescription; 
+            changed = true;
+        }
+        if (Priority != newPriority) 
+        {
+            oldValues[nameof(Priority)] = Priority;
+            newValues[nameof(Priority)] = newPriority;
+            Priority = newPriority; 
+            changed = true;
+        }
+        if (DueDate != newDueDate) 
+        {
+            oldValues[nameof(DueDate)] = DueDate;
+            newValues[nameof(DueDate)] = newDueDate;
+            DueDate = newDueDate; 
+            changed = true;
+        }
 
         if (!changed) return;
         
-        LastModifiedAt = DateTime.UtcNow;
-        LastModifiedBy = modifierUserId;
         AddDomainEvent(new TaskUpdatedEvent(Id, modifierUserId)); // Aktiviraj događaj za ažuriranje zadatka
     }
     
-    public void Move(Column newColumn, long performingUserId)
+    public void MoveToColumn(long newColumnId, long performingUserId)
     {
-        if (newColumn == null)
-            throw new ArgumentNullException(nameof(newColumn), "Nova kolona ne može biti null.");
-
-       
-        if (Column != null && newColumn.BoardId != Column.BoardId)
-        {
-            throw new InvalidOperationDomainException(
-                $"Task '{Title}' ne može biti premešten u kolonu ('{newColumn.Name}') na drugoj tabli.");
-        }
-
-        if (ColumnId == newColumn.Id)
-        {
-            // Task je već u ovoj koloni, nema potrebe za izmenom
-            return;
-        }
+        if (ColumnId == newColumnId) return;
 
         var originalColumnId = ColumnId;
-        ColumnId = newColumn.Id;
-        Column = newColumn; 
-        LastModifiedAt = DateTime.UtcNow;
-        LastModifiedBy = performingUserId;
-
-        // Dodat Domenski Event
-        AddDomainEvent(new TaskMovedEvent(Id, originalColumnId, newColumn.Id, performingUserId));
+        ColumnId = newColumnId;
+        
+        AddDomainEvent(new TaskMovedEvent(Id, originalColumnId, newColumnId, performingUserId));
     }
     
     public Comment AddComment(string content, long userId)
     {
+        
+        //TODO: Change Comment to use Create method
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Sadržaj komentara ne može biti prazan.", nameof(content));
         
@@ -127,24 +136,15 @@ public class BoardTask: AuditableEntity
         return comment;
     }
     
-    public void AssignToUser(User? assignee, long performingUserId)
+    public void AssignToUser(long? newAssigneeId, long performingUserId)
     {
+        if (AssigneeId == newAssigneeId) return;
+
         var oldAssigneeId = AssigneeId;
-
-        if (assignee == null)
-        {
-            AssigneeId = null;
-            Assignee = null;
-        }
-        else
-        {
-            AssigneeId = assignee.Id;
-            Assignee = assignee;
-        }
-
-        if (oldAssigneeId == AssigneeId) return; 
-        LastModifiedAt = DateTime.UtcNow;
-        LastModifiedBy = performingUserId;
+        AssigneeId = newAssigneeId;
+        
+        // Audit propertiji se postavljaju u DbContext-u.
+        AddDomainEvent(new TaskAssignedEvent(Id, oldAssigneeId, newAssigneeId, performingUserId));
     }
 
 }
