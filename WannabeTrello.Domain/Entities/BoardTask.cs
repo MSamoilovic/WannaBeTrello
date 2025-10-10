@@ -25,10 +25,10 @@ public class BoardTask: AuditableEntity
     public static BoardTask Create(string title, string? description, TaskPriority priority, DateTime dueDate, int position, long columnId, long? assigneeId, long creatorUserId)
     {
         if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Naslov zadatka ne može biti prazan.", nameof(title));
+            throw new BusinessRuleValidationException("Task title cannot be empty.");
         
         if (columnId < 1)
-            throw new ArgumentException("Zadatak mora pripadati koloni.", nameof(columnId));
+            throw new BusinessRuleValidationException("ColumnId cannot be less than 1.");
 
         var task = new BoardTask
         {
@@ -96,7 +96,7 @@ public class BoardTask: AuditableEntity
 
         if (!changed) return;
         
-        AddDomainEvent(new TaskUpdatedEvent(Id, modifierUserId)); // Aktiviraj događaj za ažuriranje zadatka
+        AddDomainEvent(new TaskUpdatedEvent(Id, Title, modifierUserId, oldValues, newValues)); // Aktiviraj događaj za ažuriranje zadatka
     }
     
     public void MoveToColumn(long newColumnId, long performingUserId)
@@ -143,7 +143,6 @@ public class BoardTask: AuditableEntity
         var oldAssigneeId = AssigneeId;
         AssigneeId = newAssigneeId;
         
-        // Audit propertiji se postavljaju u DbContext-u.
         AddDomainEvent(new TaskAssignedEvent(Id, oldAssigneeId, newAssigneeId, performingUserId));
     }
 
