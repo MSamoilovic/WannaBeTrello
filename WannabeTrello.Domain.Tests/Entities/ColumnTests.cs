@@ -6,8 +6,6 @@ namespace WannabeTrello.Domain.Tests.Entities;
 
 public class ColumnTests
 {
-    // --- Testovi za interni konstruktor ---
-
     [Fact]
     public void Constructor_WithValidParameters_ShouldCreateColumn()
     {
