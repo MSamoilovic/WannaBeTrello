@@ -14,22 +14,17 @@ namespace WannabeTrello.Controllers
     public class TasksController(IMediator mediator) : ControllerBase
     {
         /// <summary>
-        /// Kreira novi zadatak u određenoj koloni.
+        /// Creates a new task on a specified board and column.
         /// </summary>
         /// <param name="command">Komanda koja sadrži detalje zadatka.</param>
         /// <returns>ID novoformiranog zadatka.</returns>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateTaskCommandResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CreateTask([FromBody] CreateTaskCommand command)
-        {
-            var taskId = await mediator.Send(command);
-            return CreatedAtAction(nameof(MoveTask), new { id = taskId },
-                taskId);
-        }
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateTask([FromBody] CreateTaskCommand command) => 
+            Ok(await mediator.Send(command));
+            
 
         /// <summary>
         /// Premesta zadatak iz jedne kolone u drugu na boardu.
