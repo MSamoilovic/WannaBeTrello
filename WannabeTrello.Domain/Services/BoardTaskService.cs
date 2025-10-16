@@ -4,6 +4,7 @@ using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Domain.Services;
 
@@ -13,18 +14,18 @@ public class BoardTaskService(
     IBoardRepository boardRepository,
     IUserRepository userRepository,
     ICommentRepository commentRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork) : IBoardTaskService
 {
-    public async Task<BoardTask> CreateTaskAsync(long columnId, string title, string? description, TaskPriority priority, DateTime dueDate, int position, long? assigneeId, long creatorUserId)
+    public async Task<BoardTask> CreateTaskAsync(long columnId, string title, string? description, TaskPriority priority, DateTime dueDate, int position, long? assigneeId, long creatorUserId, CancellationToken cancellationToken)
         {
             var column = await columnRepository.GetByIdAsync(columnId);
             if (column == null) throw new NotFoundException(nameof(Column), columnId);
 
             
-            var board = await boardRepository.GetBoardWithDetailsAsync(column.BoardId);
+            var board = await boardRepository.GetBoardWithDetailsAsync(column.BoardId, cancellationToken);
             if (board == null || !board.BoardMembers.Any(bm => bm.UserId == creatorUserId && bm.Role == BoardRole.Editor))
             {
-                throw new AccessDeniedException("Nemate dozvolu za kreiranje zadataka na ovoj tabli.");
+                throw new AccessDeniedException("You don't have permission to create tasks on this board.");
             }
             
             User? assignee = null;
@@ -38,10 +39,8 @@ public class BoardTaskService(
             var task = BoardTask.Create(title, description, priority, dueDate, position, columnId, assigneeId, creatorUserId);
 
             await boardTaskRepository.AddAsync(task);
-            await unitOfWork.CompleteAsync();
-
+            await unitOfWork.CompleteAsync(cancellationToken);
             
-
             return task;
         }
 

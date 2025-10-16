@@ -12,6 +12,7 @@ public static class ConfigureServices
         services.AddScoped<IBoardService, BoardService>();
         services.AddScoped<IActivityTrackerService, ActivityTrackerService>();
         services.AddScoped<IColumnService, ColumnService>();
+        services.AddScoped<IBoardTaskService, BoardTaskService>();
         
         return services;
     }

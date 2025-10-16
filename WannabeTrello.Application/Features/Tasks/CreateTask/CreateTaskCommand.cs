@@ -3,7 +3,7 @@ using WannabeTrello.Domain.Enums;
 
 namespace WannabeTrello.Application.Features.Tasks.CreateTask;
 
-public class CreateTaskCommand: IRequest<long>
+public class CreateTaskCommand: IRequest<CreateTaskCommandResponse>
 {
     public long ColumnId { get; set; }
     public string Title { get; set; } = null!;
