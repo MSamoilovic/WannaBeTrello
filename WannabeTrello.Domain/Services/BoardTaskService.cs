@@ -44,7 +44,17 @@ public class BoardTaskService(
             return task;
         }
 
-        public async Task UpdateTaskDetailsAsync(long taskId, string newTitle, string? newDescription, TaskPriority newPriority, DateTime newDueDate, long modifierUserId)
+    public async Task<BoardTask?> GetTaskByIdAsync(long taskId, long userId, CancellationToken cancellationToken)
+    {
+        var task =  await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken);
+        if(task is null)
+            throw new NotFoundException(nameof(BoardTask), taskId);
+        
+        var userIsMemberOfBoard = task.Column.Board.BoardMembers.Any(bm => bm.UserId == userId);
+        return !userIsMemberOfBoard ? throw new AccessDeniedException("You don't have permission to view this task.") : task;
+    }
+
+    public async Task UpdateTaskDetailsAsync(long taskId, string newTitle, string? newDescription, TaskPriority newPriority, DateTime newDueDate, long modifierUserId)
         {
             var task = await boardTaskRepository.GetByIdAsync(taskId);
             if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
