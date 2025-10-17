@@ -70,6 +70,7 @@ namespace WannabeTrello.Controllers
             return StatusCode(StatusCodes.Status201Created); 
         }
         
+        /// <summary>
         /// Dohvata task po ID-u.
         /// </summary>
         /// <param name="id">ID zadatka.</param>

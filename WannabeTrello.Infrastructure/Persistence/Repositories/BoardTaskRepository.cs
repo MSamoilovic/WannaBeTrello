@@ -15,7 +15,16 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
             .ToListAsync();
     }
 
-    
+    public async Task<BoardTask?> GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
+    {
+        return await _dbSet.Include(t => t.Assignee)
+            .Include(t => t.Comments)
+                .ThenInclude(c => c.User)
+            .Include(t => t.Column)
+                .ThenInclude(c => c.Board)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+    }
+
     public override async Task AddAsync(BoardTask task) => await base.AddAsync(task);
     public override async Task<BoardTask?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
     
