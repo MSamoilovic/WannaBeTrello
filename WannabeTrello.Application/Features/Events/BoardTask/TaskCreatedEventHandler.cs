@@ -4,11 +4,13 @@ using WannabeTrello.Domain.Events.TaskEvents;
 
 namespace WannabeTrello.Application.Features.Events.BoardTask
 {
-    internal class TaskCreatedEventHandler(ITaskNotificationService taskNotificationService) : INotificationHandler<TaskCreatedEvent>
+    internal class TaskCreatedEventHandler(ITaskNotificationService taskNotificationService)
+        : INotificationHandler<TaskCreatedEvent>
     {
         public async Task Handle(TaskCreatedEvent notification, CancellationToken cancellationToken)
         {
-           await taskNotificationService.NotifyTaskCreated(notification.TaskId, notification.TaskTitle);
+            await taskNotificationService.NotifyTaskCreated(notification.TaskId, notification.TaskTitle,
+                notification.CreatorUserId, notification.AssigneeId);
         }
     }
 }
