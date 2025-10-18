@@ -42,7 +42,7 @@ public class BoardTask: AuditableEntity
         };
 
         
-        task.AddDomainEvent(new TaskCreatedEvent(task.Id, task.Title, creatorUserId)); 
+        task.AddDomainEvent(new TaskCreatedEvent(task.Id, task.Title, creatorUserId, task.Assignee!.Id)); 
 
         return task;
     }

@@ -16,7 +16,7 @@ public class GetTaskByIdQueryHandlerTests
         // Arrange
         var userId = 123L;
         var taskId = 1L;
-        var query = new GetTaskByIdQuery { Id = taskId };
+        var query = new GetTaskByIdQuery(taskId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
@@ -44,7 +44,7 @@ public class GetTaskByIdQueryHandlerTests
     public async Task Handle_WhenUserIdIsNull_ShouldThrowUnauthorizedAccessException()
     {
         // Arrange
-        var query = new GetTaskByIdQuery { Id = 1L };
+        var query = new GetTaskByIdQuery(1);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
@@ -66,7 +66,7 @@ public class GetTaskByIdQueryHandlerTests
         // Arrange
         var userId = 123L;
         var nonExistentTaskId = 999L;
-        var query = new GetTaskByIdQuery { Id = nonExistentTaskId };
+        var query = new GetTaskByIdQuery(nonExistentTaskId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
@@ -89,7 +89,7 @@ public class GetTaskByIdQueryHandlerTests
         // Arrange
         var userId = 123L;
         var taskIdWithNoAccess = 403L;
-        var query = new GetTaskByIdQuery { Id = taskIdWithNoAccess };
+        var query = new GetTaskByIdQuery(taskIdWithNoAccess);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);

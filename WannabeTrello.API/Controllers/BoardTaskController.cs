@@ -81,7 +81,7 @@ namespace WannabeTrello.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetTaskById(long id)
         {
-            var query = new GetTaskByIdQuery { Id = id };
+            var query = new GetTaskByIdQuery(id);
             var task = await mediator.Send(query);
             return Ok(task);
         }

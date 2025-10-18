@@ -16,7 +16,7 @@ public class GetTaskByIdQueryHandler(
         if (currentUserService.UserId is null)
             throw new UnauthorizedAccessException("User is not authenticated");
         
-        var task = await taskService.GetTaskByIdAsync(request.Id, currentUserService.UserId.Value, cancellationToken);
+        var task = await taskService.GetTaskByIdAsync(request.taskId, currentUserService.UserId.Value, cancellationToken);
         
         return GetTaskByIdQueryResponse.FromEntity(task!);
     }
