@@ -20,6 +20,7 @@ public class CustomExceptionFilter : IExceptionFilter
             var code = HttpStatusCode.InternalServerError;
             var message = "Došlo je do neočekivane greške.";
             var errors = new Dictionary<string, string[]>();
+            var traceId = context.HttpContext.TraceIdentifier;
 
             switch (context.Exception)
             {
@@ -45,7 +46,7 @@ public class CustomExceptionFilter : IExceptionFilter
                     message = domainException.Message;
                     break;
                 default:
-                    _logger.LogError(context.Exception, "Neobrađeni izuzetak se dogodio.");
+                    _logger.LogError(context.Exception, "Neobrađeni izuzetak se dogodio. TraceId: {TraceId}", traceId);
                     break;
             }
 
@@ -53,7 +54,8 @@ public class CustomExceptionFilter : IExceptionFilter
             {
                 status = (int)code,
                 message = message,
-                errors = errors.Count != 0 ? errors : null
+                errors = errors.Count != 0 ? errors : null,
+                traceId
             })
             {
                 StatusCode = (int)code

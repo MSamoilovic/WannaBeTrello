@@ -26,7 +26,7 @@ public class LoginUserCommandHandler(
             throw new UnauthorizedAccessException("Neispravno korisničko ime ili lozinka.");
         }
 
-        var token = jwtTokenService.GenerateToken(user);
+        var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
         return new LoginUserCommandResponse(token);
     }
 }
