@@ -16,14 +16,15 @@ public class TransactionBehavior<TRequest, TResponse>(
         {
             var response = await next(cancellationToken);
             
+            var requestTypeName = typeof(TRequest).Name;
+            if (!requestTypeName.EndsWith("Command", StringComparison.Ordinal)) return response;
             await unitOfWork.CompleteAsync(cancellationToken);
-
-            logger.LogInformation($"Transakcija potvrđena za zahtev {typeof(TRequest).Name}");
+            logger.LogInformation("Transaction confirmed for request {Name}", typeof(TRequest).Name);
             return response;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, $"Transakcija poništena za zahtev {typeof(TRequest).Name}");
+            logger.LogError(ex, "Transaction cancelled for request {Name}", typeof(TRequest).Name);
             throw;
         }
     }

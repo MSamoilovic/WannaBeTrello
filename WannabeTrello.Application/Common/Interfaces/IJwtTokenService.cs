@@ -4,5 +4,5 @@ namespace WannabeTrello.Infrastructure.Services;
 
 public interface IJwtTokenService
 {
-    string GenerateToken(User user);
+    Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default);
 }

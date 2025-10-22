@@ -11,7 +11,7 @@ namespace WannabeTrello.Infrastructure.Services;
 public class JwtTokenService(IConfiguration configuration, UserManager<User> userManager)
     : IJwtTokenService
 {
-    public string GenerateToken(User user)
+    public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var claims = new List<Claim>
         {
@@ -20,12 +20,20 @@ public class JwtTokenService(IConfiguration configuration, UserManager<User> use
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
         };
 
-        var roles = userManager.GetRolesAsync(user).Result;
+        var roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.UtcNow.AddDays(Convert.ToDouble(7));
+
+        var expiryMinutesStr = configuration["Jwt:ExpiryMinutes"];
+        var expiryMinutes = 60; // default 60 minutes
+        if (int.TryParse(expiryMinutesStr, out var parsed))
+        {
+            expiryMinutes = parsed;
+        }
+
+        var expires = DateTime.UtcNow.AddMinutes(expiryMinutes);
 
         var token = new JwtSecurityToken(
             configuration["Jwt:Issuer"],
