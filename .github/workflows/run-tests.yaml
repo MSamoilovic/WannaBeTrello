@@ -19,6 +19,18 @@ jobs:
         with:
           dotnet-version: 8.x
 
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
       - name: Run tests
-        # dotnet test komanda automatski radi restore i build
-        run: dotnet test
+        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/TestResults/**"

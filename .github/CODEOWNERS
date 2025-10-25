@@ -2,19 +2,20 @@
 # Ovi ljudi će automatski biti dodati kao reviewers na Pull Request-ove
 
 # Globalni owners - svi fajlovi
-* @your-github-username
+* @MSamoilovic
 
 # Specifični owners za kritične delove
-/.github/ @your-github-username
-/WannabeTrello.Domain/ @your-github-username
-/WannabeTrello.API/ @your-github-username
+/.github/ @MSamoilovic
+/WannabeTrello.Domain/ @MSamoilovic
+/WannabeTrello.Application/ @MSamoilovic
+/WannabeTrello.API/ @MSamoilovic
 
 # Test fajlovi
-**/*Tests.cs @your-github-username
-**/*Test*.cs @your-github-username
+**/*Tests.cs @yMSamoilovic
+**/*Test*.cs @MSamoilovic
 
 # Konfiguracija i deployment
-*.yml @your-github-username
-*.yaml @your-github-username
-Dockerfile @your-github-username
-docker-compose.yml @your-github-username
+*.yml @MSamoilovic
+*.yaml @MSamoilovic
+Dockerfile @MSamoilovic
+docker-compose.yml @MSamoilovic
