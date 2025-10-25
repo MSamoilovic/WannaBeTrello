@@ -1,4 +1,5 @@
-﻿using WannabeTrello.Domain.Exceptions;
+﻿using WannabeTrello.Domain.Events.Column_Events;
+using WannabeTrello.Domain.Exceptions;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -30,25 +31,37 @@ public class Column: AuditableEntity
         CreatedBy = userId;
     }
 
-    public void ChangeName(string newName)
+    public void ChangeName(string newName, long modifierUserId)
     {
         if (string.IsNullOrWhiteSpace(newName))
             throw new BusinessRuleValidationException("New column name cannot be empty.");
+
+        var oldName = Name;
         Name = newName;
+
+        AddDomainEvent(new ColumnUpdatedEvent(Id, oldName!, newName, BoardId, modifierUserId));
     }
 
-    public void ChangeOrder(int newOrder)
+    public void ChangeOrder(int newOrder, long modifierUserId)
     {
         if (newOrder <= 0)
             throw new BusinessRuleValidationException("New column order must be a positive number.");
+
+        var oldOrder = Order;
         Order = newOrder;
+
+        AddDomainEvent(new ColumnOrderChangedEvent(Id, BoardId, oldOrder, newOrder, modifierUserId));
     }
 
-    public void SetWipLimit(int? limit)
+    public void SetWipLimit(int? limit, long modifierUserId)
     {
         if (limit is <= 0)
             throw new BusinessRuleValidationException("WIP limit must be a positive number.");
+
+        var oldWipLimit = WipLimit;
         WipLimit = limit;
+
+        AddDomainEvent(new ColumnWipLimitChangedEvent(Id, BoardId, oldWipLimit, limit, modifierUserId));
     }
     
     internal void AddTask(BoardTask task)

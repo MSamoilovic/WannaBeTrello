@@ -10,9 +10,10 @@ public interface ITrellyHub
         Task BoardMemberRemoved(string boardId, string userId);
 
         Task ColumnCreated(long boardId, long columnId, string? columnName, long creatorUserId);
-        Task ColumnUpdated(string boardId, string columnId, string columnName); 
+        Task ColumnUpdated(long boardId, long columnId, string oldName, string newName, long modifierUserId); 
         Task ColumnDeleted(string boardId, string columnId);
-        Task ColumnOrderChanged(string boardId, string[] columnIdsInOrder);
+        Task ColumnOrderChanged(long boardId, long columnId, int oldOrder, int newOrder, long modifierUserId);
+        Task ColumnWipLimitChanged(long boardId, long columnId, int? oldWipLimit, int? newWipLimit, long modifierUserId);
         Task TaskCreated(long taskId, string taskTitle);
         Task TaskUpdated(string boardId, string taskId, object updatedFields); 
         Task TaskDeleted(string boardId, string taskId);

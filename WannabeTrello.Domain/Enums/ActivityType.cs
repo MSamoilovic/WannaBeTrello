@@ -20,6 +20,8 @@ public enum ActivityType
     ColumnAdded,
     ColumnUpdated,
     ColumnDeleted,
+    ColumnOrderChanged,
+    ColumnWipLimitChanged,
     UserInvited,
     UserJoinedBoard,
     UserRemovedFromBoard,
