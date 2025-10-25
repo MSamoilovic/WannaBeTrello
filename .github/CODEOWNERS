@@ -1,0 +1,21 @@
+# CODEOWNERS fajl za WannabeTrello projekat
+# Ovi ljudi će automatski biti dodati kao reviewers na Pull Request-ove
+
+# Globalni owners - svi fajlovi
+* @MSamoilovic
+
+# Specifični owners za kritične delove
+/.github/ @MSamoilovic
+/WannabeTrello.Domain/ @MSamoilovic
+/WannabeTrello.Application/ @MSamoilovic
+/WannabeTrello.API/ @MSamoilovic
+
+# Test fajlovi
+**/*Tests.cs @MSamoilovic
+**/*Test*.cs @MSamoilovic
+
+# Konfiguracija i deployment
+*.yml @MSamoilovic
+*.yaml @MSamoilovic
+Dockerfile @MSamoilovic
+docker-compose.yml @MSamoilovic

@@ -1,4 +1,4 @@
-﻿name: CI Pipeline
+name: Required Status Check
 
 on:
   pull_request:
@@ -7,9 +7,9 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-and-test:
+  required-checks:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,12 +25,14 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+      - name: Run all tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: "**/TestResults/**"
+      - name: Check test results
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "❌ Tests failed - Push to master blocked!"
+            exit 1
+          else
+            echo "✅ All tests passed - Push to master allowed!"
+          fi
