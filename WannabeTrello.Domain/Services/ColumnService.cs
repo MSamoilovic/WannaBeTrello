@@ -54,12 +54,12 @@ public class ColumnService(
         
         if (newName != null)
         {
-            column.ChangeName(newName);
+            column.ChangeName(newName, userId);
         }
         
         if (wipLimit.HasValue)
         {
-            column.SetWipLimit(wipLimit.Value);
+            column.SetWipLimit(wipLimit.Value,  userId);
         }
         
         await unitOfWork.CompleteAsync(cancellationToken);

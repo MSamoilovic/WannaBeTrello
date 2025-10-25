@@ -57,9 +57,10 @@ public class ColumnTests
         // Arrange
         var column = new Column("Old Name", 1L, 1, 101L);
         var newName = "New Name";
+        var modifierUserId = 102L;
 
         // Act
-        column.ChangeName(newName);
+        column.ChangeName(newName, modifierUserId);
 
         // Assert
         Assert.Equal(newName, column.Name);
@@ -73,9 +74,10 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("Valid Name", 1L, 1, 101L);
+        var modifierUserId = 102L;
 
         // Act & Assert
-        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeName(invalidName));
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeName(invalidName, modifierUserId));
         Assert.Equal("New column name cannot be empty.", exception.Message);
     }
 
@@ -87,9 +89,10 @@ public class ColumnTests
         // Arrange
         var column = new Column("Test Column", 1L, 1, 101L);
         var newOrder = 3;
+        var modifierUserId = 102L;
 
         // Act
-        column.ChangeOrder(newOrder);
+        column.ChangeOrder(newOrder, modifierUserId);
 
         // Assert
         Assert.Equal(newOrder, column.Order);
@@ -103,9 +106,10 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("Test Column", 1L, 1, 101L);
+        var modifierUserId = 102L;
 
         // Act & Assert
-        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeOrder(invalidOrder));
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeOrder(invalidOrder, modifierUserId));
         Assert.Equal("New column order must be a positive number.", exception.Message);
     }
 
@@ -116,9 +120,10 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
+        var modifierUserId = 102L;
 
         // Act
-        column.SetWipLimit(5);
+        column.SetWipLimit(5, modifierUserId);
 
         // Assert
         Assert.Equal(5, column.WipLimit);
@@ -129,10 +134,11 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
-        column.SetWipLimit(5); // Postavi početni limit
+        var modifierUserId = 102L;
+        column.SetWipLimit(5, modifierUserId); // Postavi početni limit
 
         // Act
-        column.SetWipLimit(null);
+        column.SetWipLimit(null, modifierUserId);
 
         // Assert
         Assert.Null(column.WipLimit);
@@ -146,9 +152,10 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
+        var modifierUserId = 102L;
 
         // Act & Assert
-        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(invalidLimit));
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(invalidLimit, modifierUserId));
         Assert.Equal("WIP limit must be a positive number.", exception.Message);
     }
     
@@ -159,7 +166,8 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
-        column.SetWipLimit(3);
+        var modifierUserId = 102L;
+        column.SetWipLimit(3, modifierUserId);
         var task1 = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
         var task2 = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
 
@@ -176,7 +184,8 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
-        column.SetWipLimit(1);
+        var modifierUserId = 102L;
+        column.SetWipLimit(1, modifierUserId);
         var task1 = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
         column.AddTask(task1); // Limit je sada dostignut
         
@@ -273,9 +282,10 @@ public class ColumnTests
     {
         // Arrange
         var column = new Column("In Progress", 1L, 2, 101L);
+        var modifierUserId = 102L;
 
         // Act & Assert
-        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(0));
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(0, modifierUserId));
         Assert.Equal("WIP limit must be a positive number.", exception.Message);
     }
 }

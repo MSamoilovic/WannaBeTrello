@@ -56,13 +56,9 @@ public class BoardService(
     public async Task<Board> GetBoardByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
     {
         var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
-        if (board is null)
-            throw new NotFoundException(nameof(Board), boardId);
-
-        // if (!board.IsMember(boardId))
-        //     throw new AccessDeniedException("You don't have access to this board");
-
-        return board;
+        if (board != null && !board.IsMember(userId))
+            throw new AccessDeniedException("You don't have access to this board");
+        return board ?? throw new NotFoundException(nameof(Board), boardId);
     }
 
     public async Task<Board> UpdateBoardDetailsAsync(long boardId, string? newName, string? newDescription,
@@ -194,7 +190,7 @@ public class BoardService(
         foreach (var orderInfo in columnOrders)
         {
             var columnToUpdate = board.Columns.FirstOrDefault(c => c.Id == orderInfo.Key);
-            columnToUpdate?.ChangeOrder(orderInfo.Value);
+            columnToUpdate?.ChangeOrder(orderInfo.Value, userId);
         }
 
         await unitOfWork.CompleteAsync(cancellationToken); 
