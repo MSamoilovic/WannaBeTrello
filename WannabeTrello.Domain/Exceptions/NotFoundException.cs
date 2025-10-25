@@ -1,3 +1,3 @@
 ﻿namespace WannabeTrello.Domain.Exceptions;
 
-public class NotFoundException(string name, object key) : DomainException($"Entitet \"{name}\" ({key}) nije pronađen.");
+public class NotFoundException(string name, object key) : DomainException($"Entity \'{name}\' ({key}) was not found.");

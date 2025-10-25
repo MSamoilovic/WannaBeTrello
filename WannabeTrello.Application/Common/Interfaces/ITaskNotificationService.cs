@@ -2,5 +2,5 @@
 
 public interface ITaskNotificationService
 {
-    Task NotifyTaskCreated(long taskId, string taskTitle, long taskCreatorId, long assigneeId);
+    Task NotifyTaskCreated(long taskId, string taskTitle, long taskCreatorId, long? assigneeId);
 }

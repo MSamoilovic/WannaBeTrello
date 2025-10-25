@@ -38,11 +38,12 @@ public class BoardTask: AuditableEntity
             DueDate = dueDate,
             Position = position,
             ColumnId = columnId,
-            AssigneeId = assigneeId
+            AssigneeId = assigneeId,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = creatorUserId
         };
 
-        
-        task.AddDomainEvent(new TaskCreatedEvent(task.Id, task.Title, creatorUserId, task.Assignee!.Id)); 
+        task.AddDomainEvent(new TaskCreatedEvent(task.Id, task.Title, creatorUserId, assigneeId)); 
 
         return task;
     }

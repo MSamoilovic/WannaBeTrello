@@ -11,7 +11,7 @@ public class TaskNotificationService(
     IHubContext<TrellyHub, ITrellyHub> hubContext,
     IActivityTrackerService activityTrackerService) : ITaskNotificationService
 {
-    public async Task NotifyTaskCreated(long taskId, string taskTitle, long taskCreatorId, long assigneeId)
+    public async Task NotifyTaskCreated(long taskId, string taskTitle, long taskCreatorId, long? assigneeId)
     {
         await hubContext.Clients.All.TaskCreated(taskId, taskTitle);
         
