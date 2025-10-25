@@ -1,0 +1,38 @@
+name: Required Status Check
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+
+jobs:
+  required-checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run all tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Check test results
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "❌ Tests failed - Push to master blocked!"
+            exit 1
+          else
+            echo "✅ All tests passed - Push to master allowed!"
+          fi
