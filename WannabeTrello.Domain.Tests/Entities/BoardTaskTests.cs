@@ -14,14 +14,14 @@ public class BoardTaskTests
     public void Create_WithValidParameters_ShouldCreateTaskInCorrectState()
     {
         // Arrange
-        var title = "Implement Login Page";
-        var description = "Use JWT for authentication.";
-        var priority = TaskPriority.High;
+        const string title = "Implement Login Page";
+        const string description = "Use JWT for authentication.";
+        const TaskPriority priority = TaskPriority.High;
         var dueDate = DateTime.UtcNow.AddDays(3);
-        var position = 1;
-        var columnId = 10L;
-        var assigneeId = 20L;
-        var creatorUserId = 101L;
+        const int position = 1;
+        const long columnId = 10L;
+        const long assigneeId = 20L;
+        const long creatorUserId = 101L;
 
         // Act
         var task = BoardTask.Create(title, description, priority, dueDate, position, columnId, assigneeId, creatorUserId);
@@ -162,11 +162,10 @@ public class BoardTaskTests
     public void AssignToUser_WhenAssigneeIsTheSame_ShouldDoNothing()
     {
         // Arrange
-        var assigneeId = 10L;
+        const long assigneeId = 10L;
         var task = BoardTask.Create("Test Task", null, TaskPriority.Low, DateTime.Now, 1, 1, assigneeId, 1L);
-        DomainTestUtils.InitializeDomainEvents(task); // Reset events
-
-        // Act
+        DomainTestUtils.InitializeDomainEvents(task); 
+        
         task.AssignToUser(assigneeId, 123L);
 
         // Assert

@@ -65,6 +65,50 @@ public class ColumnTests
         Assert.Equal(newName, column.Name);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void ChangeName_WithInvalidName_ShouldThrowBusinessRuleValidationException(string invalidName)
+    {
+        // Arrange
+        var column = new Column("Valid Name", 1L, 1, 101L);
+
+        // Act & Assert
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeName(invalidName));
+        Assert.Equal("New column name cannot be empty.", exception.Message);
+    }
+
+    // --- Testovi za ChangeOrder metodu ---
+
+    [Fact]
+    public void ChangeOrder_WithValidOrder_ShouldUpdateOrder()
+    {
+        // Arrange
+        var column = new Column("Test Column", 1L, 1, 101L);
+        var newOrder = 3;
+
+        // Act
+        column.ChangeOrder(newOrder);
+
+        // Assert
+        Assert.Equal(newOrder, column.Order);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-10)]
+    public void ChangeOrder_WithInvalidOrder_ShouldThrowBusinessRuleValidationException(int invalidOrder)
+    {
+        // Arrange
+        var column = new Column("Test Column", 1L, 1, 101L);
+
+        // Act & Assert
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.ChangeOrder(invalidOrder));
+        Assert.Equal("New column order must be a positive number.", exception.Message);
+    }
+
     // --- Testovi za SetWipLimit metodu ---
     
     [Fact]
@@ -92,6 +136,20 @@ public class ColumnTests
 
         // Assert
         Assert.Null(column.WipLimit);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-10)]
+    public void SetWipLimit_WithInvalidLimit_ShouldThrowBusinessRuleValidationException(int invalidLimit)
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+
+        // Act & Assert
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(invalidLimit));
+        Assert.Equal("WIP limit must be a positive number.", exception.Message);
     }
     
     // --- Testovi za AddTask i WIP Limit logiku ---
@@ -128,5 +186,96 @@ public class ColumnTests
         var exception = Assert.Throws<BusinessRuleValidationException>(() => column.AddTask(task2));
         Assert.Contains("WIP limit for column 'In Progress' has been reached.", exception.Message);
         Assert.Single(column.Tasks); // Drugi task nije dodat
+    }
+
+    // --- Testovi za RemoveTask metodu ---
+
+    [Fact]
+    public void RemoveTask_WithExistingTask_ShouldRemoveTask()
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+        var task = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
+        column.AddTask(task);
+
+        // Act
+        var removedTask = column.RemoveTask(task.Id);
+
+        // Assert
+        Assert.Equal(task, removedTask);
+        Assert.Empty(column.Tasks);
+    }
+
+    [Fact]
+    public void RemoveTask_WithNonExistingTask_ShouldThrowNotFoundException()
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+        var nonExistingTaskId = 999L;
+
+        // Act & Assert
+        var exception = Assert.Throws<NotFoundException>(() => column.RemoveTask(nonExistingTaskId));
+        Assert.Equal("Entity 'BoardTask' (999) was not found.", exception.Message);
+    }
+
+    // --- Testovi za HasTask metodu ---
+
+    [Fact]
+    public void HasTask_WithExistingTask_ShouldReturnTrue()
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+        var task = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
+        column.AddTask(task);
+
+        // Act
+        var hasTask = column.HasTask(task.Id);
+
+        // Assert
+        Assert.True(hasTask);
+    }
+
+    [Fact]
+    public void HasTask_WithNonExistingTask_ShouldReturnFalse()
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+        var nonExistingTaskId = 999L;
+
+        // Act
+        var hasTask = column.HasTask(nonExistingTaskId);
+
+        // Assert
+        Assert.False(hasTask);
+    }
+
+    // --- Dodatni edge case testovi za WIP limit ---
+
+    [Fact]
+    public void AddTask_WhenNoWipLimit_ShouldAllowUnlimitedTasks()
+    {
+        // Arrange
+        var column = new Column("Backlog", 1L, 1, 101L);
+        // Ne postavljamo WIP limit
+
+        // Act & Assert - Trebalo bi da možemo dodati neograničen broj taskova
+        for (int i = 0; i < 10; i++)
+        {
+            var task = DomainTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
+            column.AddTask(task);
+        }
+
+        Assert.Equal(10, column.Tasks.Count);
+    }
+
+    [Fact]
+    public void SetWipLimit_WithZero_ShouldThrowBusinessRuleValidationException()
+    {
+        // Arrange
+        var column = new Column("In Progress", 1L, 2, 101L);
+
+        // Act & Assert
+        var exception = Assert.Throws<BusinessRuleValidationException>(() => column.SetWipLimit(0));
+        Assert.Equal("WIP limit must be a positive number.", exception.Message);
     }
 }

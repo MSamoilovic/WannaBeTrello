@@ -145,6 +145,6 @@ public class GetBoardByIdQueryHandlerTests
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
             handler.Handle(query, CancellationToken.None));
             
-        Assert.Equal($"Entitet \"Board\" ({boardId}) nije pronađen.", exception.Message);
+        Assert.Equal($"Entity \'Board\' ({boardId}) was not found.", exception.Message);
     }
 }

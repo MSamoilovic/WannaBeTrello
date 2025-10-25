@@ -124,6 +124,6 @@ public class UpdateBoardDetailsCommandHandlerTests
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
             handler.Handle(command, CancellationToken.None));
             
-        Assert.Equal($"Entitet \"Board\" ({nonExistentBoardId}) nije pronađen.", exception.Message);
+        Assert.Equal($"Entity \'Board\' ({nonExistentBoardId}) was not found.", exception.Message);
     }
 }

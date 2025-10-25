@@ -87,7 +87,7 @@ public class ArchiveProjectCommandTests
         // ACT & ASSERT
        
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, CancellationToken.None));
-        Assert.Equal($"Entitet \"{nameof(Project)}\" ({projectId}) nije pronađen.", exception.Message);
+        Assert.Equal($"Entity \'{nameof(Project)}\' ({projectId}) was not found.", exception.Message);
         
         _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId), Times.Once);
     }

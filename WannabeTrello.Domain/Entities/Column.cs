@@ -46,7 +46,7 @@ public class Column: AuditableEntity
 
     public void SetWipLimit(int? limit)
     {
-        if (limit.HasValue && limit.Value <= 0)
+        if (limit is <= 0)
             throw new BusinessRuleValidationException("WIP limit must be a positive number.");
         WipLimit = limit;
     }
