@@ -15,6 +15,8 @@ public class Column: AuditableEntity
     private readonly List<BoardTask> _tasks = [];
     public IReadOnlyCollection<BoardTask> Tasks => _tasks.AsReadOnly();
     
+    public bool IsDeleted { get; private set; }
+    
     private Column () {}
 
     internal Column(string? name, long boardId, int order, long userId)
@@ -89,5 +91,17 @@ public class Column: AuditableEntity
     {
         if (!WipLimit.HasValue) return false;
         return _tasks.Count >= WipLimit.Value;
+    }
+
+    public void DeleteColumn(long modifierUserId)
+    {
+        if (IsDeleted)
+            return;
+            
+        IsDeleted = true;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+
+        AddDomainEvent(new ColumnDeletedEvent(Id, BoardId, modifierUserId));
     }
 }

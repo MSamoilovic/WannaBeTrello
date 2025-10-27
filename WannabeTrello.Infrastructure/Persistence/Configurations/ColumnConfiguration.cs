@@ -31,5 +31,10 @@ public class ColumnConfiguration : IEntityTypeConfiguration<Column>
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(c => c.WipLimit).HasDefaultValue(0);
+
+        builder.Property(c => c.IsDeleted).HasDefaultValue(false);
+        
+        // Filter to exclude deleted columns from queries by default
+        builder.HasQueryFilter(c => !c.IsDeleted);
     }
 }
