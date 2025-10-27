@@ -77,7 +77,10 @@ public class ColumnService(
         if (member is not { Role: BoardRole.Admin })
             throw new AccessDeniedException("Only a Board Admin can delete a column.");
         
-        await columnRepository.DeleteAsync(column.Id);
+        column.DeleteColumn(userId.Value);
+        
+        // Soft delete by marking as deleted, then save changes
+        await columnRepository.UpdateAsync(column);
         await unitOfWork.CompleteAsync(cancellationToken);
         
         return column.Id;

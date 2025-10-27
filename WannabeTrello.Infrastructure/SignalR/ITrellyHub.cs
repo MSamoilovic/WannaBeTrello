@@ -14,6 +14,8 @@ public interface ITrellyHub
         Task ColumnDeleted(string boardId, string columnId);
         Task ColumnOrderChanged(long boardId, long columnId, int oldOrder, int newOrder, long modifierUserId);
         Task ColumnWipLimitChanged(long boardId, long columnId, int? oldWipLimit, int? newWipLimit, long modifierUserId);
+        Task ColumnDeletedEvent(long boardId, long columnId, long userId);
+        
         Task TaskCreated(long taskId, string taskTitle);
         Task TaskUpdated(string boardId, string taskId, object updatedFields); 
         Task TaskDeleted(string boardId, string taskId);

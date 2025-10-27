@@ -25,4 +25,11 @@ public class ColumnNotificationService(IHubContext<TrellyHub, ITrellyHub> hubCon
     {
         await hubContext.Clients.All.ColumnWipLimitChanged(boardId, columnId, oldWipLimit, newWipLimit, modifierUserId);
     }
+
+    public async Task NotifyColumnDeletedEvent(long columnId, long boardId, long modifierUserId)
+    {
+       await hubContext.Clients.All.ColumnDeletedEvent(boardId, columnId, modifierUserId);
+    }
+    
+    
 }

@@ -8,10 +8,9 @@ public class ColumnRepository(ApplicationDbContext dbContext) : Repository<Colum
 {
     public Task<Column?> GetByIdWithBoardsAndMembersAsync(long id, CancellationToken cancellationToken)
     {
-       return dbContext.Columns
+       return _dbSet
            .Include(x => x.Board)
               .ThenInclude(b => b.BoardMembers)
-           .AsNoTracking()
            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
