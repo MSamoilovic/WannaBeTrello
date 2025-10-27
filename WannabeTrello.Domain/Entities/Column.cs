@@ -101,7 +101,12 @@ public class Column: AuditableEntity
         IsDeleted = true;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
+        
+        
+        
 
         AddDomainEvent(new ColumnDeletedEvent(Id, BoardId, modifierUserId));
+        
+        
     }
 }
