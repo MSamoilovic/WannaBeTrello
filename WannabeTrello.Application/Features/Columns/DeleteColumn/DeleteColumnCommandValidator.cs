@@ -6,6 +6,8 @@ public class DeleteColumnCommandValidator : AbstractValidator<DeleteColumnComman
 {
     public DeleteColumnCommandValidator()
     {
-        RuleFor(x => x.ColumnId).NotNull().NotEmpty().WithMessage("ColumnId is required");
+        RuleFor(x => x.ColumnId)
+            .GreaterThan(0)
+            .WithMessage("Column ID must be greater than zero");
     }
 }
