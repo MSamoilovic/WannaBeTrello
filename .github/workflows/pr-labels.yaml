@@ -36,6 +36,13 @@ jobs:
               pull_number: context.issue.number
             });
             
+            // Fetch list of files in the PR
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
             // Dodaj label na osnovu broja fajlova
             const changedFiles = pr.changed_files;
             if (changedFiles > 10) {
@@ -48,7 +55,6 @@ jobs:
             }
             
             // Dodaj label na osnovu tipa promena
-            const files = pr.files;
             const hasTests = files.some(file => file.filename.includes('Test'));
             const hasDomain = files.some(file => file.filename.includes('Domain'));
             const hasAPI = files.some(file => file.filename.includes('API'));
