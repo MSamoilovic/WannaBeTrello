@@ -56,11 +56,12 @@ public class BoardTask: AuditableEntity
         long modifierUserId
     )
     {
-        if (string.IsNullOrWhiteSpace(newTitle))
-            throw new ArgumentException("Naslov taska ne može biti prazan.", nameof(newTitle));
         
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new BusinessRuleValidationException("Task title cannot be empty.");
+        
+        if (newDueDate < DateTime.UtcNow)
+            throw new BusinessRuleValidationException("Due date must be in the future.");
         
         var changed = false;
         var oldValues = new Dictionary<string, object?>();

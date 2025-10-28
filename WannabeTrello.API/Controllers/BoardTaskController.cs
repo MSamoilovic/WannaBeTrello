@@ -5,6 +5,7 @@ using WannabeTrello.Application.Features.Tasks.CreateTask;
 using WannabeTrello.Application.Features.Tasks.GetTaskById;
 using WannabeTrello.Application.Features.Tasks.GetTasksByBoardId;
 using WannabeTrello.Application.Features.Tasks.MoveTask;
+using WannabeTrello.Application.Features.Tasks.UpdateTask;
 
 
 namespace WannabeTrello.Controllers
@@ -25,6 +26,27 @@ namespace WannabeTrello.Controllers
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskCommand command) => 
             Ok(await mediator.Send(command));
             
+        /// <summary>
+        /// Ažurira detalje postojećeg zadatka.
+        /// </summary>
+        /// <param name="id">ID zadatka za ažuriranje.</param>
+        /// <param name="command">Komanda koja sadrži nove detalje zadatka.</param>
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(UpdateTaskCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateTask(long id, [FromBody] UpdateTaskCommand command)
+        {
+            if (id != command.TaskId)
+            {
+                return BadRequest("ID zadatka u URL-u mora se podudarati sa ID-om zadatka u telu zahteva.");
+            }
+
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
 
         /// <summary>
         /// Premesta zadatak iz jedne kolone u drugu na boardu.
