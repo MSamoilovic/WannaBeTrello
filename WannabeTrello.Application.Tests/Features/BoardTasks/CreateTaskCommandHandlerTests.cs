@@ -7,7 +7,7 @@ using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
-namespace WannabeTrello.Appilcation.Tests.Features.BoardTasks;
+namespace WannabeTrello.Application.Tests.Features.BoardTasks;
 
 public class CreateTaskCommandHandlerTests
 {

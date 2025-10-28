@@ -102,9 +102,6 @@ public class Column: AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
         
-        
-        
-
         AddDomainEvent(new ColumnDeletedEvent(Id, BoardId, modifierUserId));
         
         

@@ -6,7 +6,7 @@ using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Appilcation.Tests.Features.BoardTasks;
+namespace WannabeTrello.Application.Tests.Features.BoardTasks;
 
 public class GetTaskByIdQueryHandlerTests
 {

@@ -11,7 +11,7 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
     {
         return await _dbSet
             .Where(t => t.ColumnId == columnId)
-            .OrderBy(t => t.CreatedAt) 
+            .OrderBy(t => t.CreatedAt)
             .ToListAsync();
     }
 
@@ -19,17 +19,18 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
     {
         return await _dbSet.Include(t => t.Assignee)
             .Include(t => t.Comments)
-                .ThenInclude(c => c.User)
+            .ThenInclude(c => c.User)
             .Include(t => t.Column)
-                .ThenInclude(c => c.Board)
+            .ThenInclude(c => c.Board)
+            .ThenInclude(b => b.BoardMembers)
             .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
     public override async Task AddAsync(BoardTask task) => await base.AddAsync(task);
     public override async Task<BoardTask?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
-    
+
     public async Task UpdateAsync(BoardTask task) => base.Update(task);
-    
+
     public async Task DeleteAsync(long id)
     {
         var task = await GetByIdAsync(id);
@@ -42,7 +43,7 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
             .Include(t => t.Column)
             .Include(t => t.Assignee)
             .Include(t => t.Comments)
-                .ThenInclude(c => c.User)
+            .ThenInclude(c => c.User)
             .AsSplitQuery()
             .AsQueryable();
     }
