@@ -94,7 +94,7 @@ public class BoardTaskTests
         var title = "Title";
         var description = "Description";
         var priority = TaskPriority.Medium;
-        var dueDate = DateTime.UtcNow;
+        var dueDate = DateTime.UtcNow.AddMinutes(3);
 
         var task = BoardTask.Create(title, description, priority, dueDate, 1, 1, null, 1L);
         DomainTestUtils.InitializeDomainEvents(task); // Reset events
