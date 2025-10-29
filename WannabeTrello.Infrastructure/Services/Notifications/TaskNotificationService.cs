@@ -25,4 +25,23 @@ public class TaskNotificationService(
 
         await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
     }
+
+    public async Task NotifyTaskUpdated(long taskId, string? taskTitle, long modifierUserId, 
+        Dictionary<string, object?> oldValues, Dictionary<string, object?> newValues)
+    {
+        await hubContext.Clients.All.TaskUpdated("boardId", taskId.ToString(), newValues);
+        
+        var changedFields = string.Join(", ", newValues.Keys);
+        var activity = ActivityTracker.Create(
+            type: ActivityType.TaskUpdated,
+            description: $"Task '{taskTitle}' was updated. Changed fields: {changedFields}",
+            userId: modifierUserId,
+            relatedEntityId: taskId,
+            relatedEntityType: nameof(BoardTask),
+            oldValue: oldValues,
+            newValue: newValues
+        );
+
+        await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
+    }
 }

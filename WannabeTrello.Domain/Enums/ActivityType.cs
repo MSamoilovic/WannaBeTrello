@@ -13,6 +13,7 @@ public enum ActivityType
     BoardArchived,
     BoardRestored,
     TaskCreated,
+    TaskUpdated,
     TaskMoved,
     TaskCompleted,
     CommentAdded,
