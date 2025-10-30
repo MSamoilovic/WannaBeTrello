@@ -5,7 +5,7 @@ namespace WannabeTrello.Domain.Interfaces.Repositories;
 public interface IBoardTaskRepository
 {
     Task<BoardTask?> GetByIdAsync(long id);
-    Task<IEnumerable<BoardTask>> GetTasksByColumnIdAsync(long columnId);
+    Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken);
     Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken);
     Task AddAsync(BoardTask? task);
     Task UpdateAsync(BoardTask? task);
