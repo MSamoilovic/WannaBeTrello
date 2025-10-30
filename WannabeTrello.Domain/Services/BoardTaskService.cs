@@ -59,6 +59,18 @@ public class BoardTaskService(
             : task;
     }
 
+    public async Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    {
+        var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
+        
+        if (board == null) throw new NotFoundException(nameof(Board), boardId);
+        
+        if(board.BoardMembers.All(bm => bm.UserId != userId))
+            throw new AccessDeniedException("You don't have permission to view this board.");
+        
+        return await boardTaskRepository.GetTasksByBoardIdAsync(boardId, cancellationToken);
+    }
+
     public async Task UpdateTaskDetailsAsync(long taskId, string newTitle, string? newDescription,
         TaskPriority newPriority, DateTime newDueDate, long modifierUserId, CancellationToken cancellationToken)
     {

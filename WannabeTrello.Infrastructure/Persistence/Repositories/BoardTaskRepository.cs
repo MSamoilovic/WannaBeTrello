@@ -7,12 +7,13 @@ namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 public class BoardTaskRepository(ApplicationDbContext dbContext)
     : Repository<BoardTask>(dbContext), IBoardTaskRepository
 {
-    public async Task<IEnumerable<BoardTask>> GetTasksByColumnIdAsync(long columnId)
+    public async Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken)
     {
         return await _dbSet
-            .Where(t => t.ColumnId == columnId)
+            .Include(t => t.Column)
+            .Where(t => t.Column.BoardId == boardId)
             .OrderBy(t => t.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<BoardTask?> GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
