@@ -17,12 +17,12 @@ public class GetTasksByBoardIdQueryHandler(
     public async Task<ImmutableList<GetTaskByBoardIdQueryResponse>> Handle(GetTasksByBoardIdQuery request, CancellationToken cancellationToken)
     {
         
-        if (!currentUserService.IsAuthenticated)
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
         {
             throw new AccessDeniedException("User is not authenticated");
         }
         
-        var userId = currentUserService.UserId!.Value;
+        var userId = currentUserService.UserId.Value;
         var tasks = await boardTaskService.GetTasksByBoardIdAsync(request.BoardId, userId, cancellationToken);
         
         return tasks.Select(GetTaskByBoardIdQueryResponse.FromEntity).ToImmutableList();
