@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using WannabeTrello.Domain.Specification;
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 
@@ -24,4 +25,9 @@ public interface IRepository<TEntity> where TEntity : class
     //Complex Query operations
     IQueryable<TEntity> Query();
     IQueryable<TEntity> QueryNoTracking();
+    
+    //Specification Pattern operations
+    Task<IReadOnlyList<TEntity>> GetAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetSingleAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(ISpecification<TEntity> specification, CancellationToken cancellationToken = default);
 }

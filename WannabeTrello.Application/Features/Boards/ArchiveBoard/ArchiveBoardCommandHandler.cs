@@ -6,17 +6,20 @@ using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Boards.ArchiveBoard;
 
-public  class ArchiveBoardCommandHandler(IBoardService boardService, ICurrentUserService currentUserService)
+public class ArchiveBoardCommandHandler(IBoardService boardService, ICurrentUserService currentUserService)
     : IRequestHandler<ArchiveBoardCommand, ArchiveBoardCommandResponse>
 {
-    public async Task<ArchiveBoardCommandResponse> Handle(ArchiveBoardCommand request, CancellationToken cancellationToken)
+    public async Task<ArchiveBoardCommandResponse> Handle(ArchiveBoardCommand request,
+        CancellationToken cancellationToken)
     {
         if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
         {
             throw new UnauthorizedAccessException("User is not authenticated");
         }
+
+        var boardId =
+            await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value, cancellationToken);
         
-        var boardId = await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value);
         var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now archived.");
 
         return new ArchiveBoardCommandResponse(result);

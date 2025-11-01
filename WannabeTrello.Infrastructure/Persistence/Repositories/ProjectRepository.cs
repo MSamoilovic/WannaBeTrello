@@ -6,39 +6,38 @@ namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
 public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Project>(dbContext), IProjectRepository
 {
-    public override async Task AddAsync(Project project)
-    {
-        await base.AddAsync(project);
-    }
-
-    public override async Task<Project?> GetByIdAsync(long id)
-    {
-        return await _dbSet.Include(p => p.ProjectMembers)
-            .SingleOrDefaultAsync(p => p.Id == id);
-    }
-
-    public async Task UpdateAsync(Project project)
+    public Task<Project?> GetByIdAsync(long id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task DeleteAsync(long id)
+    public Task<IEnumerable<Project>> GetAllAsync()
     {
         throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<Project>> GetProjectsByUserIdAsync(long userId)
+    public Task AddAsync(Project project)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<List<ProjectMember>> GetProjectMembersByIdAsync(long projectId)
+    public Task UpdateAsync(Project project)
     {
-        return await _dbSet
-            .Where(p => p.Id == projectId)
-            .Include(p => p.ProjectMembers)
-            .ThenInclude(pm => pm.User)
-            .SelectMany(p => p.ProjectMembers)
-            .ToListAsync();
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(long id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Project>> GetProjectsByUserIdAsync(long userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<ProjectMember>> GetProjectMembersByIdAsync(long projectId)
+    {
+        throw new NotImplementedException();
     }
 }

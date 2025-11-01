@@ -120,7 +120,7 @@ public class Repository<TEntity> where TEntity : class
     /// <summary>
     /// Gets entities based on a specification
     /// </summary>
-    protected async Task<IReadOnlyList<TEntity>> GetAsync(
+    public virtual async Task<IReadOnlyList<TEntity>> GetAsync(
         ISpecification<TEntity> specification, 
         CancellationToken cancellationToken = default)
     {
@@ -130,7 +130,7 @@ public class Repository<TEntity> where TEntity : class
     /// <summary>
     /// Gets a single entity based on a specification
     /// </summary>
-    protected async Task<TEntity?> GetSingleAsync(
+    public virtual async Task<TEntity?> GetSingleAsync(
         ISpecification<TEntity> specification, 
         CancellationToken cancellationToken = default)
     {
@@ -140,7 +140,7 @@ public class Repository<TEntity> where TEntity : class
     /// <summary>
     /// Counts entities based on a specification
     /// </summary>
-    protected async Task<int> CountAsync(
+    public virtual async Task<int> CountAsync(
         ISpecification<TEntity> specification, 
         CancellationToken cancellationToken = default)
     {

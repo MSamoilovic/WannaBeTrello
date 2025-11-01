@@ -7,47 +7,43 @@ namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 public class BoardTaskRepository(ApplicationDbContext dbContext)
     : Repository<BoardTask>(dbContext), IBoardTaskRepository
 {
-    public async Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken)
+    public Task<BoardTask?> GetByIdAsync(long id)
     {
-        return await _dbSet
-            .Include(t => t.Column)
-            .Where(t => t.Column.BoardId == boardId)
-            .OrderBy(t => t.CreatedAt)
-            .ToListAsync(cancellationToken);
+        throw new NotImplementedException();
     }
 
-    public async Task<BoardTask?> GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
+    public Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken)
     {
-        return await _dbSet.Include(t => t.Assignee)
-            .Include(t => t.Comments)
-            .ThenInclude(c => c.User)
-            .Include(t => t.Column)
-            .ThenInclude(c => c.Board)
-            .ThenInclude(b => b.BoardMembers)
-            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+        throw new NotImplementedException();
     }
 
-    public override async Task AddAsync(BoardTask task) => await base.AddAsync(task);
-    public override async Task<BoardTask?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
-
-    public async Task UpdateAsync(BoardTask task) => base.Update(task);
-
-    public async Task DeleteAsync(long id)
+    public Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
     {
-        var task = await GetByIdAsync(id);
-        if (task != null) base.Delete(task);
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(BoardTask? task)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(BoardTask? task)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(long id)
+    {
+        throw new NotImplementedException();
     }
 
     public IQueryable<BoardTask> SearchTask()
     {
-        return _dbContext.Tasks
-            .Include(t => t.Column)
-            .Include(t => t.Assignee)
-            .Include(t => t.Comments)
-            .ThenInclude(c => c.User)
-            .AsSplitQuery()
-            .AsQueryable();
+        throw new NotImplementedException();
     }
 
-    public override async Task<IEnumerable<BoardTask>> GetAllAsync() => await base.GetAllAsync();
+    public Task<IEnumerable<BoardTask>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -9,8 +9,7 @@ namespace WannabeTrello.Application.Features.Boards.CreateBoard;
 public class CreateBoardCommandHandler(ICurrentUserService currentUserService, IBoardService boardService)
     : IRequestHandler<CreateBoardCommand, CreateBoardCommandResponse>
 {
-  
-
+    
     public async Task<CreateBoardCommandResponse> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
     {
         if (!currentUserService.IsAuthenticated)
@@ -19,9 +18,9 @@ public class CreateBoardCommandHandler(ICurrentUserService currentUserService, I
         }
         
         var board = await boardService.CreateBoardAsync(
-            request.ProjectId,
             request.Name,
             request.Description,
+            request.ProjectId,
             currentUserService!.UserId ?? 0,
             cancellationToken
         );

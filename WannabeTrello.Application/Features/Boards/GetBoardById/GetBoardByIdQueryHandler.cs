@@ -17,7 +17,7 @@ public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserSe
         }
         
         var userId = currentUserService.UserId.Value;
-        var board = await boardService.GetBoardByIdAsync(request.BoardId, userId,  cancellationToken);
+        var board = await boardService.GetBoardWithDetailsAsync(request.BoardId, cancellationToken);
 
         return GetBoardByIdQueryResponse.FromEntity(board);
     }
