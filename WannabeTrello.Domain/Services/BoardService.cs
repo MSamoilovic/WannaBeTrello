@@ -49,7 +49,7 @@ public class BoardService(
         return board;
     }
 
-    public async Task<bool> UpdateBoardAsync(long boardId, string name, string? description, long userId,
+    public async Task<Board> UpdateBoardAsync(long boardId, string name, string? description, long userId,
         CancellationToken cancellationToken = default)
     {
         // Dohvatanje board-a sa tracking-om (potrebno za update)
@@ -69,7 +69,7 @@ public class BoardService(
         boardRepository.Update(board);
         await unitOfWork.CompleteAsync(cancellationToken);
 
-        return true;
+        return board;
     }
 
     public async Task<bool> DeleteBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default)
@@ -126,7 +126,7 @@ public class BoardService(
         return boardId;
     }
 
-    public async Task<bool> RestoreBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default)
+    public async Task<long> RestoreBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default)
     {
         // Dohvatanje board-a sa tracking-om
         var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
@@ -140,7 +140,7 @@ public class BoardService(
         boardRepository.Update(board);
         await unitOfWork.CompleteAsync(cancellationToken);
 
-        return true;
+        return boardId;
     }
 
     public async Task AddBoardMemberAsync(long boardId, long userId, BoardRole role, long inviterUserId,
@@ -212,5 +212,24 @@ public class BoardService(
         // Čuvanje promena
         boardRepository.Update(board);
         await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Column>> GetColumnsByBoardIdAsync(long boardId, long userId,
+        CancellationToken cancellationToken = default)
+    {
+        // Provera da li board postoji
+        var board = await boardRepository.GetByIdAsync(boardId, cancellationToken);
+        if (board == null)
+            throw new NotFoundException(nameof(Board), boardId);
+
+        // Provera da li je korisnik član board-a
+        var isMember = await boardRepository.IsBoardMemberAsync(boardId, userId, cancellationToken);
+        if (!isMember)
+            throw new AccessDeniedException("Samo članovi board-a mogu videti kolone board-a.");
+
+        // Dohvatanje svih kolona board-a
+        var columns = await boardRepository.GetColumnsByBoardIdAsync(boardId, cancellationToken);
+
+        return columns;
     }
 }

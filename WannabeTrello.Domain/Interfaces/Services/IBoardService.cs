@@ -14,7 +14,7 @@ public interface IBoardService
         long createdByUserId,
         CancellationToken cancellationToken = default);
     
-    Task<bool> UpdateBoardAsync(
+    Task<Board> UpdateBoardAsync(
         long boardId, 
         string name, 
         string? description, 
@@ -30,7 +30,7 @@ public interface IBoardService
     
     Task<long> ArchiveBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default);
     
-    Task<bool> RestoreBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default);
+    Task<long> RestoreBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default);
     
     Task AddBoardMemberAsync(
         long boardId, 
@@ -50,5 +50,10 @@ public interface IBoardService
         long userId, 
         BoardRole newRole, 
         long updaterUserId,
+        CancellationToken cancellationToken = default);
+    
+    Task<IReadOnlyList<Column>> GetColumnsByBoardIdAsync(
+        long boardId, 
+        long userId,
         CancellationToken cancellationToken = default);
 }

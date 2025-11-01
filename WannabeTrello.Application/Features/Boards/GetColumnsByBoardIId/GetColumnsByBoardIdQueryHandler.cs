@@ -21,6 +21,6 @@ public class GetColumnsByBoardIdQueryHandler(IBoardService boardService, ICurren
             cancellationToken
         );
 
-        return result.Select(column => GetColumnsByBoardIdQueryResponse.FromEntity(column)).ToList();
+        return result.Select(GetColumnsByBoardIdQueryResponse.FromEntity).ToList();
     }
 }

@@ -45,9 +45,9 @@ public class CreateBoardCommandHandlerTests
         
         boardServiceMock
             .Setup(s => s.CreateBoardAsync(
-                command.ProjectId, 
                 command.Name, 
-                command.Description, 
+                command.Description,
+                command.ProjectId,
                 userId, 
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdBoard);
@@ -63,7 +63,7 @@ public class CreateBoardCommandHandlerTests
         Assert.Equal(newBoardId, response.Result.Value);
         Assert.Equal("Board created successfully", response.Result.Message);
 
-        boardServiceMock.Verify(s => s.CreateBoardAsync(command.ProjectId, command.Name, command.Description, userId, It.IsAny<CancellationToken>()), Times.Once);
+        boardServiceMock.Verify(s => s.CreateBoardAsync(command.Name, command.Description,command.ProjectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class CreateBoardCommandHandlerTests
 
         Assert.Equal("User is not authenticated", exception.Message);
 
-        boardServiceMock.Verify(s => s.CreateBoardAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        boardServiceMock.Verify(s => s.CreateBoardAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -104,9 +104,9 @@ public class CreateBoardCommandHandlerTests
         
         boardServiceMock
             .Setup(s => s.CreateBoardAsync(
+                It.IsAny<string>(), 
+                It.IsAny<string>(), 
                 It.IsAny<long>(), 
-                It.IsAny<string>(), 
-                It.IsAny<string>(), 
                 0, 
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdBoard);
@@ -121,6 +121,6 @@ public class CreateBoardCommandHandlerTests
         Assert.True(response.Result.IsSuccess);
         Assert.Equal(newBoardId, response.Result.Value);
 
-        boardServiceMock.Verify(s => s.CreateBoardAsync(command.ProjectId, command.Name, It.IsAny<string>(), 0, It.IsAny<CancellationToken>()), Times.Once);
+        boardServiceMock.Verify(s => s.CreateBoardAsync(command.Name, command.Description, command.ProjectId, It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
