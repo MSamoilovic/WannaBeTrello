@@ -1,5 +1,5 @@
 using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Specification;
+using WannabeTrello.Domain.Specifications;
 
 namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
 
@@ -19,13 +19,13 @@ public class PaginatedBoardsSpecification : BaseSpecification<Board>
                      b.Name!.Contains(searchTerm) || 
                      (b.Description != null && b.Description.Contains(searchTerm))))
     {
-        // Include members za prikaz
+        
         AddInclude(b => b.BoardMembers);
         
-        // Sortiranje po imenu
+        
         ApplyOrderBy(b => b.Name!);
         
-        // Paginacija
+        
         ApplyPaging(skip: (pageNumber - 1) * pageSize, take: pageSize);
     }
 }

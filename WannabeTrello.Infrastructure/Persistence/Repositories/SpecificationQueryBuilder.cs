@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Specification;
+using WannabeTrello.Domain.Specifications;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 

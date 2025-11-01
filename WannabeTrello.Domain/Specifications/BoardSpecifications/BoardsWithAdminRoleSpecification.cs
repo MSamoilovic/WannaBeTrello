@@ -1,6 +1,6 @@
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Specification;
+using WannabeTrello.Domain.Specifications;
 
 namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
 

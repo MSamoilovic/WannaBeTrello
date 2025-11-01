@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using WannabeTrello.Domain.Specification;
+using WannabeTrello.Domain.Specifications;
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 

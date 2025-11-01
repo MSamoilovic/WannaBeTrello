@@ -1,5 +1,5 @@
 using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Specification;
+using WannabeTrello.Domain.Specifications;
 
 namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
 
@@ -11,10 +11,8 @@ public class BoardsByProjectSpecification : BaseSpecification<Board>
     public BoardsByProjectSpecification(long projectId, bool includeArchived = false) 
         : base(b => b.ProjectId == projectId && (includeArchived || !b.IsArchived))
     {
-        // Sortiranje po datumu kreiranja
+       
         ApplyOrderBy(b => b.CreatedAt);
-        
-        // Opciono include members
         AddInclude(b => b.BoardMembers);
     }
 }

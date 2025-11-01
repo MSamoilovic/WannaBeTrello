@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WannabeTrello.Domain.Specification;
+namespace WannabeTrello.Domain.Specifications;
 
 public interface ISpecification<T>
 {
