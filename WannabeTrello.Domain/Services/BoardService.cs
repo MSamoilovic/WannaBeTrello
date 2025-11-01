@@ -232,4 +232,66 @@ public class BoardService(
 
         return columns;
     }
+
+    public async Task ReorderColumnsAsync(long boardId, Dictionary<long, int> columnOrders, long userId,
+        CancellationToken cancellationToken = default)
+    {
+        
+        var board = await boardRepository.GetBoardWithColumnsAsync(boardId, cancellationToken);
+
+        if (board == null)
+            throw new NotFoundException(nameof(Board), boardId);
+
+       
+        if (!board.IsMember(userId))
+            throw new AccessDeniedException("Samo članovi board-a mogu reorder-ovati kolone.");
+
+        
+        var boardColumnIds = board.Columns.Select(c => c.Id).ToHashSet();
+        foreach (var columnId in columnOrders.Keys.Where(columnId => !boardColumnIds.Contains(columnId)))
+        {
+            throw new NotFoundException($"Column sa ID {columnId} ne pripada ovom board-u.", columnId);
+        }
+
+       
+        var orders = columnOrders.Values.ToList();
+        if (orders.Count != orders.Distinct().Count())
+            throw new BusinessRuleValidationException("Sve kolone moraju imati jedinstvene order vrednosti.");
+
+        // Validacija: Provera da li su order vrednosti pozitivne
+        if (orders.Any(order => order <= 0))
+            throw new BusinessRuleValidationException("Order vrednosti moraju biti pozitivne.");
+
+        // Ažuriranje order-a za svaku kolonu kroz domensku logiku
+        foreach (var (columnId, newOrder) in columnOrders)
+        {
+            var column = board.Columns.FirstOrDefault(c => c.Id == columnId);
+            if (column != null)
+            {
+                column.ChangeOrder(newOrder, userId);
+            }
+        }
+
+        // Čuvanje promena
+        boardRepository.Update(board);
+        await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Board>> GetBoardByProjectIdAsync(long projectId, long userId,
+        CancellationToken cancellationToken = default)
+    {
+        // Provera da li projekat postoji
+        var project = await projectRepository.GetByIdAsync(projectId);
+        if (project == null)
+            throw new NotFoundException(nameof(Project), projectId);
+
+        // Provera da li je korisnik član projekta
+        if (!project.IsMember(userId))
+            throw new AccessDeniedException("Samo članovi projekta mogu videti board-ove projekta.");
+
+        // Dohvatanje svih board-ova projekta
+        var boards = await boardRepository.GetBoardsByProjectIdAsync(projectId, cancellationToken);
+
+        return boards;
+    }
 }

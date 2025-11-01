@@ -3,9 +3,7 @@ using WannabeTrello.Domain.Specification;
 
 namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
 
-/// <summary>
-/// Specification za dohvatanje Board-a sa svim detaljima (Columns, Tasks, Members, Comments)
-/// </summary>
+
 public class BoardWithDetailsSpecification : BaseSpecification<Board>
 {
     public BoardWithDetailsSpecification(long boardId) 
@@ -16,7 +14,6 @@ public class BoardWithDetailsSpecification : BaseSpecification<Board>
         AddInclude("Columns.Tasks.Comments");
         AddInclude("BoardMembers.User");
         
-        // AsNoTracking je default (true) jer je ovo read-only query
     }
 }
 

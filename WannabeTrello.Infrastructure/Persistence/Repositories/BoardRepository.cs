@@ -26,6 +26,13 @@ public class BoardRepository: Repository<Board>, IBoardRepository
             .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
     }
 
+    public async Task<Board?> GetBoardWithColumnsAsync(long boardId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(b => b.Columns)
+            .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Board>> GetBoardsByProjectIdAsync(long projectId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

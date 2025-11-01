@@ -56,4 +56,15 @@ public interface IBoardService
         long boardId, 
         long userId,
         CancellationToken cancellationToken = default);
+    
+    Task ReorderColumnsAsync(
+        long boardId,
+        Dictionary<long, int> columnOrders,
+        long userId,
+        CancellationToken cancellationToken = default);
+    
+    Task<IReadOnlyList<Board>> GetBoardByProjectIdAsync(
+        long projectId,
+        long userId,
+        CancellationToken cancellationToken = default);
 }
