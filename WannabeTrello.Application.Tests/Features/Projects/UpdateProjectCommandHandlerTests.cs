@@ -35,7 +35,8 @@ public class UpdateProjectCommandHandlerTests
                 It.IsAny<ProjectStatus>(),
                 It.IsAny<ProjectVisibility>(),
                 It.IsAny<bool>(),
-                It.IsAny<long>()))
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(updatedProject);
 
         var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object);
@@ -58,7 +59,8 @@ public class UpdateProjectCommandHandlerTests
             command.Status,
             command.Visibility,
             command.Archived,
-            123
+            123,
+            It.IsAny<CancellationToken>()
         ), Times.Once);
     }
 
@@ -86,7 +88,8 @@ public class UpdateProjectCommandHandlerTests
             It.IsAny<ProjectStatus>(),
             It.IsAny<ProjectVisibility>(),
             It.IsAny<bool>(),
-            It.IsAny<long>()), Times.Never);
+            It.IsAny<long>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -106,7 +109,8 @@ public class UpdateProjectCommandHandlerTests
                 It.IsAny<ProjectStatus>(),
                 It.IsAny<ProjectVisibility>(),
                 It.IsAny<bool>(),
-                It.IsAny<long>()))
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new DataException("Database connection error."));
 
         var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object);
@@ -123,7 +127,8 @@ public class UpdateProjectCommandHandlerTests
             It.IsAny<ProjectStatus>(),
             It.IsAny<ProjectVisibility>(),
             It.IsAny<bool>(),
-            It.IsAny<long>()), Times.Once);
+            It.IsAny<long>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
     
     

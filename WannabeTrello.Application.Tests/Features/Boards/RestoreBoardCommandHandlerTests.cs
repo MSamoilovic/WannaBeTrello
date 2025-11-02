@@ -22,7 +22,7 @@ public class RestoreBoardCommandHandlerTests
 
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
-            .Setup(s => s.RestoreBoardAsync(boardId, userId))
+            .Setup(s => s.RestoreBoardAsync(boardId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boardId); 
 
         var handler = new RestoreBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
@@ -36,7 +36,7 @@ public class RestoreBoardCommandHandlerTests
         Assert.Equal(boardId, response.Result.Value);
         Assert.Equal($"Board {boardId} is now restored.", response.Result.Message);
 
-        boardServiceMock.Verify(s => s.RestoreBoardAsync(boardId, userId), Times.Once);
+        boardServiceMock.Verify(s => s.RestoreBoardAsync(boardId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class RestoreBoardCommandHandlerTests
             handler.Handle(command, CancellationToken.None));
 
         Assert.Equal("User is not authenticated", exception.Message);
-        boardServiceMock.Verify(s => s.RestoreBoardAsync(It.IsAny<long>(), It.IsAny<long>()), Times.Never);
+        boardServiceMock.Verify(s => s.RestoreBoardAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class RestoreBoardCommandHandlerTests
 
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
-            .Setup(s => s.RestoreBoardAsync(nonExistentBoardId, userId))
+            .Setup(s => s.RestoreBoardAsync(nonExistentBoardId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Domain.Entities.Board), nonExistentBoardId));
 
         var handler = new RestoreBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);

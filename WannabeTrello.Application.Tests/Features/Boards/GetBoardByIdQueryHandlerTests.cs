@@ -64,7 +64,7 @@ public class GetBoardByIdQueryHandlerTests
         SetPrivateFieldValue(boardFromService, "_columns", new List<Column>());
 
         boardServiceMock
-            .Setup(s => s.GetBoardByIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boardFromService);
 
         var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
@@ -77,7 +77,7 @@ public class GetBoardByIdQueryHandlerTests
         Assert.Equal(boardId, response.Id);
         Assert.Equal("Test Board", response.Name);
 
-        boardServiceMock.Verify(s => s.GetBoardByIdAsync(boardId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        boardServiceMock.Verify(s => s.GetBoardWithDetailsAsync(boardId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class GetBoardByIdQueryHandlerTests
             handler.Handle(query, CancellationToken.None));
         
         Assert.Equal("User is not authenticated", exception.Message);
-        boardServiceMock.Verify(s => s.GetBoardByIdAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        boardServiceMock.Verify(s => s.GetBoardWithDetailsAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -136,7 +136,7 @@ public class GetBoardByIdQueryHandlerTests
 
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
-            .Setup(s => s.GetBoardByIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Board), boardId)); 
 
         var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);

@@ -34,7 +34,7 @@ public class GetProjectByIdQueryHandlerTest
         
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
-        _projectServiceMock.Setup(x => x.GetProjectByIdAsync(projectId, userId))
+        _projectServiceMock.Setup(x => x.GetProjectByIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
                            .ReturnsAsync(mockProject);
         
         var query = new GetProjectByIdQuery(projectId);
@@ -46,7 +46,7 @@ public class GetProjectByIdQueryHandlerTest
         Assert.NotNull(result);
         Assert.Equal(mockProject.Name, result.Name);
         Assert.Equal(mockProject.Id, result.Id);
-        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(projectId, userId), Times.Once);
+        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -62,7 +62,7 @@ public class GetProjectByIdQueryHandlerTest
         
         // ACT & ASSERT
         await Assert.ThrowsAsync<AccessDeniedException>(() => _handler.Handle(query, CancellationToken.None));
-        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(It.IsAny<long>(), It.IsAny<long>()), Times.Never);
+        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -76,14 +76,14 @@ public class GetProjectByIdQueryHandlerTest
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
         
         // Simuliramo da servis baca izuzetak jer projekat nije pronađen
-        _projectServiceMock.Setup(x => x.GetProjectByIdAsync(projectId, userId))
+        _projectServiceMock.Setup(x => x.GetProjectByIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
                            .ThrowsAsync(new NotFoundException(nameof(Project), projectId));
         
         var query = new GetProjectByIdQuery(projectId);
         
         // ACT & ASSERT
         await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(query, CancellationToken.None));
-        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(projectId, userId), Times.Once);
+        _projectServiceMock.Verify(x => x.GetProjectByIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
     
     private static void SetPrivatePropertyValue<T>(T obj, string propertyName, object value)

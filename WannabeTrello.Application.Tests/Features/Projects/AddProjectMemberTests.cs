@@ -35,7 +35,7 @@ public class AddProjectMemberTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(inviterUserId);
         
-        _projectServiceMock.Setup(x => x.AddProjectMember(projectId, newMemberId, role, inviterUserId))
+        _projectServiceMock.Setup(x => x.AddProjectMember(projectId, newMemberId, role, inviterUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectId);
 
         var command = new AddProjectMemberCommand(projectId, newMemberId, role);
@@ -49,7 +49,7 @@ public class AddProjectMemberTests
         Assert.Equal(projectId, response.Result.Value);
         Assert.Equal($"{newMemberId} is now added to the project.", response.Result.Message);
 
-        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, newMemberId, role, inviterUserId), Times.Once);
+        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, newMemberId, role, inviterUserId, It.IsAny<CancellationToken>()), Times.Once);
     }
     
     
@@ -67,7 +67,7 @@ public class AddProjectMemberTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
 
-        _projectServiceMock.Verify(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()), Times.Never);
+        _projectServiceMock.Verify(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     
@@ -80,7 +80,7 @@ public class AddProjectMemberTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
 
-        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()))
+        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Project), projectId));
 
         var command = new AddProjectMemberCommand(projectId, 2, ProjectRole.Contributor);
@@ -88,7 +88,7 @@ public class AddProjectMemberTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, CancellationToken.None));
 
-        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()), Times.Once);
+        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
 
@@ -102,7 +102,7 @@ public class AddProjectMemberTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
 
-        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()))
+        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new UnauthorizedAccessException("Only Admin or Owner can add a new member."));
 
         var command = new AddProjectMemberCommand(projectId, 2, ProjectRole.Contributor);
@@ -110,7 +110,7 @@ public class AddProjectMemberTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
 
-        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()), Times.Once);
+        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Fact]
@@ -122,7 +122,7 @@ public class AddProjectMemberTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
 
-        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()))
+        _projectServiceMock.Setup(x => x.AddProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("This user is already a member of the project."));
 
         var command = new AddProjectMemberCommand(projectId, 2, ProjectRole.Contributor);
@@ -130,6 +130,6 @@ public class AddProjectMemberTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
 
-        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()), Times.Once);
+        _projectServiceMock.Verify(x => x.AddProjectMember(projectId, It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

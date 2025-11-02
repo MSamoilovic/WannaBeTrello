@@ -36,15 +36,15 @@ public class ColumnService(
         return column;
     }
     
-    public async Task<Column> GetColumnByIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    public async Task<Column> GetColumnByIdAsync(long columnId, long userId, CancellationToken cancellationToken)
     {
-        var column = await columnRepository.GetByIdAsync(boardId);
-        return column ?? throw new NotFoundException(nameof(Column), boardId);
+        var column = await columnRepository.GetColumnDetailsByIdAsync(columnId, cancellationToken);
+        return column ?? throw new NotFoundException(nameof(Column), columnId);
     }
 
     public async Task<Column> UpdateColumnAsync(long columnId, string? newName, int? wipLimit, long userId, CancellationToken cancellationToken)
     {
-        var column = await columnRepository.GetByIdWithBoardsAndMembersAsync(columnId, cancellationToken);
+        var column = await columnRepository.GetColumnWithBoardAndMembersAsync(columnId, cancellationToken);
         if (column == null)
             throw new NotFoundException(nameof(Column), columnId);
         
@@ -62,6 +62,7 @@ public class ColumnService(
             column.SetWipLimit(wipLimit.Value,  userId);
         }
         
+        columnRepository.Update(column);
         await unitOfWork.CompleteAsync(cancellationToken);
         
         return column;
@@ -69,7 +70,7 @@ public class ColumnService(
 
     public async Task<long> DeleteColumnAsync(long columnId, long? userId, CancellationToken cancellationToken)
     {
-        var column  = await columnRepository.GetByIdWithBoardsAndMembersAsync(columnId, cancellationToken);
+        var column  = await columnRepository.GetColumnWithBoardAndMembersAsync(columnId, cancellationToken);
         if (column == null)
             throw new NotFoundException(nameof(Column), columnId);
         
@@ -80,7 +81,7 @@ public class ColumnService(
         column.DeleteColumn(userId.Value);
         
         // Soft delete by marking as deleted, then save changes
-        await columnRepository.UpdateAsync(column);
+        columnRepository.Update(column);
         await unitOfWork.CompleteAsync(cancellationToken);
         
         return column.Id;

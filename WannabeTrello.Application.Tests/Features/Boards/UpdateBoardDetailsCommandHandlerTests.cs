@@ -46,7 +46,7 @@ public class UpdateBoardDetailsCommandHandlerTests
         SetPrivatePropertyValue(updatedBoardFromService, nameof(Board.Id), boardId);
         
         boardServiceMock
-            .Setup(s => s.UpdateBoardDetailsAsync(command.Id, command.Name, command.Description, userId))
+            .Setup(s => s.UpdateBoardAsync(command.Id, command.Name, command.Description, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(updatedBoardFromService);
 
         var handler = new UpdateBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
@@ -58,7 +58,7 @@ public class UpdateBoardDetailsCommandHandlerTests
         Assert.NotNull(response);
         Assert.Equal(boardId, response.Id);
 
-        boardServiceMock.Verify(s => s.UpdateBoardDetailsAsync(command.Id, command.Name, command.Description, userId), Times.Once);
+        boardServiceMock.Verify(s => s.UpdateBoardAsync(command.Id, command.Name, command.Description, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class UpdateBoardDetailsCommandHandlerTests
             handler.Handle(command, CancellationToken.None));
             
         Assert.Equal("User is not authenticated.", exception.Message);
-        boardServiceMock.Verify(s => s.UpdateBoardDetailsAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()), Times.Never);
+        boardServiceMock.Verify(s => s.UpdateBoardAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class UpdateBoardDetailsCommandHandlerTests
 
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
-            .Setup(s => s.UpdateBoardDetailsAsync(nonExistentBoardId, command.Name, command.Description, userId))
+            .Setup(s => s.UpdateBoardAsync(nonExistentBoardId, command.Name, command.Description, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId));
 
         var handler = new UpdateBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);

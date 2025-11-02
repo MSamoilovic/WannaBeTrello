@@ -24,7 +24,7 @@ public class CreateProjectCommandHandlerTests
         SetPrivatePropertyValue(createdProject, nameof(createdProject.Id), 456);
 
         projectServiceMock
-            .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
+            .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdProject);
 
 
@@ -41,7 +41,8 @@ public class CreateProjectCommandHandlerTests
         projectServiceMock.Verify(x => x.CreateProjectAsync(
             "New Test Project",
             "Description",
-            123
+            123,
+            It.IsAny<CancellationToken>()
         ), Times.Once);
     }
 
@@ -62,7 +63,8 @@ public class CreateProjectCommandHandlerTests
         projectServiceMock.Verify(x => x.CreateProjectAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
-            It.IsAny<long>()
+            It.IsAny<long>(),
+            It.IsAny<CancellationToken>()
         ), Times.Never);
     }
 
@@ -76,7 +78,7 @@ public class CreateProjectCommandHandlerTests
 
         var projectServiceMock = new Mock<IProjectService>();
         projectServiceMock
-            .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
+            .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new DataException("Database connection error."));
 
 
@@ -90,7 +92,8 @@ public class CreateProjectCommandHandlerTests
         projectServiceMock.Verify(x => x.CreateProjectAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
-            It.IsAny<long>()
+            It.IsAny<long>(),
+            It.IsAny<CancellationToken>()
         ), Times.Once);
     }
 

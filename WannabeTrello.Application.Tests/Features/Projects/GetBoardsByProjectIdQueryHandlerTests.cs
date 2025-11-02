@@ -40,7 +40,7 @@ public class GetBoardsByProjectIdQueryHandlerTests
 
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
-        _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, CancellationToken.None))
+        _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockBoards);
 
         var query = new GetBoardsByProjectIdQuery(projectId);
@@ -64,7 +64,7 @@ public class GetBoardsByProjectIdQueryHandlerTests
             }
         );
 
-        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, CancellationToken.None), Times.Once);
+        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -77,7 +77,7 @@ public class GetBoardsByProjectIdQueryHandlerTests
 
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
-        _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, CancellationToken.None))
+        _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Board>());
 
         var query = new GetBoardsByProjectIdQuery(projectId);
@@ -89,7 +89,7 @@ public class GetBoardsByProjectIdQueryHandlerTests
         Assert.NotNull(result);
         Assert.Empty(result);
 
-        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, CancellationToken.None), Times.Once);
+        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -106,7 +106,7 @@ public class GetBoardsByProjectIdQueryHandlerTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(query, CancellationToken.None));
 
-        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(It.IsAny<long>(), It.IsAny<long>(), CancellationToken.None),
+        _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 }

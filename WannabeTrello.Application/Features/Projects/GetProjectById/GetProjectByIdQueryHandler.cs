@@ -16,7 +16,7 @@ public class GetProjectByIdQueryHandler(IProjectService projectService, ICurrent
             throw new AccessDeniedException("Nemate pristup za pregled ovog boarda.");
         }
         
-        var project = await projectService.GetProjectByIdAsync(request.ProjectId, currentUserService.UserId.Value);
+        var project = await projectService.GetProjectByIdAsync(request.ProjectId, currentUserService.UserId.Value, cancellationToken);
         
         return GetProjectByIdQueryResponse.FromEntity(project);
     }

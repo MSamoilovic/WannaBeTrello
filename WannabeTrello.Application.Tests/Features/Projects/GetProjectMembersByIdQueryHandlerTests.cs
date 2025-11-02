@@ -66,7 +66,7 @@ public class GetProjectMembersByIdQueryHandlerTests
         var projectId = 123;
         
         // Mock the repository to return an empty list
-        _projectRepositoryMock.Setup(x => x.GetProjectMembersByIdAsync(projectId))
+        _projectRepositoryMock.Setup(x => x.GetProjectMembersByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
                               .ReturnsAsync(new List<ProjectMember>());
 
         var query = new GetProjectMembersByIdQuery(projectId);
@@ -77,7 +77,7 @@ public class GetProjectMembersByIdQueryHandlerTests
         // ASSERT
         Assert.NotNull(result);
         Assert.Empty(result);
-        _projectRepositoryMock.Verify(x => x.GetProjectMembersByIdAsync(projectId), Times.Once);
+        _projectRepositoryMock.Verify(x => x.GetProjectMembersByProjectIdAsync(projectId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -88,7 +88,7 @@ public class GetProjectMembersByIdQueryHandlerTests
         var nonExistentProjectId = 999;
         
         // Mock the repository to return null for a non-existent project
-        _projectRepositoryMock.Setup(x => x.GetProjectMembersByIdAsync(nonExistentProjectId))
+        _projectRepositoryMock.Setup(x => x.GetProjectMembersByProjectIdAsync(nonExistentProjectId, It.IsAny<CancellationToken>()))
                               .ReturnsAsync([]);
 
         var query = new GetProjectMembersByIdQuery(nonExistentProjectId);
@@ -99,6 +99,6 @@ public class GetProjectMembersByIdQueryHandlerTests
         // ASSERT
         Assert.NotNull(result);
         Assert.Empty(result);
-        _projectRepositoryMock.Verify(x => x.GetProjectMembersByIdAsync(nonExistentProjectId), Times.Once);
+        _projectRepositoryMock.Verify(x => x.GetProjectMembersByProjectIdAsync(nonExistentProjectId, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

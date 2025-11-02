@@ -32,7 +32,7 @@ public class ArchiveProjectCommandTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
         
-        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId))
+        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectId);
 
         var command = new ArchiveProjectCommand(projectId);
@@ -49,7 +49,7 @@ public class ArchiveProjectCommandTests
         Assert.Equal($"Project {projectId} is now archived.", response.Result.Message);
 
         // Verify the service method was called exactly once with the correct parameters
-        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId), Times.Once);
+        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Theory]
@@ -65,7 +65,7 @@ public class ArchiveProjectCommandTests
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
         
-        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(It.IsAny<long>(), It.IsAny<long>()), Times.Never);
+        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -79,7 +79,7 @@ public class ArchiveProjectCommandTests
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
     
         // Mock the service to throw a NotFoundException
-        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId))
+        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Project), projectId));
 
         var command = new ArchiveProjectCommand(projectId);
@@ -89,7 +89,7 @@ public class ArchiveProjectCommandTests
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, CancellationToken.None));
         Assert.Equal($"Entity \'{nameof(Project)}\' ({projectId}) was not found.", exception.Message);
         
-        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId), Times.Once);
+        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Fact]
@@ -102,7 +102,7 @@ public class ArchiveProjectCommandTests
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
         
-        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId))
+        _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new UnauthorizedAccessException("Only Owner or Admin can archive this project."));
 
         var command = new ArchiveProjectCommand(projectId);
@@ -110,6 +110,6 @@ public class ArchiveProjectCommandTests
         // ACT & ASSERT
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
         
-        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId), Times.Once);
+        _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
