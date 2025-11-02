@@ -30,18 +30,16 @@ public class BoardTaskService(
             throw new AccessDeniedException("You don't have permission to create tasks on this board.");
         }
 
-        User? assignee = null;
-
         if (assigneeId.HasValue)
         {
-            assignee = await userRepository.GetByIdAsync(assigneeId.Value);
+            var assignee = await userRepository.GetByIdAsync(assigneeId.Value);
             if (assignee == null) throw new NotFoundException(nameof(User), assigneeId.Value);
         }
 
         var task = BoardTask.Create(title, description, priority, dueDate, position, columnId, assigneeId,
             creatorUserId);
 
-        await boardTaskRepository.AddAsync(task);
+        await boardTaskRepository.AddAsync(task, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
 
         return task;
@@ -49,7 +47,7 @@ public class BoardTaskService(
 
     public async Task<BoardTask?> GetTaskByIdAsync(long taskId, long userId, CancellationToken cancellationToken)
     {
-        var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken);
+        var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken)!;
         if (task == null)
             throw new NotFoundException(nameof(BoardTask), taskId);
 
@@ -59,7 +57,7 @@ public class BoardTaskService(
             : task;
     }
 
-    public async Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<BoardTask>> GetTasksByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken)
     {
         var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
         
@@ -74,7 +72,7 @@ public class BoardTaskService(
     public async Task UpdateTaskDetailsAsync(long taskId, string newTitle, string? newDescription,
         TaskPriority newPriority, DateTime newDueDate, long modifierUserId, CancellationToken cancellationToken)
     {
-        var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken);
+        var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken)!;
         if (task == null) 
             throw new NotFoundException(nameof(BoardTask), taskId);
 
@@ -84,11 +82,10 @@ public class BoardTaskService(
         {
             throw new AccessDeniedException("You don't have a permission to update this task.");
         }
-
-        // Delegiranje logike ažuriranja entitetu
+        
         task.UpdateDetails(newTitle, newDescription, newPriority, newDueDate, modifierUserId);
 
-        await boardTaskRepository.UpdateAsync(task);
+        boardTaskRepository.Update(task);
         await unitOfWork.CompleteAsync(cancellationToken);
     }
 
@@ -122,7 +119,7 @@ public class BoardTaskService(
 
         task.MoveToColumn(newColumn.Id, performingUserId);
 
-        await boardTaskRepository.UpdateAsync(task);
+        boardTaskRepository.Update(task);
         await unitOfWork.CompleteAsync();
     }
 
@@ -178,7 +175,14 @@ public class BoardTaskService(
 
         task.AssignToUser(assigneeId!.Value, performingUserId);
 
-        await boardTaskRepository.UpdateAsync(task);
+        boardTaskRepository.Update(task);
         await unitOfWork.CompleteAsync();
+    }
+
+    public IQueryable<BoardTask> SearchTasks(long userId)
+    {
+        // Vraćamo samo tasks-e sa board-ova gde je korisnik član
+        return boardTaskRepository.SearchTasks()
+            .Where(t => t.Column.Board.BoardMembers.Any(bm => bm.UserId == userId));
     }
 }

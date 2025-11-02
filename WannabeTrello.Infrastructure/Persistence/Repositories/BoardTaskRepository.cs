@@ -1,49 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Specifications.TaskSpecifications;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
 public class BoardTaskRepository(ApplicationDbContext dbContext)
-    : Repository<BoardTask>(dbContext), IBoardTaskRepository
+    : Repository<BoardTask>(dbContext),IBoardTaskRepository
 {
-    public Task<BoardTask?> GetByIdAsync(long id)
+    public async Task<IReadOnlyList<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var specification = new TasksByBoardIdSpecification(boardId);
+        return await GetAsync(specification, cancellationToken);
     }
 
-    public Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken)
+    public async Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var specification = new TaskDetailsByIdSpecification(id);
+        return await GetSingleAsync(specification, cancellationToken);
     }
 
-    public Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken)
+    public IQueryable<BoardTask> SearchTasks()
     {
-        throw new NotImplementedException();
-    }
-
-    public Task AddAsync(BoardTask? task)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync(BoardTask? task)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(long id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IQueryable<BoardTask> SearchTask()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<BoardTask>> GetAllAsync()
-    {
-        throw new NotImplementedException();
+        var specification = new SearchTasksSpecification();
+        return ApplySpecification(specification);
     }
 }

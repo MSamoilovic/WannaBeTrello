@@ -2,14 +2,9 @@
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 
-public interface IBoardTaskRepository
+public interface IBoardTaskRepository: IRepository<BoardTask>
 {
-    Task<BoardTask?> GetByIdAsync(long id);
-    Task<List<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<BoardTask>> GetTasksByBoardIdAsync(long boardId, CancellationToken cancellationToken);
     Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken);
-    Task AddAsync(BoardTask? task);
-    Task UpdateAsync(BoardTask? task);
-    Task DeleteAsync(long id);
-    IQueryable<BoardTask> SearchTask();
-    Task<IEnumerable<BoardTask>> GetAllAsync();
+    IQueryable<BoardTask> SearchTasks();
 }
