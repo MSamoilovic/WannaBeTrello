@@ -22,8 +22,7 @@ public class UpdateProjectCommandHandler(IProjectService projectService, ICurren
             request.Status,
             request.Visibility,
             request.Archived,
-            currentUserService.UserId.Value
-        );
+            currentUserService.UserId.Value, cancellationToken);
 
         return new UpdateProjectCommandResponse(
             project.Name,

@@ -16,11 +16,8 @@ public class CreateProjectCommandHandler(ICurrentUserService currentUserService,
             throw new UnauthorizedAccessException("User is not authenticated.");
         }
         
-        var project = await projectService.CreateProjectAsync(
-            request.Name,
-            request.Description,
-            currentUserService.UserId ?? 0
-        );
+        var project = await projectService.CreateProjectAsync(request.Name, request.Description, currentUserService.UserId ?? 0
+, cancellationToken);
         
         var result = Result<long>.Success(project.Id, "Project Created Successfully");
         

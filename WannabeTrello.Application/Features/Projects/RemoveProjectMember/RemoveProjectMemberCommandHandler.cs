@@ -16,11 +16,14 @@ public class
         {
             throw new UnauthorizedAccessException("User is not authenticated");
         }
+        
+        var removingUserId = currentUserService.UserId.Value;
 
         await projectService.RemoveProjectMember(
             request.ProjectId, 
             request.UserToRemoveId,
-            currentUserService.UserId.Value);
+            removingUserId,
+            cancellationToken);
 
         var result = Result<long>.Success(request.ProjectId, "User Removed from the project");
         

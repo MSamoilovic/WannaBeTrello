@@ -19,14 +19,11 @@ public class AddProjectMemberCommandHandler(
             throw new UnauthorizedAccessException("User is not authenticated");
         }
 
-        var projectId = await projectService.AddProjectMember(
-            request.ProjectId, 
-            request.NewMemberId, 
-            request.Role,
-            currentUserService.UserId.Value);
-        
+        var projectId = await projectService.AddProjectMember(request.ProjectId, request.NewMemberId, request.Role,
+            currentUserService.UserId.Value, cancellationToken);
+
         var result = Result<long>.Success(projectId, $"{request.NewMemberId} is now added to the project.");
-        
+
         return new AddProjectMemberCommandResponse(result);
     }
 }

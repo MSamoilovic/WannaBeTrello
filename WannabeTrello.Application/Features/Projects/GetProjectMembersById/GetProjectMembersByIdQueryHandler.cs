@@ -13,7 +13,8 @@ public class
     public async Task<List<GetProjectMembersByIdQueryResponse>> Handle(GetProjectMembersByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var projectMembers = await projectRepository.GetProjectMembersByIdAsync(request.ProjectId);
+        // Wrapper metoda koja interno koristi Query() i direktan DbContext pristup
+        var projectMembers = await projectRepository.GetProjectMembersByProjectIdAsync(request.ProjectId, cancellationToken);
         
         return projectMembers.Select(pm => new GetProjectMembersByIdQueryResponse(
                 pm.User.Id,

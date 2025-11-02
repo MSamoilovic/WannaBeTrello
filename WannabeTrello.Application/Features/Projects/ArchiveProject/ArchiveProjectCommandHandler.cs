@@ -18,7 +18,7 @@ public class ArchiveProjectCommandHandler(
             throw new UnauthorizedAccessException("User is not authenticated");
         }
         
-        var projectId = await service.ArchiveProjectAsync(request.ProjectId, currentUserService.UserId.Value);
+        var projectId = await service.ArchiveProjectAsync(request.ProjectId, currentUserService.UserId.Value, cancellationToken);
         var result = Result<long>.Success(projectId, $"Project {request.ProjectId} is now archived.");
         
         return new ArchiveProjectCommandResponse(result);

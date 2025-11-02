@@ -22,8 +22,7 @@ public class UpdateProjectMemberRoleCommandHandler(
             request.ProjectId,
             request.MemberId,
             request.Role,
-            currentUserService.UserId.Value
-        );
+            currentUserService.UserId.Value, cancellationToken);
 
         var result = Result<long>.Success(request.ProjectId, $"Project member {request.MemberId} role updated");
         return new UpdateProjectMemberRoleCommandResponse(result);
