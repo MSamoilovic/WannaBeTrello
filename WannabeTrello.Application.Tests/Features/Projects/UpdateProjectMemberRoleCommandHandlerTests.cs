@@ -63,7 +63,8 @@ public class UpdateProjectMemberRoleCommandHandlerTests
             command.ProjectId,
             command.MemberId,
             command.Role,
-            userId
+            userId,
+            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         Assert.NotNull(result);
@@ -79,7 +80,7 @@ public class UpdateProjectMemberRoleCommandHandlerTests
         _currentUserServiceMock.Setup(c => c.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(c => c.UserId).Returns(userId);
 
-        _projectServiceMock.Setup(s => s.UpdateProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>()))
+        _projectServiceMock.Setup(s => s.UpdateProjectMember(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<ProjectRole>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Project not found"));
         
         const int projectId = 99;
@@ -116,7 +117,8 @@ public class UpdateProjectMemberRoleCommandHandlerTests
             command.ProjectId,
             command.MemberId,
             command.Role,
-            userId
+            userId,
+            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         Assert.NotNull(result);
