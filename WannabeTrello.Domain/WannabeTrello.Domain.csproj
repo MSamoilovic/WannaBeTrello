@@ -14,5 +14,9 @@
             <_Parameter1>WannabeTrello.Domain.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Specifications\ColumnSpecifications\" />
+    </ItemGroup>
     
 </Project>

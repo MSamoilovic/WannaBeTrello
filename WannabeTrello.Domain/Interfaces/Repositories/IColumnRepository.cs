@@ -2,12 +2,10 @@
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 
-public interface IColumnRepository
+public interface IColumnRepository : IRepository<Column>
 {
-    Task<Column?> GetByIdAsync(long id);
-    
-    Task<Column?> GetByIdWithBoardsAndMembersAsync(long id, CancellationToken cancellationToken);
-    Task AddAsync(Column column);
-    Task UpdateAsync(Column column);
-    Task DeleteAsync(long id);
+    Task<Column?> GetColumnDetailsByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<Column?> GetColumnWithBoardAndMembersAsync(long id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Column>> GetColumnsByBoardIdAsync(long boardId, CancellationToken cancellationToken = default);
+    Task<Column?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
 }

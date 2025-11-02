@@ -42,17 +42,6 @@ public class BoardRepository: Repository<Board>, IBoardRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Column>> GetColumnsByBoardIdAsync(long boardId, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Columns
-            .AsNoTracking()
-            .Include(c => c.Tasks.OrderBy(t => t.CreatedAt))
-            .ThenInclude(t => t.Assignee)
-            .Where(c => c.BoardId == boardId)
-            .OrderBy(c => c.Order)
-            .ToListAsync(cancellationToken);
-    }
-
     public async  Task<bool> IsBoardMemberAsync(long boardId, long userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.BoardMembers

@@ -9,6 +9,7 @@ namespace WannabeTrello.Domain.Services;
 
 public class BoardService(
     IBoardRepository boardRepository,
+    IColumnRepository columnRepository,
     IProjectRepository projectRepository,
     IUserRepository userRepository,
     IUnitOfWork unitOfWork) : IBoardService
@@ -228,7 +229,7 @@ public class BoardService(
             throw new AccessDeniedException("Samo članovi board-a mogu videti kolone board-a.");
 
         // Dohvatanje svih kolona board-a
-        var columns = await boardRepository.GetColumnsByBoardIdAsync(boardId, cancellationToken);
+        var columns = await columnRepository.GetColumnsByBoardIdAsync(boardId, cancellationToken);
 
         return columns;
     }
