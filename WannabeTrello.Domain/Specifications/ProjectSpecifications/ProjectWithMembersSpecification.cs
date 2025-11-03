@@ -11,7 +11,7 @@ public class ProjectWithMembersSpecification : BaseSpecification<Project>
         : base(p => p.Id == projectId)
     {
         AddInclude("ProjectMembers.User");
-        ApplyTracking(); // Možda trebamo tracking ako menjamo članove
+        ApplyTracking();
     }
 }
 

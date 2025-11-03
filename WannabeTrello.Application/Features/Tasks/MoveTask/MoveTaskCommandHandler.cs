@@ -1,25 +1,28 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Entities.Common;
+using WannabeTrello.Domain.Interfaces.Services;
 using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Tasks.MoveTask;
 
-public class MoveTaskCommandHandler(BoardTaskService taskService, ICurrentUserService currentUserService)
-    : IRequestHandler<MoveTaskCommand, Unit>
+public class MoveTaskCommandHandler(IBoardTaskService taskService, ICurrentUserService currentUserService)
+    : IRequestHandler<MoveTaskCommand, MoveTaskCommandResponse>
 {
-    public async Task<Unit> Handle(MoveTaskCommand request, CancellationToken cancellationToken)
+    public async Task<MoveTaskCommandResponse> Handle(MoveTaskCommand request, CancellationToken cancellationToken)
     {
         if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
         {
-            throw new UnauthorizedAccessException("Korisnik nije autentifikovan.");
+            throw new UnauthorizedAccessException("User is not authenticated.");
         }
 
         await taskService.MoveTaskAsync(
             request.TaskId,
             request.NewColumnId,
-            currentUserService.UserId.Value
+            currentUserService.UserId.Value,
+            cancellationToken
         );
 
-        return Unit.Value; // Označava uspešno izvršenje
+        return new MoveTaskCommandResponse(Result<long>.Success(request.TaskId, "Task moved successfully")); 
     }
 }

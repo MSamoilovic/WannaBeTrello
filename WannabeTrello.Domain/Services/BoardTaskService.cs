@@ -89,38 +89,38 @@ public class BoardTaskService(
         await unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task MoveTaskAsync(long taskId, long newColumnId, long performingUserId)
+    public async Task MoveTaskAsync(long taskId, long newColumnId, long performingUserId, CancellationToken cancellationToken)
     {
-        var task = await boardTaskRepository.GetByIdAsync(taskId);
+        var task = await boardTaskRepository.GetByIdAsync(taskId, cancellationToken);
         if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
 
         var oldColumnId = task.ColumnId;
 
-        var newColumn = await columnRepository.GetByIdAsync(newColumnId);
+        var newColumn = await columnRepository.GetByIdAsync(newColumnId, cancellationToken);
         if (newColumn == null) throw new NotFoundException(nameof(Column), newColumnId);
 
 
-        var oldColumn = await columnRepository.GetByIdAsync(oldColumnId);
+        var oldColumn = await columnRepository.GetByIdAsync(oldColumnId, cancellationToken);
         if (oldColumn == null) throw new NotFoundException(nameof(Column), oldColumnId);
 
         if (oldColumn.BoardId != newColumn.BoardId)
         {
             throw new InvalidOperationDomainException(
-                "Ne možete premestiti zadatak između različitih tabli putem ove operacije.");
+                "Cannot move tasks on this board task.");
         }
 
-        var board = await boardRepository.GetBoardWithDetailsAsync(oldColumn.BoardId);
+        var board = await boardRepository.GetBoardWithDetailsAsync(oldColumn.BoardId, cancellationToken);
         if (board == null ||
             !board.BoardMembers.Any(bm => bm.UserId == performingUserId && bm.Role == BoardRole.Editor))
         {
-            throw new AccessDeniedException("Nemate dozvolu za premeštanje zadataka na ovoj tabli.");
+            throw new AccessDeniedException("You don't have permission to move this task.");
         }
 
 
         task.MoveToColumn(newColumn.Id, performingUserId);
 
         boardTaskRepository.Update(task);
-        await unitOfWork.CompleteAsync();
+        await unitOfWork.CompleteAsync(cancellationToken);
     }
 
     public async Task<long> AddCommentToTaskAsync(long taskId, long userId, string content)

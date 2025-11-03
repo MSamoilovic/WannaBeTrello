@@ -10,4 +10,5 @@ public interface IBoardTaskService
     public Task<IReadOnlyList<BoardTask>> GetTasksByBoardIdAsync(long boardId, long userId, CancellationToken cancellationToken);
     public Task UpdateTaskDetailsAsync(long taskId, string newTitle, string? newDescription, TaskPriority newPriority, DateTime newDueDate, long modifierUserId, CancellationToken cancellationToken);
     public IQueryable<BoardTask> SearchTasks(long userId);
+    Task MoveTaskAsync(long taskId, long newColumnId, long performingUserId, CancellationToken cancellationToken);
 }
