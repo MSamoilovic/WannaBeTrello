@@ -19,7 +19,7 @@ public interface ITrellyHub
         Task TaskCreated(long taskId, string taskTitle);
         Task TaskUpdated(string boardId, string taskId, object updatedFields); 
         Task TaskDeleted(string boardId, string taskId);
-        Task TaskMoved(string boardId, string taskId, string oldColumnId, string newColumnId);
+        Task TaskMoved(long boardId, long newColumnId, long? performedByUserId);
         Task TaskAssigned(string boardId, string taskId, string userId);
         
         Task CommentAdded(string taskId, string commentId, string userId, string content);

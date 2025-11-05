@@ -14,7 +14,7 @@ public class TaskNotificationService(
     public async Task NotifyTaskCreated(long taskId, string taskTitle, long taskCreatorId, long? assigneeId)
     {
         await hubContext.Clients.All.TaskCreated(taskId, taskTitle);
-        
+
         var activity = ActivityTracker.Create(
             type: ActivityType.TaskCreated,
             description: $"Task '{taskTitle}' was created.",
@@ -26,11 +26,11 @@ public class TaskNotificationService(
         await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
     }
 
-    public async Task NotifyTaskUpdated(long taskId, string? taskTitle, long modifierUserId, 
+    public async Task NotifyTaskUpdated(long taskId, string? taskTitle, long modifierUserId,
         Dictionary<string, object?> oldValues, Dictionary<string, object?> newValues)
     {
         await hubContext.Clients.All.TaskUpdated("boardId", taskId.ToString(), newValues);
-        
+
         var changedFields = string.Join(", ", newValues.Keys);
         var activity = ActivityTracker.Create(
             type: ActivityType.TaskUpdated,
@@ -40,6 +40,22 @@ public class TaskNotificationService(
             relatedEntityType: nameof(BoardTask),
             oldValue: oldValues,
             newValue: newValues
+        );
+
+        await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
+    }
+
+    public async Task NotifyTaskMoved(long taskId, long newColumnId, long performedByUserId,
+        CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.TaskMoved(taskId, newColumnId, performedByUserId);
+
+        var activity = ActivityTracker.Create(
+            type: ActivityType.TaskMoved,
+            description: $"Task '{taskId}' was moved to column {newColumnId}.",
+            userId: performedByUserId,
+            relatedEntityId: taskId,
+            relatedEntityType: nameof(BoardTask)
         );
 
         await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
