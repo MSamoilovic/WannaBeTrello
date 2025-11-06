@@ -133,11 +133,9 @@ public class BoardService(
         var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
-
-        // Provera permisija - samo admin može restore board (logika je u domenskoj metodi)
+        
         board.Restore(userId);
 
-        // Čuvanje promena
         boardRepository.Update(board);
         await unitOfWork.CompleteAsync(cancellationToken);
 
