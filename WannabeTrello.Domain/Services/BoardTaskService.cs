@@ -89,6 +89,17 @@ public class BoardTaskService(
         await unitOfWork.CompleteAsync(cancellationToken);
     }
 
+    public async Task RestoreTaskAsync(long taskId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        var task = await boardTaskRepository.GetByIdAsync(taskId, cancellationToken);
+        if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
+        
+        task.Restore(modifierUserId);
+        
+        boardTaskRepository.Update(task);
+        await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
     public async Task MoveTaskAsync(long taskId, long newColumnId, long performingUserId, CancellationToken cancellationToken)
     {
         var task = await boardTaskRepository.GetByIdAsync(taskId, cancellationToken);
@@ -181,8 +192,19 @@ public class BoardTaskService(
 
     public IQueryable<BoardTask> SearchTasks(long userId)
     {
-        // Vraćamo samo tasks-e sa board-ova gde je korisnik član
+       
         return boardTaskRepository.SearchTasks()
             .Where(t => t.Column.Board.BoardMembers.Any(bm => bm.UserId == userId));
+    }
+
+    public async Task ArchiveTaskAsync(long taskId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        var task = await boardTaskRepository.GetByIdAsync(taskId, cancellationToken);
+        if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
+        
+        task.Archive(modifierUserId);
+        
+        boardTaskRepository.Update(task);
+        await unitOfWork.CompleteAsync(cancellationToken);
     }
 }
