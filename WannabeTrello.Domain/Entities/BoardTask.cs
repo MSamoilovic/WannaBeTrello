@@ -124,6 +124,9 @@ public class BoardTask : AuditableEntity
         var originalColumnId = ColumnId;
         ColumnId = newColumnId;
 
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = performingUserId;
+
         AddDomainEvent(new TaskMovedEvent(Id, originalColumnId, newColumnId, performingUserId));
     }
 
@@ -147,6 +150,9 @@ public class BoardTask : AuditableEntity
 
         var oldAssigneeId = AssigneeId;
         AssigneeId = newAssigneeId;
+
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = performingUserId;
 
         AddDomainEvent(new TaskAssignedEvent(Id, oldAssigneeId, newAssigneeId, performingUserId));
     }

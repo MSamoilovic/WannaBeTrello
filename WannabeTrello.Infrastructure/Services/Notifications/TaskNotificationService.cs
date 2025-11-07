@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Collections.Generic;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Enums;
@@ -59,5 +60,50 @@ public class TaskNotificationService(
         );
 
         await activityTrackerService.AddActivityAsync(activity, CancellationToken.None);
+    }
+
+    public async Task NotifyTaskAssigned(long boardId, long taskId, long? oldAssigneeId, long? newAssigneeId,
+        long assignedByUserId, CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.TaskAssigned(boardId.ToString(), taskId.ToString(),
+            newAssigneeId?.ToString() ?? string.Empty);
+
+        var description = newAssigneeId.HasValue
+            ? $"Task '{taskId}' was assigned to user {newAssigneeId}."
+            : $"Task '{taskId}' was unassigned.";
+
+        var activity = ActivityTracker.Create(
+            type: ActivityType.TaskAssigned,
+            description: description,
+            userId: assignedByUserId,
+            relatedEntityId: taskId,
+            relatedEntityType: nameof(BoardTask),
+            oldValue: new Dictionary<string, object?> { { nameof(BoardTask.AssigneeId), oldAssigneeId } },
+            newValue: new Dictionary<string, object?> { { nameof(BoardTask.AssigneeId), newAssigneeId } }
+        );
+
+        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
+    }
+
+    public async Task NotifyTaskCommented(long boardId, long taskId, long commentId, long commentAuthorId,
+        string content, CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.CommentAdded(taskId.ToString(), commentId.ToString(),
+            commentAuthorId.ToString(), content);
+
+        var activity = ActivityTracker.Create(
+            type: ActivityType.CommentAdded,
+            description: $"User {commentAuthorId} added a comment to task '{taskId}' on board {boardId}.",
+            userId: commentAuthorId,
+            relatedEntityId: taskId,
+            relatedEntityType: nameof(BoardTask),
+            newValue: new Dictionary<string, object?>
+            {
+                { "CommentId", commentId },
+                { "Content", content }
+            }
+        );
+
+        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
 }
