@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Services;
+using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Tasks.AddCommentToTask;
 
-public class AddCommentToTaskCommandHandler(BoardTaskService boardTaskService, ICurrentUserService currentUserService)
+public class AddCommentToTaskCommandHandler(IBoardTaskService boardTaskService, ICurrentUserService currentUserService)
     : IRequestHandler<AddCommentToTaskCommand, long>
 {
     public async Task<long> Handle(AddCommentToTaskCommand request, CancellationToken cancellationToken)

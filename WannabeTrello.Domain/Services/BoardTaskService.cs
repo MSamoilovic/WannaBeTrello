@@ -134,6 +134,39 @@ public class BoardTaskService(
         await unitOfWork.CompleteAsync(cancellationToken);
     }
 
+    public async Task AssignTaskToUserAsync(long taskId, long newAssigneeId, long performingUserId, CancellationToken cancellationToken)
+    {
+        var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken);
+        if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
+
+        var board = await boardRepository.GetBoardWithDetailsAsync(task.Column.BoardId, cancellationToken);
+        if (board == null) throw new NotFoundException(nameof(Board), task.Column.BoardId);
+
+        var performingMember = board.BoardMembers.FirstOrDefault(bm => bm.UserId == performingUserId);
+        if (performingMember is null || performingMember.Role != BoardRole.Editor)
+        {
+            throw new AccessDeniedException("You don't have permission to assign this task.");
+        }
+
+        var newAssignee = await userRepository.GetByIdAsync(newAssigneeId);
+        if (newAssignee == null) throw new NotFoundException(nameof(User), newAssigneeId);
+
+        var assigneeMembership = board.BoardMembers.FirstOrDefault(bm => bm.UserId == newAssigneeId);
+        if (assigneeMembership is null)
+        {
+            throw new AccessDeniedException("User must be a member of this board to be assigned to a task.");
+        }
+
+        if (assigneeMembership.Role == BoardRole.Viewer)
+        {
+            throw new AccessDeniedException("You cannot assign tasks to viewers.");
+        }
+
+        task.AssignToUser(newAssigneeId, performingUserId);
+        boardTaskRepository.Update(task);
+        await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
     public async Task<long> AddCommentToTaskAsync(long taskId, long userId, string content)
     {
         var task = await boardTaskRepository.GetByIdAsync(taskId);
@@ -160,36 +193,7 @@ public class BoardTaskService(
 
         return comment.Id;
     }
-
-    public async Task AssignTaskToUserAsync(long taskId, long? assigneeId, long performingUserId)
-    {
-        var task = await boardTaskRepository.GetByIdAsync(taskId);
-        if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
-
-
-        var column = await columnRepository.GetByIdAsync(task.ColumnId);
-        if (column == null) throw new NotFoundException(nameof(Column), task.ColumnId);
-        var board = await boardRepository.GetBoardWithDetailsAsync(column.BoardId);
-        if (board == null ||
-            !board.BoardMembers.Any(bm => bm.UserId == performingUserId && bm.Role == BoardRole.Editor))
-        {
-            throw new AccessDeniedException("Nemate dozvolu za dodeljivanje zadataka.");
-        }
-
-        User? assignee = null;
-        if (assigneeId.HasValue)
-        {
-            assignee = await userRepository.GetByIdAsync(assigneeId.Value);
-            if (assignee == null) throw new NotFoundException(nameof(User), assigneeId.Value);
-        }
-
-
-        task.AssignToUser(assigneeId!.Value, performingUserId);
-
-        boardTaskRepository.Update(task);
-        await unitOfWork.CompleteAsync();
-    }
-
+    
     public IQueryable<BoardTask> SearchTasks(long userId)
     {
        

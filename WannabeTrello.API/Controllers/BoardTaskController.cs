@@ -1,10 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Tasks.AddCommentToTask;
+using WannabeTrello.Application.Features.Tasks.ArchiveTask;
+using WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
 using WannabeTrello.Application.Features.Tasks.CreateTask;
 using WannabeTrello.Application.Features.Tasks.GetTaskById;
 using WannabeTrello.Application.Features.Tasks.GetTasksByBoardId;
 using WannabeTrello.Application.Features.Tasks.MoveTask;
+using WannabeTrello.Application.Features.Tasks.RestoreTask;
 using WannabeTrello.Application.Features.Tasks.UpdateTask;
 
 
@@ -113,7 +116,7 @@ namespace WannabeTrello.Controllers
         /// </summary>
         /// <param name="boardId">ID boarda.</param>
         /// <returns>Lista zadataka.</returns>
-        [HttpGet("board/{boardId}")]
+        [HttpGet("board/{boardId:long}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -123,6 +126,29 @@ namespace WannabeTrello.Controllers
             var tasks = await mediator.Send(query);
             return Ok(tasks);
         }
+
+        [HttpPut("{taskId:long}/archive")]
+        [ProducesResponseType(typeof(ArchiveTaskCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ArchiveTask(long taskId)
+        {
+            return Ok(await mediator.Send(new ArchiveTaskCommand(taskId)));
+        }
         
+        [HttpPut("{taskId:long}/restore")]
+        [ProducesResponseType(typeof(RestoreTaskCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RestoreTask(long taskId)
+        {
+            return Ok(await mediator.Send(new RestoreTaskCommand(taskId)));
+        }
+        
+        [HttpPut("{taskId:long}/assign")]
+        [ProducesResponseType(typeof(AssignTaskToUserCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AssignTaskToUser(long taskId, [FromBody] AssignTaskToUserCommand command)
+        {
+            return Ok(await mediator.Send(command));
+        }
     }
 }

@@ -13,4 +13,6 @@ public interface IBoardTaskService
     public Task ArchiveTaskAsync(long taskId,long modifierUserId, CancellationToken cancellationToken);
     public Task RestoreTaskAsync(long taskId, long modifierUserId, CancellationToken cancellationToken);
     Task MoveTaskAsync(long taskId, long newColumnId, long performingUserId, CancellationToken cancellationToken);
+    Task AssignTaskToUserAsync(long taskId, long newAssigneeId, long performingUserId, CancellationToken cancellationToken);
+    Task<long> AddCommentToTaskAsync(long taskId, long userId, string content);
 }
