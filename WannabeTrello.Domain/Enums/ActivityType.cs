@@ -15,6 +15,7 @@ public enum ActivityType
     TaskCreated,
     TaskUpdated,
     TaskMoved,
+    TaskAssigned,
     TaskCompleted,
     CommentAdded,
     BoardDeleted,
