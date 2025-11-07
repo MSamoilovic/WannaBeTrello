@@ -2,7 +2,7 @@
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 
-public interface IUserRepository
+public interface IUserRepository: IRepository<User>
 {
     Task<User?> GetByIdAsync(long id);
     Task<User?> GetByUsernameAsync(string username);
