@@ -1,32 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Specifications.CommentSpecifications;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
-public class CommentRepository: Repository<Comment>, ICommentRepository
+public class CommentRepository(ApplicationDbContext dbContext) : Repository<Comment>(dbContext), ICommentRepository
 {
-    public CommentRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public Task<Comment?> GetCommentDetailsByIdAsync(long commentId, CancellationToken ct)
     {
+        var spec = new GetCommentDetailsSpecification(commentId);
+        return GetSingleAsync(spec, ct);
     }
 
-    
-    public async Task<IEnumerable<Comment>> GetCommentsByTaskIdAsync(long taskId)
+    public Task<IReadOnlyList<Comment>> GetCommentsByTaskIdAsync(long taskId, CancellationToken ct)
     {
-        return await _dbSet
-            .Where(c => c.TaskId == taskId)
-            .OrderBy(c => c.CreatedAt)
-            .ToListAsync();
-    }
-   
-    public async Task AddAsync(Comment comment) => await base.AddAsync(comment);
-    public async Task<Comment?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
-    
-    public async Task UpdateAsync(Comment comment) => base.Update(comment);
-    
-    public async Task DeleteAsync(long id)
-    {
-        var comment = await GetByIdAsync(id);
-        if (comment != null) base.Delete(comment);
+        var spec = new GetCommentsByTaskIdSpecification(taskId);
+        return GetAsync(spec, ct);
     }
 }

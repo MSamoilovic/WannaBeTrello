@@ -13,6 +13,7 @@ public static class ConfigureServices
         services.AddScoped<IActivityTrackerService, ActivityTrackerService>();
         services.AddScoped<IColumnService, ColumnService>();
         services.AddScoped<IBoardTaskService, BoardTaskService>();
+        services.AddScoped<ICommentService, CommentService>();
         
         return services;
     }

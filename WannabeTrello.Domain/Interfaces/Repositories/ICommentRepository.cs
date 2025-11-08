@@ -2,11 +2,9 @@
 
 namespace WannabeTrello.Domain.Interfaces.Repositories;
 
-public interface ICommentRepository
+public interface ICommentRepository: IRepository<Comment>
 {
-    Task<Comment?> GetByIdAsync(long id);
-    Task<IEnumerable<Comment>> GetCommentsByTaskIdAsync(long taskId);
-    Task AddAsync(Comment comment);
-    Task UpdateAsync(Comment comment);
-    Task DeleteAsync(long id);
+    Task<Comment?> GetCommentDetailsByIdAsync(long commentId, CancellationToken ct);
+    Task<IReadOnlyList<Comment>> GetCommentsByTaskIdAsync(long taskId, CancellationToken ct);
+    
 }

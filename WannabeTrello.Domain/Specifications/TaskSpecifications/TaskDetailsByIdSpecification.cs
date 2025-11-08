@@ -9,6 +9,6 @@ public class TaskDetailsByIdSpecification: BaseSpecification<BoardTask>
         AddInclude(t => t.Column);
         AddInclude(t => t.Assignee!);
         AddInclude(t => t.Comments);
-        ApplyTracking();
+        
     }
 }
