@@ -41,7 +41,7 @@ public class Comment: AuditableEntity
 
     public void UpdateContent(string? newContent, long modifyingUserId)
     {
-        if(string.IsNullOrEmpty(newContent))
+        if(string.IsNullOrWhiteSpace(newContent))
             throw new BusinessRuleValidationException("Comment content cannot be empty.");
         
         if (newContent.Length > 300)
