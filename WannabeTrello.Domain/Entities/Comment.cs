@@ -50,15 +50,20 @@ public class Comment: AuditableEntity
         if(IsDeleted)
             throw new BusinessRuleValidationException("Comment is deleted.");
         
-        var oldContent = Content; 
+        var oldValues = new Dictionary<string, object?>();
+        var newValues = new Dictionary<string, object?>();
         
+        
+        oldValues[nameof(Content)] = Content;
         Content = newContent;
+        newValues[nameof(Content)] = newContent;
+        
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifyingUserId;
         IsEdited = true;
         EditedAt = DateTime.UtcNow;
         
-        AddDomainEvent(new CommentUpdatedEvent(Id, TaskId, oldContent, newContent, modifyingUserId));
+        AddDomainEvent(new CommentUpdatedEvent(Id, TaskId, oldValues, newValues, modifyingUserId));
     }
 
     public void Delete(long modifierUserId)

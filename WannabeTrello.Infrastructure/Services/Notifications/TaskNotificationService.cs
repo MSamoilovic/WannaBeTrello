@@ -106,4 +106,51 @@ public class TaskNotificationService(
 
         await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
+
+    public async Task NotifyCommentUpdated(long taskId, long commentId, long modifierUserId, Dictionary<string, object?> oldContent,
+        Dictionary<string, object?> newContent, CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.CommentUpdated(taskId, commentId);
+        
+        var activity = ActivityTracker.Create(
+            type: ActivityType.CommentDeleted,
+            description: $"Comment '{commentId}' was deleted from task '{taskId}'.",
+            userId: modifierUserId,
+            relatedEntityId: commentId,
+            relatedEntityType: nameof(Comment),
+            oldValue: oldContent,
+            newValue: newContent);
+
+        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
+    }
+
+    public async Task NotifyCommentDeleted(long taskId, long commentId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.CommentDeleted(taskId, commentId);
+        
+        var activity = ActivityTracker.Create(
+            type: ActivityType.CommentDeleted,
+            description: $"Comment '{commentId}' was deleted from task '{taskId}'.",
+            userId: modifierUserId,
+            relatedEntityId: commentId,
+            relatedEntityType: nameof(Comment));
+
+        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
+    }
+
+    public async Task NotifyCommentRestored(long taskId, long commentId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        await hubContext.Clients.All.CommentRestored(taskId, commentId);
+        
+        
+        // Create activity tracker record
+        var activity = ActivityTracker.Create(
+            type: ActivityType.CommentRestored,
+            description: $"Comment '{commentId}' was restored on task '{taskId}'.",
+            userId: modifierUserId,
+            relatedEntityId: commentId,
+            relatedEntityType: nameof(Comment));
+
+        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
+    }
 }

@@ -111,6 +111,7 @@ public class CommentTests
     public void UpdateContent_WithValidContent_ShouldRaiseCommentUpdatedEvent()
     {
         // Arrange
+       
         const string oldContent = "Original content";
         const string newContent = "Updated content";
         var comment = Comment.Create(1L, oldContent, 10L);
@@ -125,8 +126,8 @@ public class CommentTests
         var updatedEvent = Assert.IsType<CommentUpdatedEvent>(domainEvent);
         Assert.Equal(comment.Id, updatedEvent.CommentId);
         Assert.Equal(comment.TaskId, updatedEvent.TaskId);
-        Assert.Equal(oldContent, updatedEvent.OldContent);
-        Assert.Equal(newContent, updatedEvent.NewContent);
+        Assert.Equal(oldContent, updatedEvent.OldContent["Content"]);
+        Assert.Equal(newContent, updatedEvent.NewContent["Content"]);
         Assert.Equal(modifyingUserId, updatedEvent.ModifyingUserId);
     }
 

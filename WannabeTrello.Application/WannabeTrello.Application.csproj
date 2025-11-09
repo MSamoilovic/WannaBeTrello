@@ -20,6 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Features\Comments\RestoreComment\" />
+      <Folder Include="Features\Comments\UpdateCommentContent\" />
       <Folder Include="Features\Tasks\NewFolder\" />
       <Folder Include="Services\" />
     </ItemGroup>
