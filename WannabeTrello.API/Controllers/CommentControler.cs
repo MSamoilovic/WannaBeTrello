@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Comments.DeleteComment;
+using WannabeTrello.Application.Features.Comments.RestoreComment;
 using WannabeTrello.Application.Features.Comments.UpdateCommentContent;
 
 namespace WannabeTrello.Controllers;
@@ -28,4 +29,10 @@ public class CommentControler(IMediator mediator): ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteComment(long commentId) =>
         Ok(await mediator.Send(new DeleteCommentCommand(commentId)));
+    
+    [HttpPut("{commentId:long}/restore")]
+    [ProducesResponseType(typeof(RestoreCommentCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RestoreComment(long commentId) =>
+        Ok(await mediator.Send(new RestoreCommentCommand(commentId)));
 }
