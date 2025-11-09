@@ -4,6 +4,7 @@ using WannabeTrello.Application.Features.Tasks.AddCommentToTask;
 using WannabeTrello.Application.Features.Tasks.ArchiveTask;
 using WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
 using WannabeTrello.Application.Features.Tasks.CreateTask;
+using WannabeTrello.Application.Features.Tasks.GetCommentsByTaskId;
 using WannabeTrello.Application.Features.Tasks.GetTaskById;
 using WannabeTrello.Application.Features.Tasks.GetTasksByBoardId;
 using WannabeTrello.Application.Features.Tasks.MoveTask;
@@ -150,5 +151,11 @@ namespace WannabeTrello.Controllers
         {
             return Ok(await mediator.Send(command));
         }
+
+        [HttpGet("{taskId:long}/comments")]
+        [ProducesResponseType(typeof(IReadOnlyList<GetCommentsByTaskIdCommandResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCommentsByTaskId(long taskId) =>
+            Ok(await mediator.Send(new GetCommentsByTaskIdCommand(taskId)));
     }
 }

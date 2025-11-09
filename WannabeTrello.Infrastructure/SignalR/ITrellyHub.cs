@@ -23,8 +23,9 @@ public interface ITrellyHub
         Task TaskAssigned(string boardId, string taskId, string userId);
         
         Task CommentAdded(string taskId, string commentId, string userId, string content);
-        Task CommentUpdated(string taskId, string commentId, string content);
-        Task CommentDeleted(string taskId, string commentId);
+        Task CommentUpdated(long taskId, long commentId);
+        Task CommentDeleted(long taskId, long commentId);
+        Task CommentRestored(long taskId, long commentId);
         
         Task ProjectCreated(long projectId, string? projectName, long creatorUserId);
         Task ProjectUpdated(long projectId, long creatorUserId);
