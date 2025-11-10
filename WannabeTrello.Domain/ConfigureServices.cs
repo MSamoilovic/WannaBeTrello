@@ -14,6 +14,7 @@ public static class ConfigureServices
         services.AddScoped<IColumnService, ColumnService>();
         services.AddScoped<IBoardTaskService, BoardTaskService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<IUserService , UserService>();
         
         return services;
     }

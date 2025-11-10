@@ -4,10 +4,8 @@ namespace WannabeTrello.Domain.Interfaces.Repositories;
 
 public interface IUserRepository: IRepository<User>
 {
-    Task<User?> GetByIdAsync(long id);
-    Task<User?> GetByUsernameAsync(string username);
-    Task<User?> GetByEmailAsync(string email);
-    Task AddAsync(User user);
-    Task UpdateAsync(User user);
-    Task DeleteAsync(long id);
+    Task<User?> GetUserProfileDetailsAsync(long userId, CancellationToken cancellationToken);
+    Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken);
+    Task<User> SearchUserAsync(string searchTerm, CancellationToken cancellationToken);
+    Task<int> CountSearchResultsAsync(string searchTerm, CancellationToken cancellationToken);
 }

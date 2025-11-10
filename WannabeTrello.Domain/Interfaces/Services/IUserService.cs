@@ -1,0 +1,26 @@
+﻿using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Entities.Common;
+
+namespace WannabeTrello.Domain.Interfaces.Services;
+
+public interface IUserService
+{
+    Task<User> CreateUserAsync( string userName,
+        string email,
+        string? firstName = null,
+        string? lastName = null,
+        string? bio = null,
+        string? profilePictureUrl = null,
+        long? createdBy = null, CancellationToken cancellationToken = default);
+    
+    Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Board>> GetUserBoardMemberships(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken);
+    Task<User> UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken);
+    Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
+    Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
+    Task<PagedResult<User>> SearchUsersAsync(string searchTerm, int pageSize, int pageNumber, CancellationToken cancellationToken);
+}
