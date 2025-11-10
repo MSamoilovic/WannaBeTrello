@@ -11,10 +11,22 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.FirstName)
-            .HasMaxLength(50);
+            .HasMaxLength(100);
         
         builder.Property(u => u.LastName)
-            .HasMaxLength(50);
+            .HasMaxLength(100);
+
+        builder.Property(u => u.Bio)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.ProfilePictureUrl)
+            .HasMaxLength(2048);
+
+        builder.Property(u => u.IsActive)
+            .HasDefaultValue(true);
+
+        builder.Property(u => u.CreatedAt)
+            .HasDefaultValueSql("GETUTCDATE()");
 
         builder.Property(u => u.Email)
             .IsRequired()
