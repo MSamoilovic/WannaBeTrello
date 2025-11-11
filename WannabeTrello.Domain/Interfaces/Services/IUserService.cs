@@ -5,6 +5,7 @@ namespace WannabeTrello.Domain.Interfaces.Services;
 
 public interface IUserService
 {
+    User CreateUserForAuth(string userName, string email, string? firstName = null, string? lastName = null, string? bio = null, string? profilePictureUrl = null, long? createdBy = null);
     Task<User> CreateUserAsync( string userName,
         string email,
         string? firstName = null,

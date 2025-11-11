@@ -56,7 +56,7 @@ public class DeleteColumnCommandHandlerTests
             handler.Handle(command, CancellationToken.None));
 
         Assert.Equal("User is not authenticated", exception.Message);
-        columnServiceMock.Verify(s => s.DeleteColumnAsync(It.IsAny<long>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
+        columnServiceMock.Verify(s => s.DeleteColumnAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class DeleteColumnCommandHandlerTests
 
         var columnServiceMock = new Mock<IColumnService>();
         columnServiceMock
-            .Setup(s => s.DeleteColumnAsync(columnId, null, It.IsAny<CancellationToken>()))
+            .Setup(s => s.DeleteColumnAsync(columnId, 0, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columnId);
 
         var handler = new DeleteColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
@@ -81,7 +81,7 @@ public class DeleteColumnCommandHandlerTests
         await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        columnServiceMock.Verify(s => s.DeleteColumnAsync(columnId, null, It.IsAny<CancellationToken>()), Times.Once);
+        columnServiceMock.Verify(s => s.DeleteColumnAsync(columnId, 0, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
