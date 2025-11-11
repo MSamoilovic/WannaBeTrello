@@ -13,8 +13,7 @@ public class GetUserProfileQueryHandler(IUserService userService, ICurrentUserSe
             throw new UnauthorizedAccessException("User is not authenticated");
         }
 
-        var userId = currentUserService.UserId.Value;
-        var user = await userService.GetUserProfileAsync(userId, cancellationToken);
+        var user = await userService.GetUserProfileAsync(request.UserId, cancellationToken);
 
         return GetUserProfileQueryResponse.FromEntity(user!);
     }

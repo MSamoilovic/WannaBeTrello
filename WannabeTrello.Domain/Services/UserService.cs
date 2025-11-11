@@ -61,9 +61,9 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         throw new NotImplementedException();
     }
 
-    public Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken)
+    public async Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await userRepository.GetUserProfileDetailsAsync(userId, cancellationToken);
     }
 
     public Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)

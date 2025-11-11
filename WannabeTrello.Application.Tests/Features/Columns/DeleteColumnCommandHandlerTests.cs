@@ -60,7 +60,7 @@ public class DeleteColumnCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenUserIdIsNull_ShouldCallServiceWithNullUserId()
+    public async Task Handle_WhenUserIdIsNull_ShouldThrowUnauthorizedAccessException()
     {
         // Arrange
         var columnId = 789L;
@@ -71,17 +71,14 @@ public class DeleteColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var columnServiceMock = new Mock<IColumnService>();
-        columnServiceMock
-            .Setup(s => s.DeleteColumnAsync(columnId, 0, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(columnId);
-
         var handler = new DeleteColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
 
-        // Act
-        await handler.Handle(command, CancellationToken.None);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            handler.Handle(command, CancellationToken.None));
 
-        // Assert
-        columnServiceMock.Verify(s => s.DeleteColumnAsync(columnId, 0, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Equal("User is not authenticated", exception.Message);
+        columnServiceMock.Verify(s => s.DeleteColumnAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
