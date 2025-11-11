@@ -25,9 +25,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.IsActive)
             .HasDefaultValue(true);
 
-        builder.Property(u => u.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");
-
         builder.Property(u => u.Email)
             .IsRequired()
             .HasMaxLength(256);

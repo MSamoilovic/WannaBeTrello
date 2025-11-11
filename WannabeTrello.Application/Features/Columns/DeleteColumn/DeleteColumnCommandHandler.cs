@@ -10,10 +10,10 @@ public class DeleteColumnCommandHandler(IColumnService columnService, ICurrentUs
 {
     public async Task<DeleteColumnCommandResponse> Handle(DeleteColumnCommand request, CancellationToken cancellationToken)
     {
-        if (!currentUserService.IsAuthenticated)
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
             throw new UnauthorizedAccessException("User is not authenticated");
         
-        var userId = currentUserService.UserId;
+        var userId = currentUserService.UserId.Value;
         
         var columnId = await columnService.DeleteColumnAsync(request.ColumnId, userId, cancellationToken);
         
