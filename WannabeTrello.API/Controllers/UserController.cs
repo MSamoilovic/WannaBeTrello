@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
 using WannabeTrello.Application.Features.Users.GetUserProfile;
+using WannabeTrello.Application.Features.Users.UpdateUserProfile;
 
 namespace WannabeTrello.Controllers
 {
@@ -21,5 +22,19 @@ namespace WannabeTrello.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCurrentUserProfile()
             => Ok(await mediator.Send(new GetCurrentUserProfileQuery()));
+
+
+        [HttpPut("{userId: long}")]
+        [ProducesResponseType(typeof(UpdateUserProfileCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUserProfile(long userId, [FromBody] UpdateUserProfileCommand command)
+        {
+            if (userId != command.UserId)
+            {
+                return BadRequest();
+            }
+
+            return Ok(await mediator.Send(command));
+        }
     }
 }

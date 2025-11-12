@@ -20,7 +20,7 @@ public interface IUserService
     Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Board>> GetUserBoardMemberships(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken);
-    Task<User> UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken);
+    Task UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken);
     Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
     Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
     Task<PagedResult<User>> SearchUsersAsync(string searchTerm, int pageSize, int pageNumber, CancellationToken cancellationToken);

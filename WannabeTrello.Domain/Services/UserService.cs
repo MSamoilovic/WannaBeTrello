@@ -1,5 +1,6 @@
 ﻿using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Entities.Common;
+using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -81,8 +82,23 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         throw new NotImplementedException();
     }
 
-    public Task<User> UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken)
+    public async Task UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+       var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        if (!string.IsNullOrWhiteSpace(firstName) && firstName.Length > 100)
+            throw new BusinessRuleValidationException("First name cannot exceed 100 characters");
+
+        if (!string.IsNullOrWhiteSpace(lastName) && lastName.Length > 300)
+            throw new BusinessRuleValidationException("Last name cannot exceed 100 characters");
+
+        if (!string.IsNullOrWhiteSpace(bio) && bio.Length > 500)
+            throw new BusinessRuleValidationException("Bio cannot exceed 500 characters");
+
+        //TODO: Add validation for profile picture
+
+        user.UpdateProfile(firstName, lastName, bio, profilePictureUrl, modifiedBy);
+        await unitOfWork.CompleteAsync(cancellationToken);
+
     }
 }
