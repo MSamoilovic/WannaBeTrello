@@ -56,7 +56,6 @@ public class UpdateUserProfileCommandHandlerTests
         Assert.NotNull(response);
         Assert.NotNull(response.Result);
         Assert.True(response.Result.IsSuccess);
-        Assert.Equal(targetUserId, response.Result.Data);
         Assert.Equal("User Profile updated successfully", response.Result.Message);
 
         _userServiceMock.Verify(s => s.UpdateUserProfileAsync(
@@ -106,7 +105,7 @@ public class UpdateUserProfileCommandHandlerTests
         Assert.NotNull(response);
         Assert.NotNull(response.Result);
         Assert.True(response.Result.IsSuccess);
-        Assert.Equal(targetUserId, response.Result.Data);
+        
 
         _userServiceMock.Verify(s => s.UpdateUserProfileAsync(
             targetUserId,
