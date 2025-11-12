@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Users.DeactivateUser;
 using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
 using WannabeTrello.Application.Features.Users.GetUserProfile;
+using WannabeTrello.Application.Features.Users.ReactivateUser;
 using WannabeTrello.Application.Features.Users.UpdateUserProfile;
 
 namespace WannabeTrello.Controllers
@@ -43,5 +44,11 @@ namespace WannabeTrello.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeactivateUserProfile(long userId)
             => Ok(await mediator.Send(new DeactivateUserCommand(userId)));
+
+        [HttpPost("{userId: long}/reactivate")]
+        [ProducesResponseType(typeof(ReactivateUserCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ReactivateUserProfile(long userId)
+          => Ok(await mediator.Send(new ReactivateUserCommand(userId)));
     }
 }

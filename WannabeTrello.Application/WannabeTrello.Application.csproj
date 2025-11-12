@@ -21,7 +21,6 @@
 
     <ItemGroup>
       <Folder Include="Features\Tasks\NewFolder\" />
-      <Folder Include="Features\Users\ReactivateUser\" />
       <Folder Include="Services\" />
     </ItemGroup>
 
