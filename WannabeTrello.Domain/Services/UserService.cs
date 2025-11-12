@@ -37,9 +37,13 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
        return User.Create(userName, email, firstName, lastName, bio, profilePictureUrl, createdBy);
     }
 
-    public Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
+    public async Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        user.Deactivate(modifierUserId);
+
+        await unitOfWork.CompleteAsync(cancellationToken);
     }
 
     public Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken)
@@ -72,9 +76,12 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         throw new NotImplementedException();
     }
 
-    public Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
+    public async Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        user.Reactivate(modifierUserId);
+        await unitOfWork.CompleteAsync(cancellationToken);
     }
 
     public Task<PagedResult<User>> SearchUsersAsync(string searchTerm, int pageSize, int pageNumber, CancellationToken cancellationToken)
