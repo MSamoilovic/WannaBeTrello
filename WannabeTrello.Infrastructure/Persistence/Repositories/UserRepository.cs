@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities;
+﻿using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
 using WannabeTrello.Domain.Specifications.UserSpecifications;
 
@@ -19,13 +18,9 @@ public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(d
        return GetSingleAsync(specification, cancellationToken);
     }
 
-    public Task<User> SearchUserAsync(string searchTerm, CancellationToken cancellationToken)
+    public IQueryable<User> SearchUsers()
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<int> CountSearchResultsAsync(string searchTerm, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+        var specification = new SearchUserSpecification();
+        return ApplySpecification(specification);
     }
 }

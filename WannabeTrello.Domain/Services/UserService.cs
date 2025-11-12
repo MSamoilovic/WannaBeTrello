@@ -84,11 +84,8 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         await unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public Task<PagedResult<User>> SearchUsersAsync(string searchTerm, int pageSize, int pageNumber, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
+    public IQueryable<User> SearchUsers() => userRepository.SearchUsers();
+    
     public async Task UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken)
     {
        var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);

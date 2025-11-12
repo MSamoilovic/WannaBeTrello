@@ -6,6 +6,7 @@ using WannabeTrello.Application.Features.Tasks.SearchTasks;
 using OData.Swagger.Services;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Services;
+using WannabeTrello.Application.Features.Users.SearchUsers;
 
 namespace WannabeTrello.Extensions;
 
@@ -21,7 +22,10 @@ public static class ConfigureServices
         {
             
             var modelBuilder = new ODataConventionModelBuilder();
+
             modelBuilder.EntitySet<SearchTaskQueryResponse>("Tasks");
+
+            modelBuilder.EntitySet<SearchUsersQueryResponse>("Users");
 
             options.AddRouteComponents("odata", modelBuilder.GetEdmModel())
                    .Select()
