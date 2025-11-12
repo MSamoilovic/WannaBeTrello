@@ -1,33 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Domain.Specifications.UserSpecifications;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
-public class UserRepository: Repository<User>, IUserRepository
+public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(dbContext), IUserRepository
 {
-    public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public Task<User?> GetUserProfileDetailsAsync(long userId, CancellationToken cancellationToken)
     {
+        var specification = new GetUserProfileDetailsSpecification(userId);
+        return GetSingleAsync(specification, cancellationToken);
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken)
     {
-        return await _dbSet.FirstOrDefaultAsync(u => u.UserName == username);
+       var specification = new GetUserProfileSpecification(userId);
+       return GetSingleAsync(specification, cancellationToken);
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public Task<User> SearchUserAsync(string searchTerm, CancellationToken cancellationToken)
     {
-        return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+        throw new NotImplementedException();
     }
-    
 
-    public async Task AddAsync(User user) => await base.AddAsync(user);
-    public async Task<IEnumerable<User>> GetAllAsync() => await base.GetAllAsync();
-    public async Task<User?> GetByIdAsync(long id) => await base.GetByIdAsync(id);
-    public async Task UpdateAsync(User user) => base.Update(user);
-    public async Task DeleteAsync(long id)
+    public Task<int> CountSearchResultsAsync(string searchTerm, CancellationToken cancellationToken)
     {
-        var user = await GetByIdAsync(id);
-        if (user != null) base.Delete(user);
+        throw new NotImplementedException();
     }
 }
