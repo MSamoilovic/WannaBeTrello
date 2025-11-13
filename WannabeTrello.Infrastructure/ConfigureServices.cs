@@ -105,6 +105,7 @@ public static class ConfigureServices
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
         services.AddScoped<IProjectNotificationService, ProjectNotificationService>();
         services.AddScoped<IColumnNotificationService, ColumnNotificationService>();
+        services.AddScoped<IUserNotificationService, UserNotificationService>();
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
