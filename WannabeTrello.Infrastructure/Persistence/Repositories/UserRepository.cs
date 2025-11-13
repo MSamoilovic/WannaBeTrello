@@ -33,6 +33,14 @@ public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(d
        return await query.ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)
+    {
+        var spec = new GetUserProjectsSpecification(userId);
+        var query = SpecificationQueryBuilder.GetQuery(dbContext.Projects, spec);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Board>> GetUserBoardsAsync(long userId, CancellationToken cancellationToken)
     {
         var spec = new GetUserBoardsSpecifications(userId);

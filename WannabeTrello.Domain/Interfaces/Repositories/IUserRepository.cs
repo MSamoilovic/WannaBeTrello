@@ -8,6 +8,7 @@ public interface IUserRepository: IRepository<User>
     Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken);
     IQueryable<User> SearchUsers();
     Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Board>> GetUserBoardsAsync(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken);
 }

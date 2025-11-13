@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Features.Users.DeactivateUser;
 using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
 using WannabeTrello.Application.Features.Users.GetUserProfile;
+using WannabeTrello.Application.Features.Users.GetUserProjects;
 using WannabeTrello.Application.Features.Users.ReactivateUser;
 using WannabeTrello.Application.Features.Users.UpdateUserProfile;
 
@@ -25,6 +26,12 @@ namespace WannabeTrello.Controllers
         public async Task<IActionResult> GetCurrentUserProfile()
             => Ok(await mediator.Send(new GetCurrentUserProfileQuery()));
 
+        [HttpGet("{userId:long}/projects")]
+        [ProducesResponseType(typeof(GetUserProjectsQueryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUserProjects(long userId)
+            => Ok(await mediator.Send(new GetUserProjectsQuery(userId)));
 
         [HttpPut("{userId: long}")]
         [ProducesResponseType(typeof(UpdateUserProfileCommandResponse), StatusCodes.Status200OK)]

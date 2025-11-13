@@ -74,8 +74,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 
     public Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)
     {
-        //TODO:
-        throw new NotImplementedException();
+        return userRepository.GetUserProjectsAsync(userId, cancellationToken);
     }
 
     public async Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
