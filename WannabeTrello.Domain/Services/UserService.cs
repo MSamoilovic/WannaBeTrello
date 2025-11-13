@@ -48,22 +48,23 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 
     public Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return userRepository.GetUserAssignedTasksAsync(userId, cancellationToken);
     }
 
     public Task<IReadOnlyList<Board>> GetUserBoardMemberships(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+       return userRepository.GetUserBoardsAsync(userId, cancellationToken);
     }
 
     public Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken)
     {
+        //TODO:
         throw new NotImplementedException();
     }
 
     public Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return userRepository.GetUserOwnedProjectsAsync(userId, cancellationToken);
     }
 
     public async Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken)
@@ -73,6 +74,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 
     public Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)
     {
+        //TODO:
         throw new NotImplementedException();
     }
 
