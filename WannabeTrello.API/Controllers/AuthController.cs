@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Common.Exceptions;
+using WannabeTrello.Application.Features.Auth.ChangePassword;
 using WannabeTrello.Application.Features.Auth.LoginUser;
 using WannabeTrello.Application.Features.Auth.RegisterUser;
 
@@ -42,4 +44,11 @@ public class AuthController(IMediator mediator) : ControllerBase
         }
        
     }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    [ProducesResponseType(typeof(ChangePasswordCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        => Ok(await mediator.Send(command));
 }

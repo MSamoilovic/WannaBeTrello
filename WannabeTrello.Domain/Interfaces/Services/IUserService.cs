@@ -1,5 +1,4 @@
 ﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Entities.Common;
 
 namespace WannabeTrello.Domain.Interfaces.Services;
 
@@ -23,5 +22,5 @@ public interface IUserService
     Task UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken);
     Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
     Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
-    Task<PagedResult<User>> SearchUsersAsync(string searchTerm, int pageSize, int pageNumber, CancellationToken cancellationToken);
+    IQueryable<User> SearchUsers();
 }

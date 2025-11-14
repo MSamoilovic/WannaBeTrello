@@ -19,13 +19,41 @@ public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(d
        return GetSingleAsync(specification, cancellationToken);
     }
 
-    public Task<User> SearchUserAsync(string searchTerm, CancellationToken cancellationToken)
+    public IQueryable<User> SearchUsers()
     {
-        throw new NotImplementedException();
+        var specification = new SearchUserSpecification();
+        return ApplySpecification(specification);
     }
 
-    public Task<int> CountSearchResultsAsync(string searchTerm, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+       var spec = new GetUserOwnedProjectsSpecification(userId);
+       var query = SpecificationQueryBuilder.GetQuery(dbContext.Projects, spec);
+
+       return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)
+    {
+        var spec = new GetUserProjectsSpecification(userId);
+        var query = SpecificationQueryBuilder.GetQuery(dbContext.Projects, spec);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Board>> GetUserBoardsAsync(long userId, CancellationToken cancellationToken)
+    {
+        var spec = new GetUserBoardsSpecifications(userId);
+        var query = SpecificationQueryBuilder.GetQuery(dbContext.Boards, spec);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken)
+    {
+        var spec = new GetUserAssingedTasksSpecification(userId);
+        var query = SpecificationQueryBuilder.GetQuery(dbContext.Tasks, spec);
+
+        return await query.ToListAsync(cancellationToken);
     }
 }

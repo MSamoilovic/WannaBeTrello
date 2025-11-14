@@ -30,4 +30,7 @@ public enum ActivityType
     UserInvited,
     UserJoinedBoard,
     UserRemovedFromBoard,
+    UserProfileUpdated,
+    UserDeactivated,
+    UserReactivated,
 }
