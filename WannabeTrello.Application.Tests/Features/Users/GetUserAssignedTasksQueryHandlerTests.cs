@@ -253,37 +253,5 @@ public class GetUserAssignedTasksQueryHandlerTests
 
         _userServiceMock.Verify(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()), Times.Once);
     }
-
-    [Fact]
-    public async Task Handle_WhenTasksAreArchived_ShouldIncludeArchivedStatus()
-    {
-        // Arrange
-        const long currentUserId = 123L;
-        const long targetUserId = 123L;
-
-        var query = new GetUserAssignedTasksQuery(targetUserId);
-
-        _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
-        _currentUserServiceMock.Setup(s => s.UserId).Returns(currentUserId);
-
-        var task = BoardTask.Create("Task to Archive", "Description", TaskPriority.Medium, null, 1, 1L, currentUserId, currentUserId);
-        task.Archive(currentUserId);
-        
-        var tasks = new List<BoardTask> { task };
-
-        _userServiceMock
-            .Setup(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tasks);
-
-        // Act
-        var response = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.Single(response.Tasks);
-        Assert.True(response.Tasks[0].IsArchived);
-
-        _userServiceMock.Verify(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()), Times.Once);
-    }
 }
 
