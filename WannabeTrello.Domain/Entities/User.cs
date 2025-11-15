@@ -241,7 +241,7 @@ public class User : IdentityUser<long>
         return trimmed;
     }
 
-    private void EnsureActive()
+    public void EnsureActive()
     {
         if (!IsActive)
         {

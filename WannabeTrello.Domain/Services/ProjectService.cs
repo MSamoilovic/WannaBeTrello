@@ -81,6 +81,12 @@ public class ProjectService(
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
 
+        var newMember = await userRepository.GetByIdAsync(newMemberId);
+        if (newMember is null)
+            throw new NotFoundException(nameof(User), newMemberId);
+
+        newMember.EnsureActive();
+
         project.AddMember(newMemberId, role, inviterUserId);
 
         projectRepository.Update(project);

@@ -20,11 +20,16 @@ public class LoginUserCommandHandler(
             throw new UnauthorizedAccessException("Neispravno korisničko ime ili lozinka.");
         }
 
+        user.EnsureActive();
+
         var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
         {
             throw new UnauthorizedAccessException("Neispravno korisničko ime ili lozinka.");
         }
+
+        user.UpdateLastLogin();
+        await userManager.UpdateAsync(user);
 
         var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
         return new LoginUserCommandResponse(token);

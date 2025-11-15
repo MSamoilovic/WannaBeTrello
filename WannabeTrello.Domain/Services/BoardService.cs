@@ -155,6 +155,8 @@ public class BoardService(
         if (user == null)
             throw new NotFoundException(nameof(User), userId);
 
+        user.EnsureActive();
+
         // Provera da li je inviter član board-a
         if (!board.IsMember(inviterUserId))
             throw new AccessDeniedException("Samo članovi board-a mogu dodavati nove članove.");
