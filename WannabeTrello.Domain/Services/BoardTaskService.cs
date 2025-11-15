@@ -34,6 +34,8 @@ public class BoardTaskService(
         {
             var assignee = await userRepository.GetByIdAsync(assigneeId.Value);
             if (assignee == null) throw new NotFoundException(nameof(User), assigneeId.Value);
+            
+            assignee.EnsureActive();
         }
 
         var task = BoardTask.Create(title, description, priority, dueDate, position, columnId, assigneeId,
@@ -148,8 +150,10 @@ public class BoardTaskService(
             throw new AccessDeniedException("You don't have permission to assign this task.");
         }
 
-        var newAssignee = await userRepository.GetByIdAsync(newAssigneeId);
+        var newAssignee = await userRepository.GetUserProfileAsync(newAssigneeId, cancellationToken);
         if (newAssignee == null) throw new NotFoundException(nameof(User), newAssigneeId);
+
+        newAssignee.EnsureActive();
 
         var assigneeMembership = board.BoardMembers.FirstOrDefault(bm => bm.UserId == newAssigneeId);
         if (assigneeMembership is null)
@@ -174,6 +178,8 @@ public class BoardTaskService(
 
         var user = await userRepository.GetByIdAsync(userId);
         if (user == null) throw new NotFoundException(nameof(User), userId);
+
+        user.EnsureActive();
 
         // Provera autorizacije: Da li korisnik ima dozvolu za komentarisanje
         var column = await columnRepository.GetByIdAsync(task.ColumnId);
