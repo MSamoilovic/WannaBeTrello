@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -83,10 +84,20 @@ public static class ConfigureServices
                         Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
                         return Task.CompletedTask;
                     },
-                    OnTokenValidated = context =>
+                    OnTokenValidated = async context =>
                     {
-                        Console.WriteLine("Authentication succeeded!");
-                        return Task.CompletedTask;
+                        var userManager = context.HttpContext.RequestServices
+                            .GetRequiredService<UserManager<User>>();
+                        
+                        var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (long.TryParse(userId, out var id))
+                        {
+                            var user = await userManager.FindByIdAsync(id.ToString());
+                            if (user == null || !user.IsActive)
+                            {
+                                context.Fail("User is not active");
+                            }
+                        }
                     }
                 };
             });
