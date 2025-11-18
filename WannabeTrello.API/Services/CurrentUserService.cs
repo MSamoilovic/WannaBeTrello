@@ -22,4 +22,6 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     public string? UserName { get; }
 
     public bool IsAuthenticated => httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+    public string UserIPAddress => httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 }

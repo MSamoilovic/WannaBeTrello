@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Common.Exceptions;
 using WannabeTrello.Application.Features.Auth.ChangePassword;
+using WannabeTrello.Application.Features.Auth.ForgotPassword;
 using WannabeTrello.Application.Features.Auth.LoginUser;
 using WannabeTrello.Application.Features.Auth.RegisterUser;
 
@@ -50,5 +51,12 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ChangePasswordCommandResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        => Ok(await mediator.Send(command));
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ForgotPasswordCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         => Ok(await mediator.Send(command));
 }

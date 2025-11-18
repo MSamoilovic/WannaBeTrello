@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Features\Auth\ResetPassword\" />
       <Folder Include="Features\Tasks\NewFolder\" />
       <Folder Include="Services\" />
     </ItemGroup>

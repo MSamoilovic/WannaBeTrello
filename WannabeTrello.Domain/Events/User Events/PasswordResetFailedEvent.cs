@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Auth_Events;
+﻿namespace WannabeTrello.Domain.Events.UserEvents;
 
 public class PasswordResetFailedEvent(string email,
     string reason,
