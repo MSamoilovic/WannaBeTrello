@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WannabeTrello.Domain.Events;
-using WannabeTrello.Domain.Events.Auth_Events;
 using WannabeTrello.Domain.Events.UserEvents;
 using WannabeTrello.Domain.Exceptions;
 

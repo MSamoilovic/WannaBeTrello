@@ -6,6 +6,7 @@ using WannabeTrello.Application.Features.Auth.ChangePassword;
 using WannabeTrello.Application.Features.Auth.ForgotPassword;
 using WannabeTrello.Application.Features.Auth.LoginUser;
 using WannabeTrello.Application.Features.Auth.RegisterUser;
+using WannabeTrello.Application.Features.Auth.ResetPassword;
 
 namespace WannabeTrello.Controllers;
 
@@ -58,5 +59,13 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ForgotPasswordCommandResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+        => Ok(await mediator.Send(command));
+
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ResetPasswordCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         => Ok(await mediator.Send(command));
 }
