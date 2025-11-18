@@ -28,6 +28,8 @@ public class User : IdentityUser<long>
     public long? LastModifiedBy { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
     public DateTime? DeactivatedAt { get; private set; }
+    public DateTime? PasswordResetRequestedAt { get; private set; }
+    public string? PasswordResetRequestIpAddress { get; private set; }
 
     public string DisplayName
     {
@@ -255,6 +257,23 @@ public class User : IdentityUser<long>
         {
             throw new BusinessRuleValidationException("Actor identifier must be a positive number.");
         }
+    }
+
+    public void RequestPasswordReset(string ipAddress)
+    {
+        PasswordResetRequestedAt = DateTime.UtcNow;
+        PasswordResetRequestIpAddress = ipAddress;
+
+        AddDomainEvent(new PasswordResetRequestedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
+    }
+
+    public void CompletePasswordReset(string ipAddress)
+    {
+        PasswordResetRequestedAt = null;
+        PasswordResetRequestIpAddress = null;
+        SecurityStamp = Guid.NewGuid().ToString(); // Invalidates all JWT tokens
+
+        AddDomainEvent(new PasswordResetCompletedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
     }
 
     private void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);

@@ -111,6 +111,7 @@ public static class ConfigureServices
         services.AddScoped<IActivityTrackerRepository, ActivityTrackerRepository>();
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();

@@ -23,4 +23,5 @@ public interface IUserService
     Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
     Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken);
     IQueryable<User> SearchUsers();
+   
 }

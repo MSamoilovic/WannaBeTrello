@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Events\Auth Events\" />
       <Folder Include="Specifications\ColumnSpecifications\" />
     </ItemGroup>
     
