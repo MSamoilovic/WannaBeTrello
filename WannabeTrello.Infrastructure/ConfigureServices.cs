@@ -1,17 +1,20 @@
-﻿using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using System.Security.Claims;
+using System.Text;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Infrastructure.Options;
+using WannabeTrello.Infrastructure.Options.Validators;
 using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
@@ -36,11 +39,11 @@ public static class ConfigureServices
         
         services.AddIdentity<User, IdentityRole<long>>(options => 
             {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
                 options.Password.RequiredUniqueChars = 1;
 
                 // Konfiguracija Lockout-a (opciono)
@@ -101,6 +104,18 @@ public static class ConfigureServices
                     }
                 };
             });
+
+        //--- Registracija Option patterna -- 
+
+        services.Configure<EmailOptions>(
+            configuration.GetSection(EmailOptions.SectionName));
+        services.AddSingleton<IValidateOptions<EmailOptions>, EmailOptionsValidator>();
+
+        services.Configure<JwtOptions>(
+            configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
+
+
         // --- Repozitorijumi ---
         services.AddScoped<IBoardRepository, BoardRepository>();
         services.AddScoped<IColumnRepository, ColumnRepository>();
