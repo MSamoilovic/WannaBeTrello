@@ -1,30 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Infrastructure.Options;
 
 namespace WannabeTrello.Infrastructure.Services;
 
 public class EmailService : IEmailService
 {
-    private readonly IConfiguration _configuration;
-    private readonly string _smtpHost;
-    private readonly int _smtpPort;
-    private readonly string _smtpUsername;
-    private readonly string _smtpPassword;
-    private readonly string _fromEmail;
-    private readonly string _fromName;
+    private readonly EmailOptions _options;
 
-    public EmailService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-        _smtpHost = configuration["Email:SmtpHost"] ?? throw new InvalidOperationException("Email:SmtpHost not configured");
-        _smtpPort = int.Parse(configuration["Email:SmtpPort"] ?? "587");
-        _smtpUsername = configuration["Email:SmtpUsername"] ?? throw new InvalidOperationException("Email:SmtpUsername not configured");
-        _smtpPassword = configuration["Email:SmtpPassword"] ?? throw new InvalidOperationException("Email:SmtpPassword not configured");
-        _fromEmail = configuration["Email:FromEmail"] ?? throw new InvalidOperationException("Email:FromEmail not configured");
-        _fromName = configuration["Email:FromName"] ?? "WannabeTrello";
-    }
+    public EmailService(IOptions<EmailOptions> options) => _options = options.Value;
 
     public async Task SendPasswordResetConfirmationEmailAsync(string toEmail, string userName, CancellationToken cancellationToken = default)
     {
@@ -48,15 +34,15 @@ public class EmailService : IEmailService
         string body,
         CancellationToken cancellationToken)
     {
-        using var client = new SmtpClient(_smtpHost, _smtpPort)
+        using var client = new SmtpClient(_options.SmtpHost, _options.SmtpPort)
         {
             EnableSsl = true,
-            Credentials = new NetworkCredential(_smtpUsername, _smtpPassword)
+            Credentials = new NetworkCredential(_options.SmtpUsername, _options.SmtpPassword)
         };
 
         var message = new MailMessage
         {
-            From = new MailAddress(_fromEmail, _fromName),
+            From = new MailAddress(_options.FromEmail, _options.FromName),
             Subject = subject,
             Body = body,
             IsBodyHtml = true

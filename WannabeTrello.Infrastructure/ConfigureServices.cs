@@ -58,63 +58,62 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>() // Povezuje Identity sa vašim DbContext-om
             .AddDefaultTokenProviders(); // Omogućava generisanje tokena za reset lozinke, email potvrdu itd.
 
-            // --- JWT Bearer Authentication ---
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty)),
-                    ClockSkew = TimeSpan.Zero
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                        Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = async context =>
-                    {
-                        var userManager = context.HttpContext.RequestServices
-                            .GetRequiredService<UserManager<User>>();
-                        
-                        var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        if (long.TryParse(userId, out var id))
-                        {
-                            var user = await userManager.FindByIdAsync(id.ToString());
-                            if (user == null || !user.IsActive)
-                            {
-                                context.Fail("User is not active");
-                            }
-                        }
-                    }
-                };
-            });
-
         //--- Registracija Option patterna -- 
-
         services.Configure<EmailOptions>(
             configuration.GetSection(EmailOptions.SectionName));
         services.AddSingleton<IValidateOptions<EmailOptions>, EmailOptionsValidator>();
 
-        services.Configure<JwtOptions>(
-            configuration.GetSection(JwtOptions.SectionName));
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateOnStart();
         services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
 
+        // --- JWT Bearer Authentication ---
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                    Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = async context =>
+                {
+                    var userManager = context.HttpContext.RequestServices
+                        .GetRequiredService<UserManager<User>>();
+                    
+                    var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (long.TryParse(userId, out var id))
+                    {
+                        var user = await userManager.FindByIdAsync(id.ToString());
+                        if (user == null || !user.IsActive)
+                        {
+                            context.Fail("User is not active");
+                        }
+                    }
+                }
+            };
+        });
+
+        // Post-configure JWT Bearer options with IOptions pattern
+        services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigure>();
 
         // --- Repozitorijumi ---
         services.AddScoped<IBoardRepository, BoardRepository>();
