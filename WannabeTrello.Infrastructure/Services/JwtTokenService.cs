@@ -2,15 +2,18 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using WannabeTrello.Domain.Entities;
+using WannabeTrello.Infrastructure.Options;
 
 namespace WannabeTrello.Infrastructure.Services;
 
-public class JwtTokenService(IConfiguration configuration, UserManager<User> userManager)
+public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> userManager)
     : IJwtTokenService
 {
+
+    private  JwtOptions Options => _options.Value;
     public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var claims = new List<Claim>
@@ -23,21 +26,14 @@ public class JwtTokenService(IConfiguration configuration, UserManager<User> use
         var roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes( Options.Key ?? string.Empty));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var expiryMinutesStr = configuration["Jwt:ExpiryMinutes"];
-        var expiryMinutes = 60; // default 60 minutes
-        if (int.TryParse(expiryMinutesStr, out var parsed))
-        {
-            expiryMinutes = parsed;
-        }
-
-        var expires = DateTime.UtcNow.AddMinutes(expiryMinutes);
+        var expires = DateTime.UtcNow.AddMinutes(Options.ExpiryMinutes);
 
         var token = new JwtSecurityToken(
-            configuration["Jwt:Issuer"],
-            configuration["Jwt:Audience"],
+            Options.Issuer,
+            Options.Audience,
             claims,
             expires: expires,
             signingCredentials: creds

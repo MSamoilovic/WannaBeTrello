@@ -1,17 +1,20 @@
-﻿using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using System.Security.Claims;
+using System.Text;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces;
 using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Infrastructure.Options;
+using WannabeTrello.Infrastructure.Options.Validators;
 using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
@@ -36,11 +39,11 @@ public static class ConfigureServices
         
         services.AddIdentity<User, IdentityRole<long>>(options => 
             {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
                 options.Password.RequiredUniqueChars = 1;
 
                 // Konfiguracija Lockout-a (opciono)
@@ -55,52 +58,63 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>() // Povezuje Identity sa vašim DbContext-om
             .AddDefaultTokenProviders(); // Omogućava generisanje tokena za reset lozinke, email potvrdu itd.
 
-            // --- JWT Bearer Authentication ---
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? string.Empty)),
-                    ClockSkew = TimeSpan.Zero
-                };
+        //--- Registracija Option patterna -- 
+        services.Configure<EmailOptions>(
+            configuration.GetSection(EmailOptions.SectionName));
+        services.AddSingleton<IValidateOptions<EmailOptions>, EmailOptionsValidator>();
 
-                options.Events = new JwtBearerEvents
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateOnStart();
+        services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
+
+        // --- JWT Bearer Authentication ---
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
                 {
-                    OnAuthenticationFailed = context =>
+                    Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                    Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = async context =>
+                {
+                    var userManager = context.HttpContext.RequestServices
+                        .GetRequiredService<UserManager<User>>();
+                    
+                    var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (long.TryParse(userId, out var id))
                     {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                        Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = async context =>
-                    {
-                        var userManager = context.HttpContext.RequestServices
-                            .GetRequiredService<UserManager<User>>();
-                        
-                        var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        if (long.TryParse(userId, out var id))
+                        var user = await userManager.FindByIdAsync(id.ToString());
+                        if (user == null || !user.IsActive)
                         {
-                            var user = await userManager.FindByIdAsync(id.ToString());
-                            if (user == null || !user.IsActive)
-                            {
-                                context.Fail("User is not active");
-                            }
+                            context.Fail("User is not active");
                         }
                     }
-                };
-            });
+                }
+            };
+        });
+
+        // Post-configure JWT Bearer options with IOptions pattern
+        services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigure>();
+
         // --- Repozitorijumi ---
         services.AddScoped<IBoardRepository, BoardRepository>();
         services.AddScoped<IColumnRepository, ColumnRepository>();
