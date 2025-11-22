@@ -112,6 +112,21 @@ public static class ConfigureServices
             };
         });
 
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("EmailConfirmed", policy =>
+                policy.RequireClaim("email_confirmed", "true"));
+
+           
+            options.AddPolicy("EmailConfirmedOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("email_confirmed", "true") ||
+                    context.User.IsInRole("Admin"));
+            });
+        });
+
         // Post-configure JWT Bearer options with IOptions pattern
         services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigure>();
 

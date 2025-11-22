@@ -21,6 +21,7 @@ public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> us
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
+            new("email_confirmed", user.EmailConfirmed.ToString().ToLower()),
         };
 
         var roles = await userManager.GetRolesAsync(user);
