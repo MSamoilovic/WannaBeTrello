@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace WannabeTrello.Domain.Events.User_Events;
 
-namespace WannabeTrello.Domain.Events.User_Events
+public class EmailConfirmationSuccededEvent(long userId,
+string email,
+string ipAddress,
+DateTime confirmedAt): DomainEvent
 {
-    internal class EmailConfirmationSuccededEvent
-    {
-    }
+    public long UserId => userId;
+    public string Email => email;
+    public string IpAddress => ipAddress;
+    public DateTime ConfirmedAt => confirmedAt;
+
 }
