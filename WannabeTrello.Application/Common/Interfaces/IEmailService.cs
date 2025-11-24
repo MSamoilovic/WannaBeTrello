@@ -12,4 +12,10 @@ public interface IEmailService
         string toEmail,
         string userName,
         CancellationToken cancellationToken = default);
+
+    Task SendEmailConfirmationEmailAsync(
+        string toEmail,
+        string userName,
+        string confirmationUrl,
+        CancellationToken cancellationToken = default);
 }

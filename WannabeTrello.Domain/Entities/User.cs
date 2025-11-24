@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WannabeTrello.Domain.Events;
+using WannabeTrello.Domain.Events.User_Events;
 using WannabeTrello.Domain.Events.UserEvents;
 using WannabeTrello.Domain.Exceptions;
 
@@ -30,6 +31,9 @@ public class User : IdentityUser<long>
     public DateTime? DeactivatedAt { get; private set; }
     public DateTime? PasswordResetRequestedAt { get; private set; }
     public string? PasswordResetRequestIpAddress { get; private set; }
+    public DateTime? EmailConfirmationRequestedAt { get; private set; }
+    public string? EmailConfirmationRequestIpAddress { get; private set; }
+    public DateTime? EmailConfirmedAt { get; private set; }
 
     public string DisplayName
     {
@@ -274,6 +278,23 @@ public class User : IdentityUser<long>
         SecurityStamp = Guid.NewGuid().ToString(); // Invalidates all JWT tokens
 
         AddDomainEvent(new PasswordResetCompletedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
+    }
+
+    public void RequestEmailConfirmation(string ipAddress)
+    {
+        EmailConfirmationRequestedAt = DateTime.UtcNow;
+        EmailConfirmationRequestIpAddress = ipAddress;
+
+        //AddDomainEvent(new EmailConfirmationRequestedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
+    }
+
+    public void CompleteEmailConfirmation(string ipAddress)
+    {
+        EmailConfirmedAt = DateTime.UtcNow;
+        EmailConfirmationRequestedAt = null;
+        EmailConfirmationRequestIpAddress = null;
+
+        //AddDomainEvent(new EmailConfirmedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
     }
 
     private void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);

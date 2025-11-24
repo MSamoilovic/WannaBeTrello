@@ -32,6 +32,6 @@ public class LoginUserCommandHandler(
         await userManager.UpdateAsync(user);
 
         var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
-        return new LoginUserCommandResponse(token);
+        return new LoginUserCommandResponse(token, user.Email, user.EmailConfirmed);
     }
 }

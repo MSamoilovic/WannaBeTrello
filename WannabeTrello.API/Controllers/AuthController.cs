@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WannabeTrello.Application.Common.Exceptions;
 using WannabeTrello.Application.Features.Auth.ChangePassword;
+using WannabeTrello.Application.Features.Auth.ConfirmEmail;
 using WannabeTrello.Application.Features.Auth.ForgotPassword;
 using WannabeTrello.Application.Features.Auth.LoginUser;
 using WannabeTrello.Application.Features.Auth.RegisterUser;
+using WannabeTrello.Application.Features.Auth.ResendConfirmationEmail;
 using WannabeTrello.Application.Features.Auth.ResetPassword;
+using WannabeTrello.Domain.Exceptions;
 
 namespace WannabeTrello.Controllers;
 
@@ -68,4 +71,48 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         => Ok(await mediator.Send(command));
+
+    /// <summary>
+    /// Confirm email address using token
+    /// </summary>
+    /// <param name="command">Email confirmation request</param>
+    /// <returns>JWT token if successful</returns>
+    [HttpPost("confirm-email")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ConfirmEmailCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand command)
+    {
+        try
+        {
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
+        catch (BusinessRuleValidationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Resend email confirmation
+    /// </summary>
+    /// <param name="command">Resend confirmation request</param>
+    /// <returns>Success response</returns>
+    [HttpPost("resend-confirmation")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ResendConfirmationEmailCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationEmailCommand command)
+    {
+        try
+        {
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors });
+        }
+    }
 }

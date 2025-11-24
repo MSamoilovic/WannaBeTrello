@@ -33,4 +33,10 @@ public enum ActivityType
     UserProfileUpdated,
     UserDeactivated,
     UserReactivated,
+    PasswordResetRequested,
+    PasswordResetCompleted,
+    PasswordResetFailed,
+    EmailConfirmationRequested,
+    EmailConfirmed,
+    EmailConfirmationFailed
 }
