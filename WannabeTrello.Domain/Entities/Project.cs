@@ -1,7 +1,7 @@
 ﻿using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
 using WannabeTrello.Domain.Events.Project_Events;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -16,6 +16,9 @@ public class Project : AuditableEntity
     public User? Owner { get; private set; }
     public ICollection<Board> Boards { get; private set; } = [];
     public ICollection<ProjectMember> ProjectMembers { get; private set; } = [];
+
+    private readonly List<Activity> _activities = [];
+    public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
 
     public static Project Create(string? name, string? description, long ownerId)
     {
@@ -205,5 +208,13 @@ public class Project : AuditableEntity
     public bool IsMember(long memberId)
     {
         return ProjectMembers.Any(pm => pm.UserId == memberId);
+    }
+
+    public void AddActivity(Activity activity)
+    {
+        if (activity == null)
+            throw new ArgumentNullException(nameof(activity));
+
+        _activities.Add(activity);
     }
 }

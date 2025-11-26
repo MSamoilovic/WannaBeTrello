@@ -1,6 +1,7 @@
 ﻿using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Events.TaskEvents;
 using WannabeTrello.Domain.Exceptions;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -21,6 +22,9 @@ public class BoardTask : AuditableEntity
     public bool IsArchived { get; private set; }
 
     public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
+
+    private readonly List<Activity> _activities = [];
+    public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
 
     private BoardTask()
     {
@@ -192,5 +196,13 @@ public class BoardTask : AuditableEntity
             new Dictionary<string, object?> { { nameof(IsArchived), true } },
             new Dictionary<string, object?> { { nameof(IsArchived), false } }
         ));
+    }
+
+    public void AddActivity(Activity activity)
+    {
+        if (activity == null)
+            throw new ArgumentNullException(nameof(activity));
+
+        _activities.Add(activity);
     }
 }

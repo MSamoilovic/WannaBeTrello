@@ -3,6 +3,7 @@ using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
 using WannabeTrello.Domain.Events.Column_Events;
 using WannabeTrello.Domain.Exceptions;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -18,7 +19,10 @@ public class Board: AuditableEntity
    
     public ICollection<BoardMember> BoardMembers { get; private set; } = [];
     public bool IsArchived { get; private set; }
-    
+
+    private readonly List<Activity> _activities = [];
+    public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
+
     private Board() { }
 
     private Board(string name, string? description, long projectId)
@@ -172,6 +176,13 @@ public class Board: AuditableEntity
     {
         return BoardMembers.Any(bm => bm.UserId == userId);
     }
-    
-    
+
+    public void AddActivity(Activity activity)
+    {
+        if (activity == null)
+            throw new ArgumentNullException(nameof(activity));
+
+        _activities.Add(activity);
+    }
+
 }
