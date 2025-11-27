@@ -18,23 +18,5 @@ public class BoardCreatedEventHandler(
         await notificationService.NotifyBoardCreated(notification.BoardId, notification.BoardName,
             notification.CreatorUserId);
         
-        var initialValues = new Dictionary<string, object?>
-        {
-            { "Name", notification.BoardName },
-            { "Description", notification.Description },
-            { "OwnerId", notification.CreatorUserId },
-            { "IsArchived", false }
-        };
-        
-        var activity = ActivityTracker.Create(
-            type: ActivityType.BoardCreated,
-            description: $"Project '{notification.BoardName}' is created.",
-            userId: notification.CreatorUserId,
-            relatedEntityId: notification.BoardId,
-            relatedEntityType: nameof(WannabeTrello.Domain.Entities.Project),
-            newValue: initialValues
-        );
-
-        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
 }

@@ -12,14 +12,5 @@ public class BoardArchivedEventHandler(IBoardNotificationService boardNotificati
     public async  Task Handle(BoardArchivedEvent notification, CancellationToken cancellationToken)
     {   
         await boardNotificationService.NotifyBoardArchived(notification.BoardId, notification.ModifierUserId);
-        
-        var activity = ActivityTracker.Create(
-            type: ActivityType.BoardArchived,
-            description: $"Board '{notification.BoardId}' is archived.",
-            userId: notification.ModifierUserId,
-            relatedEntityId: notification.BoardId,
-            relatedEntityType: nameof(Domain.Entities.Board));
-        
-        await activityTrackerService.AddActivityAsync(activity, cancellationToken);
     }
 }
