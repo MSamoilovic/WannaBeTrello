@@ -4,14 +4,20 @@ namespace WannabeTrello.Domain.ValueObjects;
 
 public record Activity
 {
-    public ActivityType Type { get; init; }
-    public string Description { get; init; }
-    public DateTime Timestamp { get; init; }
-    public long UserId { get; init; }
-    public Dictionary<string, object?> OldValue { get; init; }
-    public Dictionary<string, object?> NewValue { get; init; }
+    public ActivityType Type { get; private set; }
+    public string Description { get; private set; }
+    public DateTime Timestamp { get; private set; }
+    public long UserId { get; private set; }
+    public Dictionary<string, object?> OldValue { get; private set; }
+    public Dictionary<string, object?> NewValue { get; private set; }
 
-    private Activity() { } // EF Core constructor
+    private Activity() 
+    {
+        // EF Core constructor - initialize required properties
+        Description = string.Empty;
+        OldValue = new Dictionary<string, object?>();
+        NewValue = new Dictionary<string, object?>();
+    }
 
     public Activity(ActivityType type, string description, long userId,
         Dictionary<string, object?>? oldValue = null,
