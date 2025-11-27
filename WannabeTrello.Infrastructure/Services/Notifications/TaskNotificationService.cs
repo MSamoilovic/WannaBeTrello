@@ -16,7 +16,7 @@ public class TaskNotificationService(
     {
         await hubContext.Clients.All.TaskCreated(taskId, taskTitle);
 
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.TaskCreated,
             description: $"Task '{taskTitle}' was created.",
             userId: taskCreatorId,
@@ -33,7 +33,7 @@ public class TaskNotificationService(
         await hubContext.Clients.All.TaskUpdated("boardId", taskId.ToString(), newValues);
 
         var changedFields = string.Join(", ", newValues.Keys);
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.TaskUpdated,
             description: $"Task '{taskTitle}' was updated. Changed fields: {changedFields}",
             userId: modifierUserId,
@@ -51,7 +51,7 @@ public class TaskNotificationService(
     {
         await hubContext.Clients.All.TaskMoved(taskId, newColumnId, performedByUserId);
 
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.TaskMoved,
             description: $"Task '{taskId}' was moved to column {newColumnId}.",
             userId: performedByUserId,
@@ -72,7 +72,7 @@ public class TaskNotificationService(
             ? $"Task '{taskId}' was assigned to user {newAssigneeId}."
             : $"Task '{taskId}' was unassigned.";
 
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.TaskAssigned,
             description: description,
             userId: assignedByUserId,
@@ -91,7 +91,7 @@ public class TaskNotificationService(
         await hubContext.Clients.All.CommentAdded(taskId.ToString(), commentId.ToString(),
             commentAuthorId.ToString(), content);
 
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.CommentAdded,
             description: $"User {commentAuthorId} added a comment to task '{taskId}' on board {boardId}.",
             userId: commentAuthorId,
@@ -112,7 +112,7 @@ public class TaskNotificationService(
     {
         await hubContext.Clients.All.CommentUpdated(taskId, commentId);
         
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.CommentDeleted,
             description: $"Comment '{commentId}' was deleted from task '{taskId}'.",
             userId: modifierUserId,
@@ -128,7 +128,7 @@ public class TaskNotificationService(
     {
         await hubContext.Clients.All.CommentDeleted(taskId, commentId);
         
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.CommentDeleted,
             description: $"Comment '{commentId}' was deleted from task '{taskId}'.",
             userId: modifierUserId,
@@ -144,7 +144,7 @@ public class TaskNotificationService(
         
         
         // Create activity tracker record
-        var activity = ActivityTracker.Create(
+        var activity = ActivityLog.Create(
             type: ActivityType.CommentRestored,
             description: $"Comment '{commentId}' was restored on task '{taskId}'.",
             userId: modifierUserId,

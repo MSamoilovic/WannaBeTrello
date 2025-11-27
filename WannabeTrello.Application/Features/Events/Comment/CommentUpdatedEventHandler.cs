@@ -1,9 +1,6 @@
 using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Events.Comment_Events;
-using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Events.Comment;
 
