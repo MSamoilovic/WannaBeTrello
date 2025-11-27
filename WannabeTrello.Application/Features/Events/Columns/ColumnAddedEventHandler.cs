@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.ColumnEvents;
+using WannabeTrello.Domain.Events.Column_Events;
 
 namespace WannabeTrello.Application.Features.Events.Columns;
 

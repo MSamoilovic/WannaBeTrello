@@ -25,7 +25,7 @@ public class ApplicationDbContext(
     public DbSet<Comment> Comments { get; set; } = null!;
     public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
     public DbSet<BoardMember> BoardMembers { get; set; } = null!;
-    public DbSet<ActivityTracker> ActivityTrackers { get; set; } = null!;
+    public DbSet<ActivityLog> ActivityTrackers { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -5,12 +5,8 @@ using WannabeTrello.Domain.Specifications.ProjectSpecifications;
 
 namespace WannabeTrello.Infrastructure.Persistence.Repositories;
 
-public class ProjectRepository: Repository<Project>, IProjectRepository
+public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Project>(dbContext), IProjectRepository
 {
-    public ProjectRepository(ApplicationDbContext dbContext) : base(dbContext)
-    {
-    }
-    
     public async Task<Project?> GetProjectWithDetailsAsync(long projectId, CancellationToken cancellationToken = default)
     {
         var spec = new ProjectWithDetailsSpecification(projectId);

@@ -137,7 +137,7 @@ public static class ConfigureServices
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
-        services.AddScoped<IActivityTrackerRepository, ActivityTrackerRepository>();
+        services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
