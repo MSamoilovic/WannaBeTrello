@@ -285,7 +285,7 @@ public class User : IdentityUser<long>
         EmailConfirmationRequestedAt = DateTime.UtcNow;
         EmailConfirmationRequestIpAddress = ipAddress;
 
-        //AddDomainEvent(new EmailConfirmationRequestedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
+        AddDomainEvent(new EmailConfirmationRequestedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
     }
 
     public void CompleteEmailConfirmation(string ipAddress)
@@ -294,7 +294,7 @@ public class User : IdentityUser<long>
         EmailConfirmationRequestedAt = null;
         EmailConfirmationRequestIpAddress = null;
 
-        //AddDomainEvent(new EmailConfirmedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
+        AddDomainEvent(new EmailConfirmationSuccededEvent(Id, Email!, ipAddress, DateTime.UtcNow));
     }
 
     private void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);

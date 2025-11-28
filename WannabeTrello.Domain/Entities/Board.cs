@@ -46,7 +46,14 @@ public class Board: AuditableEntity
         };
 
         board.AddDefaultColumns(creatorUserId);
-        
+
+        var activity = new Activity(
+            ActivityType.BoardCreated,
+            $"Board '{name}' was created",
+            creatorUserId
+        );
+        board.AddActivity(activity);
+
         board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId));
 
         return board;
@@ -90,6 +97,16 @@ public class Board: AuditableEntity
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
+
+        var activity = new Activity(
+            ActivityType.BoardUpdated,
+            $"Board '{newName}' was updated",
+            modifierUserId,
+            oldValues,
+            newValues
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new BoardUpdatedEvent(Id, oldValues, newValues, modifierUserId)); 
     }
 
@@ -104,6 +121,15 @@ public class Board: AuditableEntity
         IsArchived = true;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
+
+        var activity = new Activity(
+            ActivityType.BoardArchived,
+            $"Board '{Name}' was archived",
+            modifierUserId,
+            newValue: new Dictionary<string, object?> { [nameof(IsArchived)] = true }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new BoardArchivedEvent(Id, modifierUserId));
     }
 
@@ -116,8 +142,16 @@ public class Board: AuditableEntity
         IsArchived = false;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
-        
-        //Add DomainEvent
+
+        var activity = new Activity(
+            ActivityType.BoardRestored,
+            $"Board '{Name}' was restored",
+            modifierUserId,
+            new Dictionary<string, object?> { [nameof(IsArchived)] = true },
+            new Dictionary<string, object?> { [nameof(IsArchived)] = false }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new BoardRestoredEvent(Id, modifierUserId));
     }
     
@@ -134,7 +168,19 @@ public class Board: AuditableEntity
         var newColumn = new Column(columnName, Id, order, creatorUserId);
     
         _columns.Add(newColumn);
-    
+
+        var activity = new Activity(
+            ActivityType.ColumnAdded,
+            $"Column '{columnName}' was added",
+            creatorUserId,
+            newValue: new Dictionary<string, object?>
+            {
+                ["ColumnName"] = columnName,
+                ["Order"] = order
+            }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new ColumnAddedEvent(Id, newColumn.Id, newColumn.Name!, creatorUserId));
     
     }

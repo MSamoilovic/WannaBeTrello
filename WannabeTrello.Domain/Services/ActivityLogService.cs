@@ -30,15 +30,20 @@ public class ActivityLogService(IActivityLogRepository activityLogRepository, IU
 
     public async Task<ActivityLog> LogActivityAsync(Activity activity, long? boardTaskId = null, long? projectId = null, long? boardId = null, CancellationToken cancellationToken = default)
     {
-        var activityLog = ActivityLog.CreateForTask(activity, boardTaskId ?? 0);
-
-        if (projectId.HasValue)
+        ActivityLog activityLog;
+        
+        if (boardTaskId.HasValue)
+            activityLog = ActivityLog.CreateForTask(activity, boardTaskId.Value);
+        else if (projectId.HasValue)
             activityLog = ActivityLog.CreateForProject(activity, projectId.Value);
-
-        if (boardId.HasValue)
+        else if (boardId.HasValue)
             activityLog = ActivityLog.CreateForBoard(activity, boardId.Value);
+        else
+            throw new ArgumentException("At least one entity ID (boardTaskId, projectId, or boardId) must be provided");
 
         await activityLogRepository.AddAsync(activityLog, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
         return activityLog;
     }
 }
