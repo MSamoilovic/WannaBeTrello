@@ -47,4 +47,25 @@ public static class DomainTestUtils
         var domainEventsList = new List<DomainEvent>();
         SetPrivatePropertyValue(entity, "_domainEvents", domainEventsList);
     }
+
+    /// <summary>
+    /// Creates a Column instance for testing purposes
+    /// </summary>
+    public static Column CreateColumn(long boardId, string name, int order)
+    {
+        var column = CreateInstanceWithoutConstructor<Column>();
+        SetPrivatePropertyValue(column, nameof(Column.BoardId), boardId);
+        SetPrivatePropertyValue(column, nameof(Column.Name), name);
+        SetPrivatePropertyValue(column, nameof(Column.Order), order);
+        InitializeDomainEvents(column);
+        return column;
+    }
+
+    /// <summary>
+    /// Sets the Column navigation property on a BoardTask
+    /// </summary>
+    public static void SetTaskColumn(BoardTask task, Column column)
+    {
+        SetPrivatePropertyValue(task, nameof(BoardTask.Column), column);
+    }
 }

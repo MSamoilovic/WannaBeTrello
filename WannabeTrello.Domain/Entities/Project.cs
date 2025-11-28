@@ -1,7 +1,7 @@
 ﻿using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events;
 using WannabeTrello.Domain.Events.Board_Events;
 using WannabeTrello.Domain.Events.Project_Events;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -16,6 +16,9 @@ public class Project : AuditableEntity
     public User? Owner { get; private set; }
     public ICollection<Board> Boards { get; private set; } = [];
     public ICollection<ProjectMember> ProjectMembers { get; private set; } = [];
+
+    private readonly List<Activity> _activities = [];
+    public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
 
     public static Project Create(string? name, string? description, long ownerId)
     {
@@ -37,6 +40,13 @@ public class Project : AuditableEntity
         
         var newProjectMember = ProjectMember.Create(ownerId, project.Id, ProjectRole.Owner);
         project.ProjectMembers.Add(newProjectMember);
+
+        var activity = new Activity(
+            ActivityType.ProjectCreated,
+            $"Project '{name}' was created",
+            ownerId
+        );
+        project.AddActivity(activity);
 
         project.AddDomainEvent(new ProjectCreatedEvent(project.Id, project.Name, ownerId, project.Description));
 
@@ -96,6 +106,16 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = updatedBy;
 
+        var activity = new Activity(
+            ActivityType.ProjectUpdated,
+            $"Project '{Name}' was updated",
+            updatedBy,
+            oldValues,
+            newValues
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new ProjectUpdatedEvent(Id, Name, updatedBy, oldValues, newValues));
     }
 
@@ -127,7 +147,16 @@ public class Project : AuditableEntity
         IsArchived = true;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = archiverUserId;
-    
+
+        var activity = new Activity(
+            ActivityType.ProjectArchived,
+            $"Project '{Name}' was archived",
+            archiverUserId,
+            newValue: new Dictionary<string, object?> { [nameof(IsArchived)] = true }
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new ProjectArchivedEvent(Id, Name, archiverUserId));
     }
 
@@ -150,6 +179,19 @@ public class Project : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
 
+        var activity = new Activity(
+           ActivityType.ProjectMemberAdded,
+            $"User {newMemberId} was added to project with role {role}",
+           inviterUserId,
+           newValue: new Dictionary<string, object?>
+           {
+               ["NewMemberId"] = newMemberId,
+               ["Role"] = role
+           }
+        );
+        
+        AddActivity(activity);
+
         AddDomainEvent(new ProjectMemberAddedEvent(Id, Name,  newMemberId, role, inviterUserId));
     }
 
@@ -171,7 +213,19 @@ public class Project : AuditableEntity
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = removerUserId;
-        
+
+        var activity = new Activity(
+            ActivityType.ProjectMemberRemoved,
+            $"User {removedMemberId} was removed from project",
+            removerUserId,
+            oldValue: new Dictionary<string, object?>
+            {
+                ["RemovedMemberId"] = removedMemberId,
+                ["Role"] = role
+            }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new ProjectMemberRemovedEvent(Id,removedMemberId, role, removerUserId));
     }
 
@@ -198,12 +252,29 @@ public class Project : AuditableEntity
         
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = inviterUserId;
-        
+
+        var activity = new Activity(
+            ActivityType.ProjectMemberRoleUpdated,
+            $"User {updatedMemberId} role was updated from {oldRole} to {role}",
+            inviterUserId,
+            new Dictionary<string, object?> { ["OldRole"] = oldRole },
+            new Dictionary<string, object?> { ["NewRole"] = role }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new ProjectMemberUpdatedEvent(Id, Name, updatedMemberId, oldRole, role, inviterUserId));
     }
 
     public bool IsMember(long memberId)
     {
         return ProjectMembers.Any(pm => pm.UserId == memberId);
+    }
+
+    public void AddActivity(Activity activity)
+    {
+        if (activity == null)
+            throw new ArgumentNullException(nameof(activity));
+
+        _activities.Add(activity);
     }
 }

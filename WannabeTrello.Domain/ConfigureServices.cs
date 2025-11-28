@@ -10,7 +10,7 @@ public static class ConfigureServices
     {
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBoardService, BoardService>();
-        services.AddScoped<IActivityTrackerService, ActivityTrackerService>();
+        services.AddScoped<IActivityLogService, ActivityLogService>();
         services.AddScoped<IColumnService, ColumnService>();
         services.AddScoped<IBoardTaskService, BoardTaskService>();
         services.AddScoped<ICommentService, CommentService>();

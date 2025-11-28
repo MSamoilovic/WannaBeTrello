@@ -9,6 +9,9 @@ public class BoardTaskConfiguration: IEntityTypeConfiguration<BoardTask>
     public void Configure(EntityTypeBuilder<BoardTask> builder)
     {
         builder.HasKey(t => t.Id);
+        
+        // Ignore Activities - it's a transient collection, not persisted
+        builder.Ignore(t => t.Activities);
 
         builder.Property(t => t.Title)
             .IsRequired()

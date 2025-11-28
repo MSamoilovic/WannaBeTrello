@@ -1,6 +1,7 @@
 ﻿using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Events.TaskEvents;
 using WannabeTrello.Domain.Exceptions;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Entities;
 
@@ -21,6 +22,9 @@ public class BoardTask : AuditableEntity
     public bool IsArchived { get; private set; }
 
     public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
+
+    private readonly List<Activity> _activities = [];
+    public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
 
     private BoardTask()
     {
@@ -53,6 +57,14 @@ public class BoardTask : AuditableEntity
             CreatedAt = DateTime.UtcNow,
             CreatedBy = creatorUserId
         };
+
+        var activity = new Activity(
+            ActivityType.TaskCreated,
+            $"Task '{title}' was created",
+            creatorUserId
+        );
+
+        task.AddActivity(activity);
 
         task.AddDomainEvent(new TaskCreatedEvent(task.Id, task.Title, creatorUserId, assigneeId));
 
@@ -112,6 +124,16 @@ public class BoardTask : AuditableEntity
 
         if (!changed) return;
 
+        var activity = new Activity(
+            ActivityType.TaskUpdated,
+            $"Task '{newTitle}' was updated",
+            modifierUserId,
+            oldValues,
+            newValues
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new TaskUpdatedEvent(Id, Title, modifierUserId, oldValues, newValues));
     }
 
@@ -127,6 +149,16 @@ public class BoardTask : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = performingUserId;
 
+        var activity = new Activity(
+            ActivityType.TaskMoved,
+            $"Task moved from column {originalColumnId} to column {newColumnId}",
+            performingUserId,
+            new Dictionary<string, object?> { ["OldColumnId"] = originalColumnId },
+            new Dictionary<string, object?> { ["NewColumnId"] = newColumnId }
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new TaskMovedEvent(Id, originalColumnId, newColumnId, performingUserId));
     }
 
@@ -140,6 +172,16 @@ public class BoardTask : AuditableEntity
 
         if (Column == null)
             throw new BusinessRuleValidationException("Column must be loaded to comment on a task.");
+
+        var activity = new Activity(
+            ActivityType.CommentAdded,
+            $"Comment added to task",
+            userId,
+            newValue: new Dictionary<string, object?> { ["CommentId"] = comment.Id }
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new TaskCommentedEvent(Id, comment.Id, userId, Column.BoardId));
         return comment;
     }
@@ -154,6 +196,18 @@ public class BoardTask : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = performingUserId;
 
+        var activity = new Activity(
+            ActivityType.TaskAssigned,
+            newAssigneeId.HasValue
+                ? $"Task assigned to user {newAssigneeId}"
+                : "Task unassigned",
+            performingUserId,
+            new Dictionary<string, object?> { ["OldAssigneeId"] = oldAssigneeId },
+            new Dictionary<string, object?> { ["NewAssigneeId"] = newAssigneeId }
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new TaskAssignedEvent(Id, oldAssigneeId, newAssigneeId, performingUserId));
     }
 
@@ -162,8 +216,19 @@ public class BoardTask : AuditableEntity
         if (newPosition < 0)
             throw new BusinessRuleValidationException("Position cannot be negative.");
         if (newPosition == Position) return;
+        
         var old = Position;
         Position = newPosition;
+
+        var activity = new Activity(
+            ActivityType.TaskUpdated,
+            $"Task position changed from {old} to {newPosition}",
+            modifierUserId,
+            new Dictionary<string, object?> { [nameof(Position)] = old },
+            new Dictionary<string, object?> { [nameof(Position)] = newPosition }
+        );
+        AddActivity(activity);
+
         AddDomainEvent(new TaskUpdatedEvent(Id, Title, modifierUserId,
             new Dictionary<string, object?> { { nameof(Position), old } },
             new Dictionary<string, object?> { { nameof(Position), newPosition } }
@@ -176,6 +241,17 @@ public class BoardTask : AuditableEntity
         IsArchived = true;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
+
+        var activity = new Activity(
+            ActivityType.TaskUpdated,
+            "Task archived",
+            modifierUserId,
+            new Dictionary<string, object?> { [nameof(IsArchived)] = false },
+            new Dictionary<string, object?> { [nameof(IsArchived)] = true }
+        );
+
+        AddActivity(activity);
+        
         AddDomainEvent(new TaskUpdatedEvent(Id, Title, modifierUserId,
             new Dictionary<string, object?> { { nameof(IsArchived), false } },
             new Dictionary<string, object?> { { nameof(IsArchived), true } }
@@ -188,9 +264,28 @@ public class BoardTask : AuditableEntity
         IsArchived = false;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifierUserId;
+
+        var activity = new Activity(
+            ActivityType.TaskUpdated,
+            "Task restored",
+            modifierUserId,
+            new Dictionary<string, object?> { [nameof(IsArchived)] = true },
+            new Dictionary<string, object?> { [nameof(IsArchived)] = false }
+        );
+
+        AddActivity(activity);
+
         AddDomainEvent(new TaskUpdatedEvent(Id, Title, modifierUserId,
             new Dictionary<string, object?> { { nameof(IsArchived), true } },
             new Dictionary<string, object?> { { nameof(IsArchived), false } }
         ));
+    }
+
+    public void AddActivity(Activity activity)
+    {
+        if (activity == null)
+            throw new ArgumentNullException(nameof(activity));
+
+        _activities.Add(activity);
     }
 }

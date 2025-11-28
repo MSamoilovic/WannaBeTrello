@@ -5,6 +5,7 @@ using WannabeTrello.Domain.Events.Board_Events;
 using WannabeTrello.Domain.Events.Column_Events;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Tests.Utils;
+using WannabeTrello.Domain.ValueObjects;
 
 namespace WannabeTrello.Domain.Tests.Entities;
 
@@ -84,6 +85,7 @@ public class BoardTests
 
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
 
@@ -117,6 +119,7 @@ public class BoardTests
 
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
 
@@ -145,6 +148,7 @@ public class BoardTests
 
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
 
@@ -164,6 +168,7 @@ public class BoardTests
         // Arrange
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), "Initial Name");
 
         // Act
@@ -187,6 +192,7 @@ public class BoardTests
 
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), initialName);
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), initialDescription);
 
@@ -210,6 +216,7 @@ public class BoardTests
         const long adminUserId = 1L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
@@ -237,6 +244,7 @@ public class BoardTests
         var memberUserId = 2L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var member = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.UserId), memberUserId);
@@ -260,6 +268,7 @@ public class BoardTests
         var adminUserId = 1L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
@@ -284,6 +293,7 @@ public class BoardTests
         var nonMemberUserId = 999L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         // Tabla nema članova ili dati korisnik nije među njima
         var members = new List<BoardMember>();
@@ -302,6 +312,7 @@ public class BoardTests
         const long adminUserId = 1L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
@@ -329,6 +340,7 @@ public class BoardTests
         var memberUserId = 2L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var member = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(member, nameof(BoardMember.UserId), memberUserId);
@@ -352,6 +364,7 @@ public class BoardTests
         var adminUserId = 1L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
@@ -376,6 +389,7 @@ public class BoardTests
         var nonMemberUserId = 999L;
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         var members = new List<BoardMember>();
         DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
@@ -393,6 +407,7 @@ public class BoardTests
         // Arrange
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         
         // Postavljamo postojeću kolonu da bismo testirali logiku za redosled
         var existingColumn = DomainTestUtils.CreateInstanceWithoutConstructor<Column>();
@@ -428,6 +443,7 @@ public class BoardTests
         // Arrange
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
         DomainTestUtils.SetPrivatePropertyValue(board, "_columns", new List<Column>());
 
         // Act & Assert
@@ -443,6 +459,7 @@ public class BoardTests
         // Arrange
         var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
         DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
 
         var existingColumnName = "To Do";
         var existingColumn = DomainTestUtils.CreateInstanceWithoutConstructor<Column>();
@@ -455,5 +472,145 @@ public class BoardTests
         Assert.Equal($"A column with the name 'to do' already exists on this board.", exception.Message);
         Assert.Single(board.Columns);
         Assert.Empty(board.DomainEvents);
+    }
+
+    // --- Activity Tracking Tests ---
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Create_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        const string boardName = "Sprint Board";
+        const long creatorUserId = 123L;
+
+        // Act
+        var board = Board.Create(boardName, "Description", 1L, creatorUserId);
+
+        // Assert
+        Assert.Single(board.Activities);
+        var activity = board.Activities.First();
+        Assert.Equal(ActivityType.BoardCreated, activity.Type);
+        Assert.Equal(creatorUserId, activity.UserId);
+        Assert.Contains(boardName, activity.Description);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void UpdateDetails_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.SetPrivatePropertyValue(board, "_domainEvents", new List<DomainEvent>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), "Old Name");
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Description), "Old Desc");
+        
+        const long modifierUserId = 456L;
+
+        // Act
+        board.UpdateDetails("New Name", "New Desc", modifierUserId);
+
+        // Assert
+        Assert.Single(board.Activities);
+        var activity = board.Activities.First();
+        Assert.Equal(ActivityType.BoardUpdated, activity.Type);
+        Assert.Equal(modifierUserId, activity.UserId);
+        Assert.Contains("New Name", activity.Description);
+        Assert.Contains("Name", activity.OldValue);
+        Assert.Contains("Name", activity.NewValue);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Archive_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        const long adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), "Test Board");
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), false);
+
+        // Act
+        board.Archive(adminUserId);
+
+        // Assert
+        Assert.Single(board.Activities);
+        var activity = board.Activities.First();
+        Assert.Equal(ActivityType.BoardArchived, activity.Type);
+        Assert.Equal(adminUserId, activity.UserId);
+        Assert.Contains("archived", activity.Description, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("IsArchived", activity.NewValue);
+        Assert.Equal(true, activity.NewValue["IsArchived"]);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Restore_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        const long adminUserId = 1L;
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.Name), "Test Board");
+        
+        var adminMember = DomainTestUtils.CreateInstanceWithoutConstructor<BoardMember>();
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.UserId), adminUserId);
+        DomainTestUtils.SetPrivatePropertyValue(adminMember, nameof(BoardMember.Role), BoardRole.Admin);
+        
+        var members = new List<BoardMember> { adminMember };
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.BoardMembers), members);
+        DomainTestUtils.SetPrivatePropertyValue(board, nameof(Board.IsArchived), true);
+
+        // Act
+        board.Restore(adminUserId);
+
+        // Assert
+        Assert.Single(board.Activities);
+        var activity = board.Activities.First();
+        Assert.Equal(ActivityType.BoardRestored, activity.Type);
+        Assert.Equal(adminUserId, activity.UserId);
+        Assert.Contains("restored", activity.Description, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("IsArchived", activity.OldValue);
+        Assert.Contains("IsArchived", activity.NewValue);
+        Assert.Equal(true, activity.OldValue["IsArchived"]);
+        Assert.Equal(false, activity.NewValue["IsArchived"]);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void AddColumn_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var board = DomainTestUtils.CreateInstanceWithoutConstructor<Board>();
+        DomainTestUtils.InitializeDomainEvents(board);
+        DomainTestUtils.SetPrivatePropertyValue(board, "_activities", new List<Activity>());
+        DomainTestUtils.SetPrivatePropertyValue(board, "_columns", new List<Column>());
+        
+        const string newColumnName = "In Review";
+        const long creatorUserId = 123L;
+
+        // Act
+        board.AddColumn(newColumnName, creatorUserId);
+
+        // Assert
+        Assert.Single(board.Activities);
+        var activity = board.Activities.First();
+        Assert.Equal(ActivityType.ColumnAdded, activity.Type);
+        Assert.Equal(creatorUserId, activity.UserId);
+        Assert.Contains(newColumnName, activity.Description);
+        Assert.Contains("ColumnName", activity.NewValue);
+        Assert.Contains("Order", activity.NewValue);
+        Assert.Equal(newColumnName, activity.NewValue["ColumnName"]);
     }
 }
