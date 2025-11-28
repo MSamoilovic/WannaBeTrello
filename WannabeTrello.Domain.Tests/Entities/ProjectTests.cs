@@ -631,4 +631,163 @@ public class ProjectTests
         typeof(T).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
             ?.SetValue(obj, value);
     }
+
+    // --- Activity Tracking Tests ---
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Create_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        const string projectName = "New Project";
+        const long ownerId = 123L;
+
+        // Act
+        var project = Project.Create(projectName, "Description", ownerId);
+
+        // Assert
+        Assert.Single(project.Activities);
+        var activity = project.Activities.First();
+        Assert.Equal(ActivityType.ProjectCreated, activity.Type);
+        Assert.Equal(ownerId, activity.UserId);
+        Assert.Contains(projectName, activity.Description);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Update_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var project = Project.Create("Old Name", "Old Desc", 1L);
+        var initialActivityCount = project.Activities.Count;
+        const long updaterUserId = 456L;
+
+        // Act
+        project.Update("New Name", "New Desc", ProjectStatus.Completed, ProjectVisibility.Private, false, updaterUserId);
+
+        // Assert
+        Assert.Equal(initialActivityCount + 1, project.Activities.Count);
+        var lastActivity = project.Activities.Last();
+        Assert.Equal(ActivityType.ProjectUpdated, lastActivity.Type);
+        Assert.Equal(updaterUserId, lastActivity.UserId);
+        Assert.Contains("New Name", lastActivity.Description);
+        Assert.NotEmpty(lastActivity.OldValue);
+        Assert.NotEmpty(lastActivity.NewValue);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void Archive_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var projectId = 1;
+        var ownerId = 100L;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        var initialActivityCount = project.Activities.Count;
+
+        // Act
+        project.Archive(ownerId);
+
+        // Assert
+        Assert.Equal(initialActivityCount + 1, project.Activities.Count);
+        var lastActivity = project.Activities.Last();
+        Assert.Equal(ActivityType.ProjectArchived, lastActivity.Type);
+        Assert.Equal(ownerId, lastActivity.UserId);
+        Assert.Contains("archived", lastActivity.Description, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("IsArchived", lastActivity.NewValue);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void AddMember_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var projectId = 1;
+        var ownerId = 100L;
+        var newMemberId = 200L;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        var members = CreateTestProjectMember(ownerId, projectId, ProjectRole.Owner);
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        var initialActivityCount = project.Activities.Count;
+
+        // Act
+        project.AddMember(newMemberId, ProjectRole.Contributor, ownerId);
+
+        // Assert
+        Assert.Equal(initialActivityCount + 1, project.Activities.Count);
+        var lastActivity = project.Activities.Last();
+        Assert.Equal(ActivityType.ProjectMemberAdded, lastActivity.Type);
+        Assert.Equal(ownerId, lastActivity.UserId);
+        Assert.Contains("NewMemberId", lastActivity.NewValue);
+        Assert.Contains("Role", lastActivity.NewValue);
+        Assert.Equal(newMemberId, lastActivity.NewValue["NewMemberId"]);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void RemoveMember_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var projectId = 1;
+        var ownerId = 100L;
+        var memberToRemove = 200L;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        
+        var members = new List<ProjectMember>
+        {
+            ProjectMember.Create(ownerId, projectId, ProjectRole.Owner),
+            ProjectMember.Create(memberToRemove, projectId, ProjectRole.Contributor)
+        };
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        var initialActivityCount = project.Activities.Count;
+
+        // Act
+        project.RemoveMember(memberToRemove, ownerId);
+
+        // Assert
+        Assert.Equal(initialActivityCount + 1, project.Activities.Count);
+        var lastActivity = project.Activities.Last();
+        Assert.Equal(ActivityType.ProjectMemberRemoved, lastActivity.Type);
+        Assert.Equal(ownerId, lastActivity.UserId);
+        Assert.Contains("RemovedMemberId", lastActivity.OldValue);
+        Assert.Equal(memberToRemove, lastActivity.OldValue["RemovedMemberId"]);
+    }
+
+    [Fact]
+    [Trait("Category", "Domain")]
+    public void UpdateMember_ShouldAddActivityToCollection()
+    {
+        // Arrange
+        var projectId = 1;
+        var ownerId = 100L;
+        var memberToUpdate = 200L;
+        var project = CreateTestProject(projectId, "Test Project", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
+        
+        var members = new List<ProjectMember>
+        {
+            ProjectMember.Create(ownerId, projectId, ProjectRole.Owner),
+            ProjectMember.Create(memberToUpdate, projectId, ProjectRole.Contributor)
+        };
+        SetPrivatePropertyValue(project, "ProjectMembers", members);
+        
+        var initialActivityCount = project.Activities.Count;
+
+        // Act
+        project.UpdateMember(memberToUpdate, ProjectRole.Admin, ownerId);
+
+        // Assert
+        Assert.Equal(initialActivityCount + 1, project.Activities.Count);
+        var lastActivity = project.Activities.Last();
+        Assert.Equal(ActivityType.ProjectMemberRoleUpdated, lastActivity.Type);
+        Assert.Equal(ownerId, lastActivity.UserId);
+        Assert.Contains("OldRole", lastActivity.OldValue);
+        Assert.Contains("NewRole", lastActivity.NewValue);
+        Assert.Equal(ProjectRole.Contributor, lastActivity.OldValue["OldRole"]);
+        Assert.Equal(ProjectRole.Admin, lastActivity.NewValue["NewRole"]);
+    }
 }

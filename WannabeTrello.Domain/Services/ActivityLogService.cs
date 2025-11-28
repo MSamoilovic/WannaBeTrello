@@ -42,7 +42,7 @@ public class ActivityLogService(IActivityLogRepository activityLogRepository, IU
             throw new ArgumentException("At least one entity ID (boardTaskId, projectId, or boardId) must be provided");
 
         await activityLogRepository.AddAsync(activityLog, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.CompleteAsync(cancellationToken);
         
         return activityLog;
     }

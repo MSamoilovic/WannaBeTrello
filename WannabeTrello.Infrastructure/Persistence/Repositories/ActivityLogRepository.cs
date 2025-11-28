@@ -28,7 +28,7 @@ public class ActivityLogRepository(ApplicationDbContext dbContext)
 
     public Task<IReadOnlyList<ActivityLog>> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default)
     {
-        //TODO: Implement for user specification
-        throw new NotImplementedException();
+        var specification = new GetActivityByUserIdSpecification(userId);
+        return GetAsync(specification, cancellationToken);
     }
 }
