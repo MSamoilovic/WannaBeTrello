@@ -2,7 +2,7 @@
 
 namespace WannabeTrello.Domain.ValueObjects;
 
-public record Activity
+public class Activity
 {
     public ActivityType Type { get; private set; }
     public string Description { get; private set; }
@@ -13,15 +13,19 @@ public record Activity
 
     private Activity() 
     {
-        // EF Core constructor - initialize required properties
+        
         Description = string.Empty;
-        OldValue = new Dictionary<string, object?>();
-        NewValue = new Dictionary<string, object?>();
+        OldValue = [];
+        NewValue = [];
     }
 
-    public Activity(ActivityType type, string description, long userId,
+    public Activity(
+        ActivityType type, 
+        string description, 
+        long userId,
         Dictionary<string, object?>? oldValue = null,
-        Dictionary<string, object?>? newValue = null)
+        Dictionary<string, object?>? newValue = null
+    )
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Description cannot be empty", nameof(description));
