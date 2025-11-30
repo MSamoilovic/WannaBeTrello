@@ -28,6 +28,12 @@ public class ActivityLogService(IActivityLogRepository activityLogRepository, IU
         return activityLogs.Select(al => al.Activity);
     }
 
+    public async Task<IEnumerable<Activity>> GetActivitiesForUserAsync(long userId, CancellationToken cancellationToken = default)
+    {
+        var activityLogs = await activityLogRepository.GetByUserIdAsync(userId, cancellationToken);
+        return activityLogs.Select(al => al.Activity);
+    }
+
     public async Task<ActivityLog> LogActivityAsync(Activity activity, long? boardTaskId = null, long? projectId = null, long? boardId = null, CancellationToken cancellationToken = default)
     {
         ActivityLog activityLog;
