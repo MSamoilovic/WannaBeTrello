@@ -11,4 +11,5 @@ public interface IActivityLogService
     Task<IEnumerable<Activity>> GetActivitiesForTaskAsync(long taskId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Activity>> GetActivitiesForProjectAsync(long projectId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Activity>> GetActivitiesForBoardAsync(long boardId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Activity>> GetActivitiesForUserAsync(long userId, CancellationToken cancellationToken = default);
 }

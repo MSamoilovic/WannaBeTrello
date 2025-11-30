@@ -20,7 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Tasks\NewFolder\" />
+      <Folder Include="Features\Activities\GetActivityByTask\" />
+      <Folder Include="Features\Activities\GetActivityByUser\" />
       <Folder Include="Services\" />
     </ItemGroup>
 
