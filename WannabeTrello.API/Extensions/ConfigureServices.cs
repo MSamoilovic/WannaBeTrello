@@ -18,6 +18,7 @@ public static class ConfigureServices
         services.AddControllers(options =>
         {
             options.Filters.Add<CustomExceptionFilter>();
+
         }).AddOData(options =>
         {
             

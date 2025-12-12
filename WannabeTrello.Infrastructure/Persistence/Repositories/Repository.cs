@@ -24,7 +24,7 @@ public class Repository<TEntity> where TEntity : class
     public virtual async Task<TEntity?> GetByIdWithTrackingAsync(long id, CancellationToken cancellationToken = default)
     {
         // FindAsync already tracks, but for consistency with the pattern
-        return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+        return await _dbSet.FindAsync([id], cancellationToken);
     }
 
     public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
