@@ -53,10 +53,10 @@ public static class ConfigureServices
 
                 // Konfiguracija korisničkog imena i emaila
                 options.User.RequireUniqueEmail = true;
-                // Identity će koristiti UserName za login, ali i Email se može koristiti
+               
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>() // Povezuje Identity sa vašim DbContext-om
-            .AddDefaultTokenProviders(); // Omogućava generisanje tokena za reset lozinke, email potvrdu itd.
+            .AddEntityFrameworkStores<ApplicationDbContext>() 
+            .AddDefaultTokenProviders();
 
         //--- Registracija Option patterna -- 
         services.Configure<EmailOptions>(
