@@ -71,6 +71,7 @@ _ReSharper.*/
 *.vsw
 *.code-workspace
 *.md
+*.env
 
 # Explicitno ignorisanje bin i obj foldera unutar slojeva aplikacije
 # (Ovo je često pokriveno gornjim [Bb]in/ i [Oo]bj/, ali je dodato za eksplicitnost)
