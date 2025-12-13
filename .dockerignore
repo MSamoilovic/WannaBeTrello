@@ -1,0 +1,57 @@
+
+**/bin/
+**/obj/
+**/out/
+
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+**/packages/
+
+
+**/TestResults/
+**/*.trx
+
+
+**/*.Tests/
+**/*.Tests.csproj
+
+Docs/
+*.md
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+**/Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+.env*
+!.env.example
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# User secrets
+secrets/
+
+# Misc
+*.tmp
+*.temp
+*.swp
