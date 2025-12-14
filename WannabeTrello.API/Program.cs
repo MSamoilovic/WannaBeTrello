@@ -1,15 +1,18 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using WannabeTrello.Application;
 using WannabeTrello.Domain;
 using WannabeTrello.Extensions;
 using WannabeTrello.Infrastructure;
 using WannabeTrello.Infrastructure.Options;
+using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.SignalR;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -44,6 +47,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddDomainServices();
 builder.Services.AddInfrastructure(builder.Configuration, builder);
 builder.Services.AddApplication();
@@ -75,6 +80,25 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+        
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Database migrations applied successfully");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database");
+    }
+}
+
+// Validate configuration options
+using (var scope = app.Services.CreateScope())
+{
     var emailOptions = scope.ServiceProvider.GetRequiredService<IOptions<EmailOptions>>();
     var jwtOptions = scope.ServiceProvider.GetRequiredService<IOptions<JwtOptions>>();
     try
@@ -98,7 +122,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Skip HTTPS redirection in Docker/Production (not needed for internal HTTP)
+// app.UseHttpsRedirection();
 
 app.UseRouting(); 
 
@@ -107,6 +132,7 @@ app.UseCors("Default");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.MapHub<TrellyHub>("/trelly");
 app.Run();
