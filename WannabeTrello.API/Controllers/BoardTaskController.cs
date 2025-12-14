@@ -80,7 +80,7 @@ namespace WannabeTrello.Controllers
         /// </summary>
         /// <param name="taskId">ID zadatka za dodavanje komentara.</param>
         /// <param name="command">Komanda koja sadrži sadržaj komentara.</param>
-        [HttpPost("{taskId:guid}/comments")]
+        [HttpPost("{taskId:long}/comments")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
