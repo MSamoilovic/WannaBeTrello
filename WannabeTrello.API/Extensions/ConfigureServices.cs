@@ -1,7 +1,6 @@
 ﻿
 using WannabeTrello.Filters;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.OData.ModelBuilder;
 using WannabeTrello.Application.Features.Tasks.SearchTasks;
 using OData.Swagger.Services;

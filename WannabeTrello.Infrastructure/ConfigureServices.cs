@@ -141,6 +141,7 @@ public static class ConfigureServices
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ICachingService, RedisCacheService>();
 
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
