@@ -122,8 +122,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Skip HTTPS redirection in Docker/Production (not needed for internal HTTP)
-// app.UseHttpsRedirection();
 
 app.UseRouting(); 
 
