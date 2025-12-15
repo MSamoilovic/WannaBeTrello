@@ -4,31 +4,20 @@ services:
     image: postgres:16-alpine
     container_name: wannabetrello-db
     
-    # Restart policy - "unless-stopped" znači da će se restartovati
-    # osim ako ga eksplicitno ne zaustavimo
     restart: unless-stopped
     
-    # Environment varijable za PostgreSQL
-    # Sintaksa ${VAR:-default} koristi vrednost iz .env fajla,
-    # ili default vrednost ako nije definisana
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-wannabetrello}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-WannabeTrello2024!}
       POSTGRES_DB: ${POSTGRES_DB:-wannabetrello}
     
-    # Port mapping: HOST_PORT:CONTAINER_PORT
-    # Omogućava pristup bazi sa host mašine (npr. za database tools)
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     
-    # Volumes - perzistentno skladište
-    # postgres_data - named volume za podatke (preživljava restart)
-    # init.sql - inicijalni skript koji se izvršava pri prvom pokretanju
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     
-    # Health check - proverava da li je PostgreSQL spreman
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wannabetrello} -d ${POSTGRES_DB:-wannabetrello}"]
       interval: 10s
@@ -45,7 +34,6 @@ services:
   # Naša .NET aplikacija
   # ---------------------------------------------------------------------------
   api:
-    # Build instrukcije - koristi Dockerfile iz trenutnog direktorijuma
     build:
       context: .
       dockerfile: Dockerfile
@@ -57,14 +45,10 @@ services:
     ports:
       - "${API_PORT:-5000}:8080"
     
-    # Environment varijable koje prepisuju appsettings.json
-    # .NET Core automatski čita env varijable u formatu:
-    # Section__Key = vrednost (dvostruki underscore za nested properties)
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
       
-      # Connection string - koristi "postgres" kao hostname
-      # jer je to ime servisa u docker-compose
+      
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-wannabetrello};Username=${POSTGRES_USER:-wannabetrello};Password=${POSTGRES_PASSWORD:-WannabeTrello2024!}
       
       # JWT konfiguracija
@@ -93,14 +77,14 @@ services:
       - Redis__ConnectionString=${REDIS_CONNECTION_STRING:-redis:6379}
       - Redis__InstanceName=${REDIS_INSTANCE_NAME:-wannabetrello}
       - Redis__DefaultExpirationMinutes=${REDIS_DEFAULT_EXPIRATION_MINUTES:-5}
-    
-    # Čekamo da PostgreSQL bude zdrav pre pokretanja API-ja
+  
+
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     
-    # Health check za API
-    # start_period je povećan jer migracije mogu trajati dugo
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -111,16 +95,12 @@ services:
     networks:
       - wannabetrello-network
 
-  # ---------------------------------------------------------------------------
-  # PgAdmin (Database Management UI) - Opciono
-  # Pokreće se samo sa: docker compose --profile tools up -d
-  # ---------------------------------------------------------------------------
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: wannabetrello-pgadmin
     restart: unless-stopped
     
-    # Profile omogućava selektivno pokretanje servisa
     profiles:
       - tools
     
@@ -141,20 +121,64 @@ services:
     networks:
       - wannabetrello-network
 
-# =============================================================================
-# VOLUMES
-# Named volumes za perzistentno skladište
-# =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: wannabetrello-redis
+    restart: unless-stopped
+    
+    # Komanda sa konfiguracijom
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    
+    volumes:
+      - redis_data:/data
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+    networks:
+      - wannabetrello-network
+
+  
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: wannabetrello-redis-ui
+    restart: unless-stopped
+    profiles:
+      - tools
+    
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    
+    depends_on:
+      - redis
+    
+    networks:
+      - wannabetrello-network
+
+
 volumes:
   postgres_data:
     driver: local
   pgadmin_data:
     driver: local
+  redis_data:
+    driver: local
 
-# =============================================================================
-# NETWORKS
-# Bridge network za komunikaciju između kontejnera
-# =============================================================================
+
 networks:
   wannabetrello-network:
     driver: bridge

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text;
 using WannabeTrello.Application.Common.Interfaces;
@@ -141,6 +142,33 @@ public static class ConfigureServices
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
+
+        //Redis
+        services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));
+
+        var redisOptions = configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>()
+            ?? new RedisOptions();
+
+        if (redisOptions.Enabled)
+        {
+
+            var redisConnection = ConnectionMultiplexer.Connect(redisOptions.ConnectionString);
+            services.AddSingleton<IConnectionMultiplexer>(redisConnection);
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisOptions.ConnectionString;
+                options.InstanceName = redisOptions.InstanceName + ":";
+            });
+
+            // Cache service
+            services.AddSingleton<ICachingService, RedisCacheService>();
+        }
+        else
+        {
+            services.AddDistributedMemoryCache();
+           
+        }
 
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
