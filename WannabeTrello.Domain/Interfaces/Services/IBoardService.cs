@@ -16,7 +16,7 @@ public interface IBoardService
     
     Task<Board> UpdateBoardAsync(
         long boardId, 
-        string name, 
+        string? name, 
         string? description, 
         long userId,
         CancellationToken cancellationToken = default);

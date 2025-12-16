@@ -162,7 +162,7 @@ public static class ConfigureServices
             });
 
             // Cache service
-            services.AddSingleton<ICachingService, RedisCacheService>();
+            services.AddSingleton<ICacheService, RedisCacheService>();
         }
         else
         {
