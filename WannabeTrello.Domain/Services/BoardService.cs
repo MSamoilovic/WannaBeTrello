@@ -50,10 +50,10 @@ public class BoardService(
         return board;
     }
 
-    public async Task<Board> UpdateBoardAsync(long boardId, string name, string? description, long userId,
+    public async Task<Board> UpdateBoardAsync(long boardId, string? name, string? description, long userId,
         CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om (potrebno za update)
+        
         var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);

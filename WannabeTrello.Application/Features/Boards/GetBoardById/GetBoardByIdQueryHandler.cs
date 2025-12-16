@@ -1,12 +1,12 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Repositories;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Boards.GetBoardById;
 
-public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService)
+public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService, ICacheService cacheService)
     : IRequestHandler<GetBoardByIdQuery, GetBoardByIdQueryResponse>
 {
     public async Task<GetBoardByIdQueryResponse> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
@@ -15,9 +15,16 @@ public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserSe
         {
             throw new AccessDeniedException("User is not authenticated");
         }
-        
+
+        var cacheKey = CacheKeys.Board(request.BoardId);
+
         var userId = currentUserService.UserId.Value;
-        var board = await boardService.GetBoardWithDetailsAsync(request.BoardId, cancellationToken);
+        var board = await cacheService.GetOrSetAsync(
+             cacheKey,
+             () => boardService.GetBoardWithDetailsAsync(request.BoardId, cancellationToken),
+             CacheExpiration.Medium,
+             cancellationToken
+         );
 
         return GetBoardByIdQueryResponse.FromEntity(board);
     }

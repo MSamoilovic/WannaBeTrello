@@ -8,7 +8,7 @@ using WannabeTrello.Infrastructure.Options;
 
 namespace WannabeTrello.Infrastructure.Services
 {
-    public class RedisCacheService : ICachingService
+    public class RedisCacheService : ICacheService
     {
 
         private readonly IDistributedCache _cache;

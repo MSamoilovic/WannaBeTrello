@@ -1,6 +1,6 @@
 ﻿namespace WannabeTrello.Application.Common.Interfaces;
 
-public interface ICachingService
+public interface ICacheService
 {
     Task<T?> GetOrSetAsync<T>(
         string key,
