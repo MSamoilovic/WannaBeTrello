@@ -38,7 +38,15 @@ public class GetColumnsByBoardIdQueryTests
             .Setup(s => s.GetColumnsByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columnsFromService);
 
-        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+        cachingServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Column>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Column>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -59,7 +67,9 @@ public class GetColumnsByBoardIdQueryTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+
+        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -79,7 +89,9 @@ public class GetColumnsByBoardIdQueryTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null); // UserId je null
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+
+        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         // Proveravamo InvalidOperationException jer će '!.Value' na nullable tipu baciti ovu grešku.
@@ -104,7 +116,15 @@ public class GetColumnsByBoardIdQueryTests
             .Setup(s => s.GetColumnsByBoardIdAsync(nonExistentBoardId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId));
 
-        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+        cachingServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Column>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Column>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetColumnsByBoardIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() =>

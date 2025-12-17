@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
@@ -31,6 +32,11 @@ public class GetColumnsByBoardIdQueryHandler(IBoardService boardService, ICurren
              cancellationToken
          );
 
-        return GetColumnsByBoardIdQueryResponse.FromEntity(columns ?? []);
+        if (columns is null)
+        {
+            throw new NotFoundException("Board", request.BoardId);
+        }
+
+        return GetColumnsByBoardIdQueryResponse.FromEntity(columns);
     }
 }

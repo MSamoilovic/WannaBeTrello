@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Users.GetUserProfile;
@@ -22,6 +23,11 @@ public class GetUserProfileQueryHandler(IUserService userService, ICurrentUserSe
              CacheExpiration.Long,
              cancellationToken
          );
+
+        if (user is null)
+        {
+            throw new NotFoundException("User", request.UserId);
+        }
 
         return GetUserProfileQueryResponse.FromEntity(user!);
     }
