@@ -1,0 +1,35 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image (no push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: wannabetrello-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Optional: run tests before build (uncomment if needed)
+      # - name: Restore & test
+      #   run: |
+      #     dotnet restore
+      #     dotnet test --no-build
+

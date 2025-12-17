@@ -1,4 +1,6 @@
-﻿namespace WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
+﻿using WannabeTrello.Domain.Entities;
+
+namespace WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
 
 public class GetColumnsByBoardIdQueryResponse
 {
@@ -8,24 +10,24 @@ public class GetColumnsByBoardIdQueryResponse
     public int? WipLimit { get; set; }
     public List<TaskResponse>? Tasks { get; set; }
     
-    public static GetColumnsByBoardIdQueryResponse FromEntity(Domain.Entities.Column column)
+    public static List<GetColumnsByBoardIdQueryResponse> FromEntity(IReadOnlyList<Column?> column)
     {
-        return new GetColumnsByBoardIdQueryResponse
+        return [.. column.Select(col => new GetColumnsByBoardIdQueryResponse
         {
-            ColumnId = column.Id,
-            ColumnName = column.Name,
-            ColumnOrder = column.Order,
-            WipLimit = column.WipLimit,
-            Tasks = column.Tasks?.Select(t => new TaskResponse
+            ColumnId = col.Id,
+            ColumnName = col.Name,
+            ColumnOrder = col.Order,
+            WipLimit = col.WipLimit,
+            Tasks = col.Tasks?.Select(t => new TaskResponse
             {
                 TaskId = t.Id,
                 Title = t.Title,
                 Description = t.Description,
                 Priority = t.Priority.ToString(),
                 DueDate = t.DueDate,
-                
-            }).ToList() ?? []
-        };
+
+            }).ToList()
+        })];
     }
 }
 
