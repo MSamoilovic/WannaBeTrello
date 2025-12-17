@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
+using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
@@ -25,6 +26,11 @@ public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserSe
              CacheExpiration.Medium,
              cancellationToken
          );
+
+        if (board is null)
+        {
+            throw new NotFoundException(nameof(Board), request.BoardId);
+        }
 
         return GetBoardByIdQueryResponse.FromEntity(board);
     }

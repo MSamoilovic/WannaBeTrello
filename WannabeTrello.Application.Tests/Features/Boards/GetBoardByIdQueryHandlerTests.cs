@@ -67,7 +67,15 @@ public class GetBoardByIdQueryHandlerTests
             .Setup(s => s.GetBoardWithDetailsAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boardFromService);
 
-        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+        cachingServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<Board>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<Board>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -91,7 +99,9 @@ public class GetBoardByIdQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+
+        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() => 
@@ -113,7 +123,9 @@ public class GetBoardByIdQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+
+        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() => 
@@ -137,9 +149,17 @@ public class GetBoardByIdQueryHandlerTests
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
             .Setup(s => s.GetBoardWithDetailsAsync(boardId, It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NotFoundException(nameof(Board), boardId)); 
+            .ThrowsAsync(new NotFoundException(nameof(Board), boardId));
 
-        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cachingServiceMock = new Mock<ICacheService>();
+        cachingServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<Board>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<Board>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetBoardByIdQueryHandler(boardServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>

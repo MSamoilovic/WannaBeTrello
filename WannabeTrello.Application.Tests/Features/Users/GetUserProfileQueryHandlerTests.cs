@@ -3,6 +3,7 @@ using Moq;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.GetUserProfile;
 using WannabeTrello.Domain.Entities;
+using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Tests.Features.Users;
@@ -54,6 +55,14 @@ public class GetUserProfileQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         currentUserServiceMock.Setup(s => s.UserId).Returns(currentUserId);
 
+        var cachingServiceMock = new Mock<ICacheService>();
+        cachingServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<User?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<User?>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
         var userServiceMock = new Mock<IUserService>();
         var userFromService = CreateInstanceWithoutConstructor<User>();
         SetPrivatePropertyValue(userFromService, nameof(User.Id), requestedUserId);
@@ -72,7 +81,7 @@ public class GetUserProfileQueryHandlerTests
             .Setup(s => s.GetUserProfileAsync(requestedUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(userFromService);
 
-        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cachingServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -103,7 +112,8 @@ public class GetUserProfileQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var userServiceMock = new Mock<IUserService>();
-        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -125,7 +135,8 @@ public class GetUserProfileQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var userServiceMock = new Mock<IUserService>();
-        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -136,7 +147,7 @@ public class GetUserProfileQueryHandlerTests
     }
     
     [Fact]
-    public async Task Handle_WhenRequestedUserNotFound_ShouldReturnNull()
+    public async Task Handle_WhenRequestedUserNotFound_ShouldThrowNotFoundException()
     {
         // Arrange
         const long currentUserId = 123L;
@@ -152,10 +163,18 @@ public class GetUserProfileQueryHandlerTests
             .Setup(s => s.GetUserProfileAsync(requestedUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<User?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<User?>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() =>
+        await Assert.ThrowsAsync<NotFoundException>(() =>
             handler.Handle(query, CancellationToken.None));
     }
     
@@ -187,7 +206,15 @@ public class GetUserProfileQueryHandlerTests
             .Setup(s => s.GetUserProfileAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(userFromService);
 
-        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<User?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<User?>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
