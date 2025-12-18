@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Activities.GetActivityByBoard;
 using WannabeTrello.Domain.Enums;
@@ -13,8 +14,8 @@ public class GetActivityByBoardQueryHandlerTests
     public async Task Handle_WhenUserIsAuthenticatedAndActivitiesExist_ShouldReturnActivities()
     {
         // Arrange
-        var userId = 123L;
-        var boardId = 456L;
+        const long userId = 123L;
+        const long boardId = 456L;
         var query = new GetActivityByBoardQuery(boardId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
@@ -44,7 +45,17 @@ public class GetActivityByBoardQueryHandlerTests
             .Setup(s => s.GetActivitiesForBoardAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activities);
 
-        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                Task.FromResult(factory().GetAwaiter().GetResult()));
+
+        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -67,8 +78,8 @@ public class GetActivityByBoardQueryHandlerTests
     public async Task Handle_WhenUserIsAuthenticatedAndNoActivitiesExist_ShouldReturnEmptyList()
     {
         // Arrange
-        var userId = 123L;
-        var boardId = 456L;
+        const long userId = 123L;
+        const long boardId = 456L;
         var query = new GetActivityByBoardQuery(boardId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
@@ -80,7 +91,17 @@ public class GetActivityByBoardQueryHandlerTests
             .Setup(s => s.GetActivitiesForBoardAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Enumerable.Empty<Activity>());
 
-        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                Task.FromResult(factory().GetAwaiter().GetResult()));
+
+        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -104,7 +125,8 @@ public class GetActivityByBoardQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var activityLogServiceMock = new Mock<IActivityLogService>();
-        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -128,7 +150,8 @@ public class GetActivityByBoardQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var activityLogServiceMock = new Mock<IActivityLogService>();
-        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -144,8 +167,8 @@ public class GetActivityByBoardQueryHandlerTests
     public async Task Handle_WhenActivitiesHaveOldAndNewValues_ShouldMapCorrectly()
     {
         // Arrange
-        var userId = 123L;
-        var boardId = 456L;
+        const long userId = 123L;
+        const long boardId = 456L;
         var query = new GetActivityByBoardQuery(boardId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
@@ -170,7 +193,17 @@ public class GetActivityByBoardQueryHandlerTests
             .Setup(s => s.GetActivitiesForBoardAsync(boardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activities);
 
-        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                Task.FromResult(factory().GetAwaiter().GetResult()));
+
+        var handler = new GetActivityByBoardQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -183,7 +216,6 @@ public class GetActivityByBoardQueryHandlerTests
         Assert.Equal(userId, response[0].UserId);
         Assert.Equal("Old Board Name", response[0].OldValue["Name"]);
         Assert.Equal("New Board Name", response[0].NewValue["Name"]);
-        Assert.NotNull(response[0].Timestamp);
     }
 }
 
