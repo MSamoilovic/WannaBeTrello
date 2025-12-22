@@ -52,7 +52,9 @@ public class CreateBoardCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdBoard);
 
-        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -64,6 +66,7 @@ public class CreateBoardCommandHandlerTests
         Assert.Equal("Board created successfully", response.Result.Message);
 
         boardServiceMock.Verify(s => s.CreateBoardAsync(command.Name, command.Description,command.ProjectId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -76,7 +79,8 @@ public class CreateBoardCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -85,6 +89,7 @@ public class CreateBoardCommandHandlerTests
         Assert.Equal("User is not authenticated", exception.Message);
 
         boardServiceMock.Verify(s => s.CreateBoardAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -111,7 +116,9 @@ public class CreateBoardCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdBoard);
 
-        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -122,5 +129,43 @@ public class CreateBoardCommandHandlerTests
         Assert.Equal(newBoardId, response.Result.Value);
 
         boardServiceMock.Verify(s => s.CreateBoardAsync(command.Name, command.Description, command.ProjectId, It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenBoardIsCreated_ShouldInvalidateProjectBoardsCache()
+    {
+        // Arrange
+        var userId = 123L;
+        var newBoardId = 456L;
+        var projectId = 789L;
+        var command = new CreateBoardCommand { ProjectId = projectId, Name = "Test Board", Description = "Test Desc" };
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        var createdBoard = (Board)FormatterServices.GetUninitializedObject(typeof(Board));
+        SetPrivatePropertyValue(createdBoard, nameof(Board.Id), newBoardId);
+        
+        boardServiceMock
+            .Setup(s => s.CreateBoardAsync(
+                command.Name, 
+                command.Description,
+                command.ProjectId,
+                userId, 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(createdBoard);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new CreateBoardCommandHandler(currentUserServiceMock.Object, boardServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        cacheServiceMock.Verify(c => c.RemoveAsync($"project:{projectId}:boards", It.IsAny<CancellationToken>()), Times.Once);
     }
 }

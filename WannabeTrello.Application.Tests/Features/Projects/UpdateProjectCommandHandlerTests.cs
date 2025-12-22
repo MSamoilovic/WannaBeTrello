@@ -39,7 +39,9 @@ public class UpdateProjectCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(updatedProject);
 
-        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
         var command = new UpdateProjectCommand(1, "Updated Name", "Updated Description",
             ProjectStatus.Active, ProjectVisibility.Public, false);
 
@@ -62,6 +64,8 @@ public class UpdateProjectCommandHandlerTests
             123,
             It.IsAny<CancellationToken>()
         ), Times.Once);
+        
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -74,8 +78,9 @@ public class UpdateProjectCommandHandlerTests
         currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
 
         var projectServiceMock = new Mock<IProjectService>();
+        var cacheServiceMock = new Mock<ICacheService>();
 
-        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object);
+        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
         var command =
             new UpdateProjectCommand(1, "Name", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
 
@@ -90,6 +95,8 @@ public class UpdateProjectCommandHandlerTests
             It.IsAny<bool>(),
             It.IsAny<long>(),
             It.IsAny<CancellationToken>()), Times.Never);
+        
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -113,7 +120,9 @@ public class UpdateProjectCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new DataException("Database connection error."));
 
-        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
         var command =
             new UpdateProjectCommand(1, "Name", "Desc", ProjectStatus.Active, ProjectVisibility.Public, false);
 
@@ -129,6 +138,51 @@ public class UpdateProjectCommandHandlerTests
             It.IsAny<bool>(),
             It.IsAny<long>(),
             It.IsAny<CancellationToken>()), Times.Once);
+        
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenProjectIsUpdated_ShouldInvalidateProjectCache()
+    {
+        // ARRANGE
+        var projectId = 1L;
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(x => x.UserId).Returns(123);
+
+        var projectServiceMock = new Mock<IProjectService>();
+
+        var updatedProject = new Project();
+        SetPrivatePropertyValue(updatedProject, "Id", projectId);
+        SetPrivatePropertyValue(updatedProject, "Name", "Updated Name");
+        SetPrivatePropertyValue(updatedProject, "Description", "Updated Description");
+        SetPrivatePropertyValue(updatedProject, "Visibility", ProjectVisibility.Public);
+        SetPrivatePropertyValue(updatedProject, "Status", ProjectStatus.Active);
+        SetPrivatePropertyValue(updatedProject, "IsArchived", false);
+
+        projectServiceMock.Setup(x => x.UpdateProjectAsync(
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<ProjectStatus>(),
+                It.IsAny<ProjectVisibility>(),
+                It.IsAny<bool>(),
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updatedProject);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new UpdateProjectCommandHandler(projectServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+        var command = new UpdateProjectCommand(projectId, "Updated Name", "Updated Description",
+            ProjectStatus.Active, ProjectVisibility.Public, false);
+
+        // ACT
+        await handler.Handle(command, CancellationToken.None);
+
+        // ASSERT
+        cacheServiceMock.Verify(c => c.RemoveAsync($"project:{projectId}", It.IsAny<CancellationToken>()), Times.Once);
     }
     
     

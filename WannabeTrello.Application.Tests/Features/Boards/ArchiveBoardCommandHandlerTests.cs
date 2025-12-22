@@ -46,7 +46,9 @@ public class ArchiveBoardCommandHandlerTests
             .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
             .ReturnsAsync(boardId);
 
-        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -58,6 +60,7 @@ public class ArchiveBoardCommandHandlerTests
         Assert.Equal($"Board {boardId} is now archived.", response.Result.Message);
 
         boardServiceMock.Verify(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -70,7 +73,8 @@ public class ArchiveBoardCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -78,6 +82,7 @@ public class ArchiveBoardCommandHandlerTests
             
         Assert.Equal("User is not authenticated", exception.Message);
         boardServiceMock.Verify(s => s.ArchiveBoardAsync(It.IsAny<long>(), It.IsAny<long>(), CancellationToken.None), Times.Never);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -91,13 +96,15 @@ public class ArchiveBoardCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
             handler.Handle(command, CancellationToken.None));
             
         Assert.Equal("User is not authenticated", exception.Message);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -117,12 +124,42 @@ public class ArchiveBoardCommandHandlerTests
             .Setup(s => s.ArchiveBoardAsync(nonExistentBoardId, userId, CancellationToken.None))
             .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId));
 
-        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
             handler.Handle(command, CancellationToken.None));
             
         Assert.Equal($"Entity \'Board\' ({nonExistentBoardId}) was not found.", exception.Message);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenBoardIsArchived_ShouldInvalidateCorrectCacheKeys()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 456L;
+        var command = new ArchiveBoardCommand(boardId);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
+            .ReturnsAsync(boardId);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}", CancellationToken.None), Times.Once);
     }
 }
