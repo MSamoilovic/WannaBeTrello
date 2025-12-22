@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Entities.Common;
@@ -6,7 +7,10 @@ using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Boards.ArchiveBoard;
 
-public class ArchiveBoardCommandHandler(IBoardService boardService, ICurrentUserService currentUserService)
+public class ArchiveBoardCommandHandler(
+    IBoardService boardService, 
+    ICurrentUserService currentUserService, 
+    ICacheService cacheService)
     : IRequestHandler<ArchiveBoardCommand, ArchiveBoardCommandResponse>
 {
     public async Task<ArchiveBoardCommandResponse> Handle(ArchiveBoardCommand request,
@@ -20,8 +24,16 @@ public class ArchiveBoardCommandHandler(IBoardService boardService, ICurrentUser
         var boardId =
             await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value, cancellationToken);
         
+        await InvalidateCacheAsync(request.BoardId, cancellationToken);
+        
         var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now archived.");
 
         return new ArchiveBoardCommandResponse(result);
+    }
+    
+    private async Task InvalidateCacheAsync(long boardId, CancellationToken ct)
+    {
+        await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
+        
     }
 }

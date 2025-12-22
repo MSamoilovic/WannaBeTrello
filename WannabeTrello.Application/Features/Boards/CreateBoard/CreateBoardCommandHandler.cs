@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -6,7 +7,10 @@ using WannabeTrello.Domain.Services;
 
 namespace WannabeTrello.Application.Features.Boards.CreateBoard;
 
-public class CreateBoardCommandHandler(ICurrentUserService currentUserService, IBoardService boardService)
+public class CreateBoardCommandHandler(
+    ICurrentUserService currentUserService, 
+    IBoardService boardService, 
+    ICacheService cacheService)
     : IRequestHandler<CreateBoardCommand, CreateBoardCommandResponse>
 {
     
@@ -25,8 +29,15 @@ public class CreateBoardCommandHandler(ICurrentUserService currentUserService, I
             cancellationToken
         );
         
+        await InvalidateCacheAsync(request.ProjectId, cancellationToken);
+        
         var result =  Result<long>.Success(board.Id, "Board created successfully");
         
         return new CreateBoardCommandResponse(result);
+    }
+    
+    private async Task InvalidateCacheAsync(long projectId, CancellationToken ct)
+    {
+        await cacheService.RemoveAsync(CacheKeys.ProjectBoards(projectId), ct);
     }
 }
