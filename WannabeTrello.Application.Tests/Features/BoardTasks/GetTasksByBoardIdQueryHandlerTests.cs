@@ -52,7 +52,15 @@ public class GetTasksByBoardIdQueryHandlerTests
             .Setup(s => s.GetTasksByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasksFromService);
 
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -72,6 +80,11 @@ public class GetTasksByBoardIdQueryHandlerTests
         Assert.Null(response[1].AssigneeId);
         
         taskServiceMock.Verify(s => s.GetTasksByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -85,7 +98,8 @@ public class GetTasksByBoardIdQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() => 
@@ -93,6 +107,11 @@ public class GetTasksByBoardIdQueryHandlerTests
         
         Assert.Equal("User is not authenticated", exception.Message);
         taskServiceMock.Verify(s => s.GetTasksByBoardIdAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<Task<IEnumerable<BoardTask>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -107,7 +126,8 @@ public class GetTasksByBoardIdQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() => 
@@ -115,6 +135,11 @@ public class GetTasksByBoardIdQueryHandlerTests
         
         Assert.Equal("User is not authenticated", exception.Message);
         taskServiceMock.Verify(s => s.GetTasksByBoardIdAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<Task<IEnumerable<BoardTask>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -132,9 +157,17 @@ public class GetTasksByBoardIdQueryHandlerTests
         var taskServiceMock = new Mock<IBoardTaskService>();
         taskServiceMock
             .Setup(s => s.GetTasksByBoardIdAsync(nonExistentBoardId, userId, It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId)); 
+            .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId));
 
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -161,7 +194,15 @@ public class GetTasksByBoardIdQueryHandlerTests
             .Setup(s => s.GetTasksByBoardIdAsync(boardIdWithNoAccess, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AccessDeniedException("You don't have permission to view this board."));
 
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() =>
@@ -188,7 +229,15 @@ public class GetTasksByBoardIdQueryHandlerTests
             .Setup(s => s.GetTasksByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<BoardTask>());
 
-        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -197,6 +246,44 @@ public class GetTasksByBoardIdQueryHandlerTests
         Assert.NotNull(response);
         Assert.Empty(response);
         taskServiceMock.Verify(s => s.GetTasksByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenTasksAreCached_ShouldUseCacheKey()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 456L;
+        var query = new GetTasksByBoardIdQuery { BoardId = boardId };
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var taskServiceMock = new Mock<IBoardTaskService>();
+        taskServiceMock
+            .Setup(s => s.GetTasksByBoardIdAsync(boardId, userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<BoardTask>());
+
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetTasksByBoardIdQueryHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            $"board:{boardId}:tasks",
+            It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }
 

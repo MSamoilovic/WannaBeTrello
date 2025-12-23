@@ -34,6 +34,5 @@ public class ArchiveBoardCommandHandler(
     private async Task InvalidateCacheAsync(long boardId, CancellationToken ct)
     {
         await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
-        
     }
 }
