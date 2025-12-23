@@ -64,7 +64,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(commentsFromService);
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -110,7 +118,8 @@ public class GetCommentsByTaskIdCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var commentServiceMock = new Mock<ICommentService>();
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -118,6 +127,11 @@ public class GetCommentsByTaskIdCommandHandlerTests
 
         Assert.Equal("User is not authenticated", exception.Message);
         commentServiceMock.Verify(s => s.GetCommentsByTaskId(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<Task<IEnumerable<Comment>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -132,7 +146,8 @@ public class GetCommentsByTaskIdCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var commentServiceMock = new Mock<ICommentService>();
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -140,6 +155,11 @@ public class GetCommentsByTaskIdCommandHandlerTests
 
         Assert.Equal("User is not authenticated", exception.Message);
         commentServiceMock.Verify(s => s.GetCommentsByTaskId(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<Task<IEnumerable<Comment>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -159,7 +179,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Comment>());
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -187,7 +215,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(nonExistentTaskId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(BoardTask), nonExistentTaskId));
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -214,7 +250,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(taskIdWithNoAccess, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AccessDeniedException("You don't have permission to view comments for this task."));
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() =>
@@ -254,7 +298,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Comment> { comment });
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -306,7 +358,15 @@ public class GetCommentsByTaskIdCommandHandlerTests
             .Setup(s => s.GetCommentsByTaskId(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(comments);
 
-        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -319,6 +379,44 @@ public class GetCommentsByTaskIdCommandHandlerTests
             Assert.Equal($"Comment {i + 1}", response[i].Content);
             Assert.Equal((i + 1) * 10, response[i].UserId);
         }
+    }
+    
+    [Fact]
+    public async Task Handle_WhenCommentsAreCached_ShouldUseCacheKey()
+    {
+        // Arrange
+        var userId = 123L;
+        var taskId = 456L;
+        var command = new GetCommentsByTaskIdCommand(taskId);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var commentServiceMock = new Mock<ICommentService>();
+        commentServiceMock
+            .Setup(s => s.GetCommentsByTaskId(taskId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Comment>());
+
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Comment>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCommentsByTaskIdCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            $"task:{taskId}:comments",
+            It.IsAny<Func<Task<IReadOnlyList<Comment>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }
 
