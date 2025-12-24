@@ -33,6 +33,14 @@ public class ArchiveBoardCommandHandler(
     
     private async Task InvalidateCacheAsync(long boardId, CancellationToken ct)
     {
-        await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
+        var board = await boardService.GetBoardWithDetailsAsync(boardId, ct);
+        
+        if (board is not null)
+        {
+            await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
+            await cacheService.RemoveAsync(CacheKeys.ProjectBoards(board.ProjectId), ct);
+            await cacheService.RemoveAsync(CacheKeys.BoardColumns(boardId), ct);
+            await cacheService.RemoveAsync(CacheKeys.BoardTasks(boardId), ct);
+        }
     }
 }

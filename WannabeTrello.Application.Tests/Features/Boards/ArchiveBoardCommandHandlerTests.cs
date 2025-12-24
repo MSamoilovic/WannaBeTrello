@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using Moq;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Boards.ArchiveBoard;
+using WannabeTrello.Application.Tests.Utils;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -35,13 +36,21 @@ public class ArchiveBoardCommandHandlerTests
         // Arrange
         var userId = 123L;
         var boardId = 456L;
+        var projectId = 789L;
         var command = new ArchiveBoardCommand(boardId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
+        var board = ApplicationTestUtils.CreateInstanceWithoutConstructor<Board>();
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.Id), boardId);
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.ProjectId), projectId);
+
         var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, CancellationToken.None))
+            .ReturnsAsync(board);
         boardServiceMock
             .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
             .ReturnsAsync(boardId);
@@ -60,7 +69,7 @@ public class ArchiveBoardCommandHandlerTests
         Assert.Equal($"Board {boardId} is now archived.", response.Result.Message);
 
         boardServiceMock.Verify(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None), Times.Once);
-        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), CancellationToken.None), Times.Exactly(4));
     }
 
     [Fact]
@@ -141,13 +150,21 @@ public class ArchiveBoardCommandHandlerTests
         // Arrange
         var userId = 123L;
         var boardId = 456L;
+        var projectId = 789L;
         var command = new ArchiveBoardCommand(boardId);
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
+        var board = ApplicationTestUtils.CreateInstanceWithoutConstructor<Board>();
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.Id), boardId);
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.ProjectId), projectId);
+
         var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, CancellationToken.None))
+            .ReturnsAsync(board);
         boardServiceMock
             .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
             .ReturnsAsync(boardId);
@@ -161,5 +178,8 @@ public class ArchiveBoardCommandHandlerTests
 
         // Assert
         cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"project:{projectId}:boards", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}:columns", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}:tasks", CancellationToken.None), Times.Once);
     }
 }
