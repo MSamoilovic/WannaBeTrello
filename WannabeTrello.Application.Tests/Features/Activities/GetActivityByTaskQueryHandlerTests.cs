@@ -52,7 +52,17 @@ public class GetActivityByTaskQueryHandlerTests
             .Setup(s => s.GetActivitiesForTaskAsync(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activities);
 
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -90,7 +100,17 @@ public class GetActivityByTaskQueryHandlerTests
             .Setup(s => s.GetActivitiesForTaskAsync(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Enumerable.Empty<Activity>());
 
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -114,7 +134,17 @@ public class GetActivityByTaskQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var activityLogServiceMock = new Mock<IActivityLogService>();
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -138,7 +168,17 @@ public class GetActivityByTaskQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var activityLogServiceMock = new Mock<IActivityLogService>();
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -180,7 +220,17 @@ public class GetActivityByTaskQueryHandlerTests
             .Setup(s => s.GetActivitiesForTaskAsync(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activities);
 
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -223,7 +273,17 @@ public class GetActivityByTaskQueryHandlerTests
             .Setup(s => s.GetActivitiesForTaskAsync(taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activities);
 
-        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock
+            .Setup(s => s.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IEnumerable<Activity>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((string key, Func<Task<IEnumerable<Activity>>> factory, TimeSpan? expiration, CancellationToken ct) => 
+                factory());
+
+        var handler = new GetActivityByTaskQueryHandler(activityLogServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
