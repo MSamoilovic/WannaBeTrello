@@ -1,6 +1,8 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Tasks.UpdateTask;
+using WannabeTrello.Application.Tests.Utils;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Enums;
 using WannabeTrello.Domain.Exceptions;
@@ -41,7 +43,21 @@ public class UpdateTaskCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        // Task sa Column-om koji ima BoardId (za invalidaciju keša)
+        var taskWithColumn = ApplicationTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
+        ApplicationTestUtils.SetPrivatePropertyValue(taskWithColumn, nameof(BoardTask.Id), taskId);
+        ApplicationTestUtils.SetPrivatePropertyValue(taskWithColumn, nameof(BoardTask.AssigneeId), 999L);
+        var column = ApplicationTestUtils.CreateInstanceWithoutConstructor<Column>();
+        ApplicationTestUtils.SetPrivatePropertyValue(column, nameof(Column.BoardId), 123L);
+        ApplicationTestUtils.SetPrivatePropertyValue(taskWithColumn, nameof(BoardTask.Column), column);
+        
+        taskServiceMock
+            .Setup(s => s.GetTaskByIdAsync(taskId, userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(taskWithColumn);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -62,6 +78,10 @@ public class UpdateTaskCommandHandlerTests
                 userId,
                 It.IsAny<CancellationToken>()),
             Times.Once);
+        
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.Task(taskId)), It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.BoardTasks(123L)), It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.UserTasks(999L)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -80,7 +100,8 @@ public class UpdateTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -117,7 +138,8 @@ public class UpdateTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -168,7 +190,8 @@ public class UpdateTaskCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(BoardTask), nonExistentTaskId));
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -208,7 +231,8 @@ public class UpdateTaskCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AccessDeniedException("You don't have a permission to update this task."));
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() =>
@@ -248,7 +272,8 @@ public class UpdateTaskCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new BusinessRuleValidationException("Task title cannot be empty."));
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(() =>
@@ -291,7 +316,8 @@ public class UpdateTaskCommandHandlerTests
                 cancellationToken))
             .Returns(Task.CompletedTask);
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, cancellationToken);
@@ -343,7 +369,8 @@ public class UpdateTaskCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);

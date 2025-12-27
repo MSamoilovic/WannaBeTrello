@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Columns.CreateColumn;
 using WannabeTrello.Application.Tests.Utils;
@@ -39,7 +40,9 @@ public class CreateColumnCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdColumn);
 
-        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -51,6 +54,7 @@ public class CreateColumnCommandHandlerTests
         Assert.Equal("Column created successfully", response.Result.Message);
 
         columnServiceMock.Verify(s => s.CreateColumnAsync(command.BoardId, command.Name, command.Order, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.BoardColumns(command.BoardId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -63,7 +67,8 @@ public class CreateColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var columnServiceMock = new Mock<IColumnService>();
-        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -98,7 +103,8 @@ public class CreateColumnCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdColumn);
         
-        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);

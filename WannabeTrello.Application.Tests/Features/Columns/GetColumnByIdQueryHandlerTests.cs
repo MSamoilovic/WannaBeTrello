@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Columns.GetColumn;
 using WannabeTrello.Application.Tests.Utils;
@@ -31,7 +32,15 @@ public class GetColumnByIdQueryHandlerTests
             .Setup(s => s.GetColumnByIdAsync(columnId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columnFromService);
 
-        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<Column>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<Column>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -40,6 +49,11 @@ public class GetColumnByIdQueryHandlerTests
         Assert.NotNull(response);
         Assert.Equal(columnId, response.ColumnId);
         columnServiceMock.Verify(s => s.GetColumnByIdAsync(columnId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.Column(columnId)),
+            It.IsAny<Func<Task<Column>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -52,7 +66,8 @@ public class GetColumnByIdQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null); // UserId je null
 
         var columnServiceMock = new Mock<IColumnService>();
-        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -78,7 +93,15 @@ public class GetColumnByIdQueryHandlerTests
             .Setup(s => s.GetColumnByIdAsync(nonExistentColumnId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Column), nonExistentColumnId));
 
-        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<Column>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<Column>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
+        var handler = new GetColumnByIdQueryHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() =>
