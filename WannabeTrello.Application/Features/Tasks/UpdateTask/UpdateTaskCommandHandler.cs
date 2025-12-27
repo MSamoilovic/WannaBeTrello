@@ -1,11 +1,15 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Tasks.UpdateTask;
 
-public class UpdateTaskCommandHandler(IBoardTaskService taskService, ICurrentUserService currentUserService)
+public class UpdateTaskCommandHandler(
+    IBoardTaskService taskService, 
+    ICurrentUserService currentUserService,
+    ICacheService cacheService)
     : IRequestHandler<UpdateTaskCommand, UpdateTaskCommandResponse>
 {
     public async Task<UpdateTaskCommandResponse> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
@@ -25,6 +29,25 @@ public class UpdateTaskCommandHandler(IBoardTaskService taskService, ICurrentUse
             cancellationToken
         );
 
+        await InvalidateCacheAsync(request.TaskId, cancellationToken);
+
         return new UpdateTaskCommandResponse(Result<long>.Success(request.TaskId, "Task updated successfully"));
+    }
+
+    private async Task InvalidateCacheAsync(long taskId, CancellationToken ct)
+    {
+        var task = await taskService.GetTaskByIdAsync(taskId, currentUserService.UserId!.Value, ct);
+        if (task != null)
+        {
+            var boardId = task.Column.BoardId;
+            
+            await cacheService.RemoveAsync(CacheKeys.Task(taskId), ct);
+            await cacheService.RemoveAsync(CacheKeys.BoardTasks(boardId), ct);
+            
+            if (task.AssigneeId.HasValue)
+            {
+                await cacheService.RemoveAsync(CacheKeys.UserTasks(task.AssigneeId.Value), ct);
+            }
+        }
     }
 }

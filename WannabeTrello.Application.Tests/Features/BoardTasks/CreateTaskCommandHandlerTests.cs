@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Tasks.CreateTask;
 using WannabeTrello.Application.Tests.Utils;
@@ -17,15 +18,18 @@ public class CreateTaskCommandHandlerTests
         // Arrange
         var userId = 123L;
         var newTaskId = 789L;
+        var columnId = 1L;
+        var boardId = 456L;
+        var assigneeId = 10L;
         var command = new CreateTaskCommand
         {
-            ColumnId = 1L,
+            ColumnId = columnId,
             Title = "New Task Title",
             Description = "Task Description",
             Priority = TaskPriority.Medium,
             DueDate = DateTime.UtcNow.AddDays(1),
             Position = 1,
-            AssigneeId = 10L
+            AssigneeId = assigneeId
         };
 
         var currentUserServiceMock = new Mock<ICurrentUserService>();
@@ -35,6 +39,14 @@ public class CreateTaskCommandHandlerTests
         var taskServiceMock = new Mock<IBoardTaskService>();
         var createdTask = ApplicationTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
         ApplicationTestUtils.SetPrivatePropertyValue(createdTask, nameof(BoardTask.Id), newTaskId);
+
+        // Task sa Column-om koji ima BoardId (za invalidaciju keša)
+        var taskWithColumn = ApplicationTestUtils.CreateInstanceWithoutConstructor<BoardTask>();
+        ApplicationTestUtils.SetPrivatePropertyValue(taskWithColumn, nameof(BoardTask.Id), newTaskId);
+        var column = ApplicationTestUtils.CreateInstanceWithoutConstructor<Column>();
+        ApplicationTestUtils.SetPrivatePropertyValue(column, nameof(Column.Id), columnId);
+        ApplicationTestUtils.SetPrivatePropertyValue(column, nameof(Column.BoardId), boardId);
+        ApplicationTestUtils.SetPrivatePropertyValue(taskWithColumn, nameof(BoardTask.Column), column);
 
         taskServiceMock
             .Setup(s => s.CreateTaskAsync(
@@ -48,8 +60,14 @@ public class CreateTaskCommandHandlerTests
                 userId,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdTask);
+        
+        taskServiceMock
+            .Setup(s => s.GetTaskByIdAsync(newTaskId, userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(taskWithColumn);
 
-        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -64,6 +82,9 @@ public class CreateTaskCommandHandlerTests
             s => s.CreateTaskAsync(command.ColumnId, command.Title, command.Description, command.Priority,
                 command.DueDate, command.Position, command.AssigneeId, userId, It.IsAny<CancellationToken>()),
             Times.Once);
+        
+        cacheServiceMock.Verify(c => c.RemoveAsync(CacheKeys.BoardTasks(boardId), It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(CacheKeys.UserTasks(assigneeId), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -76,7 +97,8 @@ public class CreateTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -96,7 +118,8 @@ public class CreateTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var taskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateTaskCommandHandler(taskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
