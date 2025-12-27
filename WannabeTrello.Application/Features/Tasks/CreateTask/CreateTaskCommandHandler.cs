@@ -39,7 +39,7 @@ public class CreateTaskCommandHandler(
 
     private async Task InvalidateCacheAsync(long taskId, long columnId, long? assigneeId, CancellationToken ct)
     {
-        // Get task to get boardId from Column
+        
         var task = await taskService.GetTaskByIdAsync(taskId, currentUserService.UserId!.Value, ct);
         if (task != null)
         {

@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Columns.ReorderColumn;
 using WannabeTrello.Domain.Exceptions;
@@ -26,7 +27,9 @@ public class ReorderColumnCommandHandlerTests
             .Setup(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -38,6 +41,7 @@ public class ReorderColumnCommandHandlerTests
         Assert.Equal("Columns reordered successfully", response.Result.Message);
 
         boardServiceMock.Verify(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.BoardColumns(boardId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -50,7 +54,8 @@ public class ReorderColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -68,7 +73,8 @@ public class ReorderColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var boardServiceMock = new Mock<IBoardService>();
-        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -93,7 +99,8 @@ public class ReorderColumnCommandHandlerTests
             .Setup(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Domain.Entities.Board), boardId));
 
-        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() =>

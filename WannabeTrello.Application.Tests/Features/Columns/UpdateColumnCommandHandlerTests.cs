@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Columns.UpdateColumn;
 using WannabeTrello.Application.Tests.Utils;
@@ -25,12 +26,15 @@ public class UpdateColumnCommandHandlerTests
         var columnServiceMock = new Mock<IColumnService>();
         var updatedColumnFromService = ApplicationTestUtils.CreateInstanceWithoutConstructor<Column>();
         ApplicationTestUtils.SetPrivatePropertyValue(updatedColumnFromService, nameof(Column.Id), columnId);
+        ApplicationTestUtils.SetPrivatePropertyValue(updatedColumnFromService, nameof(Column.BoardId), 123L);
 
         columnServiceMock
             .Setup(s => s.UpdateColumnAsync(command.ColumnId!, command.NewName, command.WipLimit, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(updatedColumnFromService);
 
-        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -39,6 +43,8 @@ public class UpdateColumnCommandHandlerTests
         Assert.NotNull(response);
         Assert.Equal(columnId, response.Id);
         columnServiceMock.Verify(s => s.UpdateColumnAsync(columnId, command.NewName, command.WipLimit, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.Column(columnId)), It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.BoardColumns(123L)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -51,7 +57,8 @@ public class UpdateColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var columnServiceMock = new Mock<IColumnService>();
-        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -71,7 +78,8 @@ public class UpdateColumnCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var columnServiceMock = new Mock<IColumnService>();
-        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -95,7 +103,8 @@ public class UpdateColumnCommandHandlerTests
             .Setup(s => s.UpdateColumnAsync(columnId, command.NewName, command.WipLimit, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Column), columnId));
 
-        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new UpdateColumnCommandHandler(columnServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() =>
