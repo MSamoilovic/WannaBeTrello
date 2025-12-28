@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.GetUserAssignedTasks;
 using WannabeTrello.Domain.Entities;
@@ -11,13 +12,15 @@ public class GetUserAssignedTasksQueryHandlerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly GetUserAssignedTasksQueryHandler _handler;
 
     public GetUserAssignedTasksQueryHandlerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
-        _handler = new GetUserAssignedTasksQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new GetUserAssignedTasksQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -38,6 +41,13 @@ public class GetUserAssignedTasksQueryHandlerTests
             BoardTask.Create("Task 2", "Description 2", TaskPriority.Medium, DateTime.UtcNow.AddDays(14), 2, 2L, currentUserId, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasks);
@@ -55,6 +65,11 @@ public class GetUserAssignedTasksQueryHandlerTests
         Assert.Equal(TaskPriority.Medium, response.Tasks[1].Priority);
 
         _userServiceMock.Verify(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.UserTasks(targetUserId)),
+            It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -71,6 +86,13 @@ public class GetUserAssignedTasksQueryHandlerTests
 
         var tasks = new List<BoardTask>();
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasks);
@@ -142,6 +164,13 @@ public class GetUserAssignedTasksQueryHandlerTests
             BoardTask.Create("Other User Task", "Description", TaskPriority.Low, null, 1, 1L, otherUserId, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
         _userServiceMock
             .Setup(s => s.GetUserAssignedTasksAsync(otherUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasks);
@@ -172,9 +201,10 @@ public class GetUserAssignedTasksQueryHandlerTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        _userServiceMock
-            .Setup(s => s.GetUserAssignedTasksAsync(
-                It.IsAny<long>(),
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -202,6 +232,13 @@ public class GetUserAssignedTasksQueryHandlerTests
             BoardTask.Create("Low Priority Task", "Description", TaskPriority.Low, null, 3, 2L, currentUserId, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasks);
@@ -238,6 +275,13 @@ public class GetUserAssignedTasksQueryHandlerTests
             BoardTask.Create("Task without Due Date", "Description", TaskPriority.Medium, null, 2, 1L, currentUserId, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<BoardTask>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<BoardTask>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserAssignedTasksAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(tasks);

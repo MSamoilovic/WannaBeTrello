@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.ReactivateUser;
 using WannabeTrello.Domain.Exceptions;
@@ -10,13 +11,15 @@ public class ReactivateUserCommandHandlerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly ReactivateUserCommandHandler _handler;
 
     public ReactivateUserCommandHandlerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
-        _handler = new ReactivateUserCommandHandler(_userServiceMock.Object, _currentUserServiceMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new ReactivateUserCommandHandler(_userServiceMock.Object, _currentUserServiceMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -51,6 +54,7 @@ public class ReactivateUserCommandHandlerTests
             targetUserId,
             currentUserId,
             It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.UserProfile(targetUserId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

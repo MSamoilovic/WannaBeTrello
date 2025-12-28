@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Reflection;
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.CreateProject;
 using WannabeTrello.Domain.Entities;
@@ -27,8 +28,9 @@ public class CreateProjectCommandHandlerTests
             .Setup(x => x.CreateProjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdProject);
 
+        var cacheServiceMock = new Mock<ICacheService>();
 
-        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
+        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object, cacheServiceMock.Object);
         var command = new CreateProjectCommand("New Test Project", "Description");
 
         var response = await handler.Handle(command, CancellationToken.None);
@@ -44,6 +46,7 @@ public class CreateProjectCommandHandlerTests
             123,
             It.IsAny<CancellationToken>()
         ), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.UserProjects(123)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -53,8 +56,9 @@ public class CreateProjectCommandHandlerTests
         currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(false);
 
         var projectServiceMock = new Mock<IProjectService>();
+        var cacheServiceMock = new Mock<ICacheService>();
 
-        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
+        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object, cacheServiceMock.Object);
         var command = new CreateProjectCommand("Unauthorized Project", "Description");
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => handler.Handle(command, CancellationToken.None)
@@ -82,7 +86,8 @@ public class CreateProjectCommandHandlerTests
             .ThrowsAsync(new DataException("Database connection error."));
 
 
-        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new CreateProjectCommandHandler(currentUserServiceMock.Object, projectServiceMock.Object, cacheServiceMock.Object);
         var command = new CreateProjectCommand("Failing Project", "Description");
 
 

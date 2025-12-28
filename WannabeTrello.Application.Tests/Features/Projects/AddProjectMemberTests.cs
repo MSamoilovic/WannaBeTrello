@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.AddProjectMember;
 using WannabeTrello.Domain.Entities;
@@ -12,15 +13,18 @@ public class AddProjectMemberTests
 {
     private readonly Mock<IProjectService> _projectServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly AddProjectMemberCommandHandler _handler;
 
     public AddProjectMemberTests()
     {
         _projectServiceMock = new Mock<IProjectService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _cacheServiceMock = new Mock<ICacheService>();
         _handler = new AddProjectMemberCommandHandler(
             _projectServiceMock.Object,
-            _currentUserServiceMock.Object);
+            _currentUserServiceMock.Object,
+            _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -50,6 +54,7 @@ public class AddProjectMemberTests
         Assert.Equal($"{newMemberId} is now added to the project.", response.Result.Message);
 
         _projectServiceMock.Verify(x => x.AddProjectMember(projectId, newMemberId, role, inviterUserId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.ProjectMembers(projectId)), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     

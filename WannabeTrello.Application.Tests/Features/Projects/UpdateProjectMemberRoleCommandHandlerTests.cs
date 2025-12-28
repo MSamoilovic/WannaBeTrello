@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
 using WannabeTrello.Domain.Enums;
@@ -10,16 +11,19 @@ public class UpdateProjectMemberRoleCommandHandlerTests
 {
     private readonly Mock<IProjectService> _projectServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly UpdateProjectMemberRoleCommandHandler _handler;
 
     public UpdateProjectMemberRoleCommandHandlerTests()
     {
         _projectServiceMock = new Mock<IProjectService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _cacheServiceMock = new Mock<ICacheService>();
 
         _handler = new UpdateProjectMemberRoleCommandHandler(
             _projectServiceMock.Object,
-            _currentUserServiceMock.Object
+            _currentUserServiceMock.Object,
+            _cacheServiceMock.Object
         );
     }
 
@@ -70,6 +74,7 @@ public class UpdateProjectMemberRoleCommandHandlerTests
         Assert.NotNull(result);
         Assert.Equal(command.ProjectId, result.Result.Value);
         Assert.Contains("role updated", result.Result.Message, StringComparison.OrdinalIgnoreCase);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.ProjectMembers(command.ProjectId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -124,5 +129,6 @@ public class UpdateProjectMemberRoleCommandHandlerTests
         Assert.NotNull(result);
         Assert.Equal(command.ProjectId, result.Result.Value);
         Assert.Contains("role updated", result.Result.Message, StringComparison.OrdinalIgnoreCase);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.ProjectMembers(command.ProjectId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

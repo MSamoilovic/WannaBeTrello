@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Tasks.AddCommentToTask;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -29,7 +30,9 @@ public class AddCommentToTaskCommandHandlerTests
             .Setup(s => s.AddCommentToTaskAsync(command.TaskId, currentUserId, command.Content))
             .ReturnsAsync(createdCommentId);
 
-        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -39,6 +42,7 @@ public class AddCommentToTaskCommandHandlerTests
         boardTaskServiceMock.Verify(
             s => s.AddCommentToTaskAsync(command.TaskId, currentUserId, command.Content),
             Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.TaskComments(command.TaskId)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -51,7 +55,8 @@ public class AddCommentToTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var boardTaskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -74,7 +79,8 @@ public class AddCommentToTaskCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var boardTaskServiceMock = new Mock<IBoardTaskService>();
-        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new AddCommentToTaskCommandHandler(boardTaskServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>

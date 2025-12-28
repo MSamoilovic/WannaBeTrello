@@ -1,4 +1,5 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.GetBoardsByProjectId;
 using WannabeTrello.Domain.Entities;
@@ -10,15 +11,18 @@ public class GetBoardsByProjectIdQueryHandlerTests
 {
     private readonly Mock<IBoardService> _boardServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly GetBoardsByProjectIdQueryHandler _handler;
 
     public GetBoardsByProjectIdQueryHandlerTests()
     {
         _boardServiceMock = new Mock<IBoardService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _cacheServiceMock = new Mock<ICacheService>();
         _handler = new GetBoardsByProjectIdQueryHandler(
             _boardServiceMock.Object,
-            _currentUserServiceMock.Object
+            _currentUserServiceMock.Object,
+            _cacheServiceMock.Object
         );
     }
 
@@ -40,6 +44,14 @@ public class GetBoardsByProjectIdQueryHandlerTests
 
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
+        
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockBoards);
 
@@ -65,6 +77,11 @@ public class GetBoardsByProjectIdQueryHandlerTests
         );
 
         _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.ProjectBoards(projectId)),
+            It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -77,6 +94,14 @@ public class GetBoardsByProjectIdQueryHandlerTests
 
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
+        
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _boardServiceMock.Setup(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Board>());
 
@@ -90,6 +115,11 @@ public class GetBoardsByProjectIdQueryHandlerTests
         Assert.Empty(result);
 
         _boardServiceMock.Verify(x => x.GetBoardByProjectIdAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.ProjectBoards(projectId)),
+            It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
 

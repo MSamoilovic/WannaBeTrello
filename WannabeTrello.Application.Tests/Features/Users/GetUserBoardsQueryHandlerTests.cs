@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.GetUserBoards;
 using WannabeTrello.Domain.Entities;
@@ -11,13 +12,15 @@ public class GetUserBoardsQueryHandlerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly GetUserBoardsQueryHandler _handler;
 
     public GetUserBoardsQueryHandlerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
-        _handler = new GetUserBoardsQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new GetUserBoardsQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -38,6 +41,13 @@ public class GetUserBoardsQueryHandlerTests
             Board.Create("Board 2", "Description 2", 2L, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserBoardMemberships(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
@@ -53,6 +63,11 @@ public class GetUserBoardsQueryHandlerTests
         Assert.Equal("Board 2", response.Boards[1].Name);
 
         _userServiceMock.Verify(s => s.GetUserBoardMemberships(targetUserId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.UserBoards(targetUserId)),
+            It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -69,6 +84,13 @@ public class GetUserBoardsQueryHandlerTests
 
         var boards = new List<Board>();
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserBoardMemberships(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
@@ -140,6 +162,13 @@ public class GetUserBoardsQueryHandlerTests
             Board.Create("Other User Board", "Description", 1L, otherUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
         _userServiceMock
             .Setup(s => s.GetUserBoardMemberships(otherUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
@@ -170,9 +199,10 @@ public class GetUserBoardsQueryHandlerTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        _userServiceMock
-            .Setup(s => s.GetUserBoardMemberships(
-                It.IsAny<long>(),
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -200,6 +230,13 @@ public class GetUserBoardsQueryHandlerTests
             Board.Create("Viewer Board", "Description 3", 3L, 888L)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserBoardMemberships(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);
@@ -231,6 +268,13 @@ public class GetUserBoardsQueryHandlerTests
             Board.Create("Board with Project", "Description", 1L, currentUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Board>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Board>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserBoardMemberships(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(boards);

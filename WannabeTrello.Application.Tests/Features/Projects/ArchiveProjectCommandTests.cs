@@ -1,6 +1,8 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.ArchiveProject;
+using WannabeTrello.Application.Tests.Utils;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -11,15 +13,18 @@ public class ArchiveProjectCommandTests
 {
     private readonly Mock<IProjectService> _projectServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly ArchiveProjectCommandHandler _handler;
 
     public ArchiveProjectCommandTests()
     {
         _projectServiceMock = new Mock<IProjectService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _cacheServiceMock = new Mock<ICacheService>();
         _handler = new ArchiveProjectCommandHandler(
             _projectServiceMock.Object,
-            _currentUserServiceMock.Object);
+            _currentUserServiceMock.Object,
+            _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -31,6 +36,14 @@ public class ArchiveProjectCommandTests
         
         _currentUserServiceMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(x => x.UserId).Returns(userId);
+        
+        // Project sa OwnerId (za invalidaciju keša)
+        var project = ApplicationTestUtils.CreateInstanceWithoutConstructor<Project>();
+        ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.Id), projectId);
+        ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.OwnerId), 456L);
+        
+        _projectServiceMock.Setup(x => x.GetProjectByIdAsync(projectId, userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
         
         _projectServiceMock.Setup(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectId);
@@ -50,6 +63,8 @@ public class ArchiveProjectCommandTests
 
         // Verify the service method was called exactly once with the correct parameters
         _projectServiceMock.Verify(x => x.ArchiveProjectAsync(projectId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.Project(projectId)), It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.UserProjects(456L)), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Theory]

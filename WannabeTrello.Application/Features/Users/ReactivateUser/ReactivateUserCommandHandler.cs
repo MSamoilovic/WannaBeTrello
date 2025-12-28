@@ -1,11 +1,16 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Users.ReactivateUser;
 
-public class ReactivateUserCommandHandler(IUserService userService, ICurrentUserService currentUserService) : IRequestHandler<ReactivateUserCommand, ReactivateUserCommandResponse>
+public class ReactivateUserCommandHandler(
+    IUserService userService, 
+    ICurrentUserService currentUserService,
+    ICacheService cacheService) 
+    : IRequestHandler<ReactivateUserCommand, ReactivateUserCommandResponse>
 {
     public async Task<ReactivateUserCommandResponse> Handle(ReactivateUserCommand request, CancellationToken cancellationToken)
     {
@@ -18,6 +23,13 @@ public class ReactivateUserCommandHandler(IUserService userService, ICurrentUser
 
         await userService.ReactivateUserAsync(request.UserId, userId, cancellationToken);
 
+        await InvalidateCacheAsync(request.UserId, cancellationToken);
+
         return new ReactivateUserCommandResponse(Result<long>.Success(request.UserId, "User Reactivated Successfully"));
+    }
+
+    private async Task InvalidateCacheAsync(long userId, CancellationToken ct)
+    {
+        await cacheService.RemoveAsync(CacheKeys.UserProfile(userId), ct);
     }
 }
