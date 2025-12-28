@@ -1,11 +1,15 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Comments.DeleteComment;
 
-public class DeleteCommentCommandHandler(ICommentService commentService, ICurrentUserService currentUserService)
+public class DeleteCommentCommandHandler(
+    ICommentService commentService, 
+    ICurrentUserService currentUserService,
+    ICacheService cacheService)
     : IRequestHandler<DeleteCommentCommand, DeleteCommentCommandResponse>
 {
     public async Task<DeleteCommentCommandResponse> Handle(DeleteCommentCommand request,
@@ -18,9 +22,19 @@ public class DeleteCommentCommandHandler(ICommentService commentService, ICurren
 
         var userId = currentUserService.UserId.Value;
 
+        // Get comment before deletion to get TaskId
+        var comment = await commentService.GetCommentByIdAsync(request.CommentId, cancellationToken);
+
         await commentService.DeleteCommentAsync(request.CommentId, userId, cancellationToken);
+
+        await InvalidateCacheAsync(comment.TaskId, cancellationToken);
 
         return new DeleteCommentCommandResponse(Result<long>.Success(request.CommentId,
             "Comment deleted successfully"));
+    }
+
+    private async Task InvalidateCacheAsync(long taskId, CancellationToken ct)
+    {
+        await cacheService.RemoveAsync(CacheKeys.TaskComments(taskId), ct);
     }
 }

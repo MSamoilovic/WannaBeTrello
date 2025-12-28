@@ -1,10 +1,14 @@
 using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Users.GetUserAssignedTasks;
 
-public class GetUserAssignedTasksQueryHandler(IUserService userService, ICurrentUserService currentUserService)
+public class GetUserAssignedTasksQueryHandler(
+    IUserService userService, 
+    ICurrentUserService currentUserService,
+    ICacheService cacheService)
     : IRequestHandler<GetUserAssignedTasksQuery, GetUserAssignedTasksQueryResponse>
 {
     public async Task<GetUserAssignedTasksQueryResponse> Handle(GetUserAssignedTasksQuery request, CancellationToken cancellationToken)
@@ -14,9 +18,16 @@ public class GetUserAssignedTasksQueryHandler(IUserService userService, ICurrent
             throw new UnauthorizedAccessException("User is not authenticated");
         }
 
-        var tasks = await userService.GetUserAssignedTasksAsync(request.UserId, cancellationToken);
+        var cacheKey = CacheKeys.UserTasks(request.UserId);
 
-        return GetUserAssignedTasksQueryResponse.FromEntities(tasks);
+        var tasks = await cacheService.GetOrSetAsync(
+            cacheKey,
+            () => userService.GetUserAssignedTasksAsync(request.UserId, cancellationToken),
+            CacheExpiration.Short,
+            cancellationToken
+        );
+
+        return GetUserAssignedTasksQueryResponse.FromEntities(tasks ?? []);
     }
 }
 

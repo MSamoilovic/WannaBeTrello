@@ -1,10 +1,15 @@
 ﻿using MediatR;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Domain.Interfaces.Services;
 
 namespace WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
 
-public class GetCurrentUserProfileQueryHandler(IUserService userService, ICurrentUserService currentUserService) : IRequestHandler<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryResponse>
+public class GetCurrentUserProfileQueryHandler(
+    IUserService userService, 
+    ICurrentUserService currentUserService,
+    ICacheService cacheService) 
+    : IRequestHandler<GetCurrentUserProfileQuery, GetCurrentUserProfileQueryResponse>
 {
     public async Task<GetCurrentUserProfileQueryResponse> Handle(GetCurrentUserProfileQuery request, CancellationToken cancellationToken)
     {
@@ -14,8 +19,14 @@ public class GetCurrentUserProfileQueryHandler(IUserService userService, ICurren
         }
 
         var userId = currentUserService.UserId.Value;
+        var cacheKey = CacheKeys.UserProfile(userId);
 
-        var user = await userService.GetUserProfileAsync(userId, cancellationToken);
+        var user = await cacheService.GetOrSetAsync(
+            cacheKey,
+            () => userService.GetUserProfileAsync(userId, cancellationToken),
+            CacheExpiration.Long,
+            cancellationToken
+        );
 
         return GetCurrentUserProfileQueryResponse.FromEntity(user!);
     }
