@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
 using WannabeTrello.Domain.Entities;
@@ -74,7 +75,15 @@ public class GetCurrentUserProfileQueryHandlerTests
             .Setup(s => s.GetUserProfileAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(userFromService);
 
-        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<User?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<User?>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
+        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(query, CancellationToken.None);
@@ -94,6 +103,11 @@ public class GetCurrentUserProfileQueryHandlerTests
         Assert.NotNull(response.ProjectMemberships);
 
         userServiceMock.Verify(s => s.GetUserProfileAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.UserProfile(userId)),
+            It.IsAny<Func<Task<User?>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -106,7 +120,8 @@ public class GetCurrentUserProfileQueryHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var userServiceMock = new Mock<IUserService>();
-        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -127,7 +142,8 @@ public class GetCurrentUserProfileQueryHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var userServiceMock = new Mock<IUserService>();
-        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
@@ -153,7 +169,8 @@ public class GetCurrentUserProfileQueryHandlerTests
             .Setup(s => s.GetUserProfileAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new GetCurrentUserProfileQueryHandler(userServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() =>

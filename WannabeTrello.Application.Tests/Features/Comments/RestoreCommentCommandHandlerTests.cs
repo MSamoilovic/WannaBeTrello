@@ -1,6 +1,8 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Comments.RestoreComment;
+using WannabeTrello.Application.Tests.Utils;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Exceptions;
 using WannabeTrello.Domain.Interfaces.Services;
@@ -22,11 +24,23 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
         var commentServiceMock = new Mock<ICommentService>();
+        
+        // Comment sa TaskId (za invalidaciju keša)
+        var comment = ApplicationTestUtils.CreateInstanceWithoutConstructor<Comment>();
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.Id), commentId);
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.TaskId), 789L);
+        
+        commentServiceMock
+            .Setup(s => s.GetCommentByIdAsync(commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(comment);
+        
         commentServiceMock
             .Setup(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -38,6 +52,7 @@ public class RestoreCommentCommandHandlerTests
         Assert.Equal("Comment restored successfully", response.Result.Message);
 
         commentServiceMock.Verify(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.TaskComments(789L)), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -50,7 +65,8 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
 
         var commentServiceMock = new Mock<ICommentService>();
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -71,7 +87,8 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
 
         var commentServiceMock = new Mock<ICommentService>();
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
@@ -98,7 +115,8 @@ public class RestoreCommentCommandHandlerTests
             .Setup(s => s.RestoreCommentAsync(nonExistentCommentId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Comment), nonExistentCommentId));
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -125,7 +143,8 @@ public class RestoreCommentCommandHandlerTests
             .Setup(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AccessDeniedException("Samo autor komentara može vratiti komentar."));
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<AccessDeniedException>(() =>
@@ -152,7 +171,8 @@ public class RestoreCommentCommandHandlerTests
             .Setup(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new BusinessRuleValidationException("Komentar nije obrisan."));
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(() =>
@@ -176,11 +196,22 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
         var commentServiceMock = new Mock<ICommentService>();
+        
+        // Comment sa TaskId (za invalidaciju keša)
+        var comment = ApplicationTestUtils.CreateInstanceWithoutConstructor<Comment>();
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.Id), commentId);
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.TaskId), 999L);
+        
+        commentServiceMock
+            .Setup(s => s.GetCommentByIdAsync(commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(comment);
+        
         commentServiceMock
             .Setup(s => s.RestoreCommentAsync(commentId, userId, cancellationToken))
             .Returns(Task.CompletedTask);
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         await handler.Handle(command, cancellationToken);
@@ -204,11 +235,23 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
         var commentServiceMock = new Mock<ICommentService>();
+        
+        // Comment sa TaskId (za invalidaciju keša)
+        var comment = ApplicationTestUtils.CreateInstanceWithoutConstructor<Comment>();
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.Id), commentId);
+        ApplicationTestUtils.SetPrivatePropertyValue(comment, nameof(Comment.TaskId), 789L);
+        
+        commentServiceMock
+            .Setup(s => s.GetCommentByIdAsync(commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(comment);
+        
         commentServiceMock
             .Setup(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -224,7 +267,7 @@ public class RestoreCommentCommandHandlerTests
         // Arrange
         var userId = 123L;
         var commentId1 = 456L;
-        var commentId2 = 789L;
+        var commentId2 = 790L; // Changed to avoid conflict with TaskId
         var command1 = new RestoreCommentCommand(commentId1);
         var command2 = new RestoreCommentCommand(commentId2);
 
@@ -233,11 +276,30 @@ public class RestoreCommentCommandHandlerTests
         currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
         var commentServiceMock = new Mock<ICommentService>();
+        
+        // Comment 1 sa TaskId
+        var comment1 = ApplicationTestUtils.CreateInstanceWithoutConstructor<Comment>();
+        ApplicationTestUtils.SetPrivatePropertyValue(comment1, nameof(Comment.Id), commentId1);
+        ApplicationTestUtils.SetPrivatePropertyValue(comment1, nameof(Comment.TaskId), 1001L);
+        
+        // Comment 2 sa TaskId
+        var comment2 = ApplicationTestUtils.CreateInstanceWithoutConstructor<Comment>();
+        ApplicationTestUtils.SetPrivatePropertyValue(comment2, nameof(Comment.Id), commentId2);
+        ApplicationTestUtils.SetPrivatePropertyValue(comment2, nameof(Comment.TaskId), 1002L);
+        
+        commentServiceMock
+            .Setup(s => s.GetCommentByIdAsync(commentId1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(comment1);
+        commentServiceMock
+            .Setup(s => s.GetCommentByIdAsync(commentId2, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(comment2);
+        
         commentServiceMock
             .Setup(s => s.RestoreCommentAsync(It.IsAny<long>(), userId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act
         var response1 = await handler.Handle(command1, CancellationToken.None);
@@ -268,7 +330,8 @@ public class RestoreCommentCommandHandlerTests
             .Setup(s => s.RestoreCommentAsync(commentId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Some unexpected error"));
 
-        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object);
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new RestoreCommentCommandHandler(commentServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<Exception>(() =>

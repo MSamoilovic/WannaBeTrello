@@ -1,4 +1,5 @@
 using Moq;
+using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Users.GetUserProjects;
 using WannabeTrello.Domain.Entities;
@@ -11,13 +12,15 @@ public class GetUserProjectsQueryHandlerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<ICurrentUserService> _currentUserServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly GetUserProjectsQueryHandler _handler;
 
     public GetUserProjectsQueryHandlerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _currentUserServiceMock = new Mock<ICurrentUserService>();
-        _handler = new GetUserProjectsQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new GetUserProjectsQueryHandler(_userServiceMock.Object, _currentUserServiceMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]
@@ -38,6 +41,13 @@ public class GetUserProjectsQueryHandlerTests
             Project.Create("Project 2", "Description 2", 456L)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Project>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserProjectsAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projects);
@@ -53,6 +63,11 @@ public class GetUserProjectsQueryHandlerTests
         Assert.Equal("Project 2", response.Projects[1].Name);
 
         _userServiceMock.Verify(s => s.GetUserProjectsAsync(targetUserId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.UserProjects(targetUserId)),
+            It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -69,6 +84,13 @@ public class GetUserProjectsQueryHandlerTests
 
         var projects = new List<Project>();
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Project>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserProjectsAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projects);
@@ -140,6 +162,13 @@ public class GetUserProjectsQueryHandlerTests
             Project.Create("Other User Project", "Description", otherUserId)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Project>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+
         _userServiceMock
             .Setup(s => s.GetUserProjectsAsync(otherUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projects);
@@ -170,9 +199,10 @@ public class GetUserProjectsQueryHandlerTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        _userServiceMock
-            .Setup(s => s.GetUserProjectsAsync(
-                It.IsAny<long>(),
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+                It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -200,6 +230,13 @@ public class GetUserProjectsQueryHandlerTests
             Project.Create("Admin Project", "Description 3", 888L)
         };
 
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<Project>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<Project>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _userServiceMock
             .Setup(s => s.GetUserProjectsAsync(targetUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(projects);

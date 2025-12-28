@@ -1,4 +1,6 @@
 ﻿using Moq;
+using WannabeTrello.Application.Common.Caching;
+using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
 using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Interfaces.Repositories;
@@ -8,12 +10,14 @@ namespace WannabeTrello.Application.Tests.Features.Projects;
 public class GetProjectMembersByIdQueryHandlerTests
 {
     private readonly Mock<IProjectRepository> _projectRepositoryMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly GetProjectMembersByIdQueryHandler _handler;
 
     public GetProjectMembersByIdQueryHandlerTests()
     {
         _projectRepositoryMock = new Mock<IProjectRepository>();
-        _handler = new GetProjectMembersByIdQueryHandler(_projectRepositoryMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new GetProjectMembersByIdQueryHandler(_projectRepositoryMock.Object, _cacheServiceMock.Object);
     }
     
     //TODO: Apdejtovati User Entitet i onda promeniti kreiranje usera unutar ProjectMember
@@ -66,6 +70,13 @@ public class GetProjectMembersByIdQueryHandlerTests
         var projectId = 123;
         
         // Mock the repository to return an empty list
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<ProjectMember>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<ProjectMember>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _projectRepositoryMock.Setup(x => x.GetProjectMembersByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
                               .ReturnsAsync(new List<ProjectMember>());
 
@@ -78,6 +89,11 @@ public class GetProjectMembersByIdQueryHandlerTests
         Assert.NotNull(result);
         Assert.Empty(result);
         _projectRepositoryMock.Verify(x => x.GetProjectMembersByProjectIdAsync(projectId, It.IsAny<CancellationToken>()), Times.Once);
+        _cacheServiceMock.Verify(c => c.GetOrSetAsync(
+            It.Is<string>(k => k == CacheKeys.ProjectMembers(projectId)),
+            It.IsAny<Func<Task<IReadOnlyList<ProjectMember>>>>(),
+            It.IsAny<TimeSpan?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -88,6 +104,13 @@ public class GetProjectMembersByIdQueryHandlerTests
         var nonExistentProjectId = 999;
         
         // Mock the repository to return null for a non-existent project
+        _cacheServiceMock.Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<IReadOnlyList<ProjectMember>>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<IReadOnlyList<ProjectMember>>>, TimeSpan?, CancellationToken>((_, factory, _, _) => factory());
+        
         _projectRepositoryMock.Setup(x => x.GetProjectMembersByProjectIdAsync(nonExistentProjectId, It.IsAny<CancellationToken>()))
                               .ReturnsAsync([]);
 
