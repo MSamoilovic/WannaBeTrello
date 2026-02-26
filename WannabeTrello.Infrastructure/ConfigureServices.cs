@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,8 @@ using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
 using WannabeTrello.Infrastructure.Services.Notifications;
+using WannabeTrello.Infrastructure.SignalR.Configuration;
+using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
 
 namespace WannabeTrello.Infrastructure;
 
@@ -178,7 +181,24 @@ public static class ConfigureServices
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddSignalR();
+        // SignalR
+        services.Configure<SignalROptions>(configuration.GetSection(SignalROptions.SectionName));
+
+        var signalROptions = configuration.GetSection(SignalROptions.SectionName).Get<SignalROptions>()
+            ?? new SignalROptions();
+
+        services.AddSignalR(options =>
+        {
+            options.MaximumReceiveMessageSize = signalROptions.MaximumReceiveMessageSize;
+            options.StreamBufferCapacity = signalROptions.StreamBufferCapacity;
+            options.EnableDetailedErrors = signalROptions.EnableDetailedErrors;
+            options.ClientTimeoutInterval = signalROptions.ClientTimeoutInterval;
+            options.HandshakeTimeout = signalROptions.HandshakeTimeout;
+            options.KeepAliveInterval = signalROptions.KeepAliveInterval;
+            options.MaximumParallelInvocationsPerClient = signalROptions.MaximumParallelInvocationsPerClient;
+        });
+
+        services.AddSingleton<IHubFilter, HubMethodFilter>();
 
         return services;
     }

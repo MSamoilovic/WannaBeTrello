@@ -9,6 +9,7 @@ using WannabeTrello.Infrastructure;
 using WannabeTrello.Infrastructure.Options;
 using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.SignalR;
+using WannabeTrello.Infrastructure.SignalR.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -133,6 +134,7 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapControllers();
 app.MapHub<TrellyHub>("/trelly");
+app.MapHub<BoardHub>("/hubs/boards").RequireAuthorization();
 app.Run();
 
 
