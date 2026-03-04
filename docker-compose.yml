@@ -1,62 +1,58 @@
 services:
-
   postgres:
     image: postgres:16-alpine
     container_name: wannabetrello-db
-    
+
     restart: unless-stopped
-    
+
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-wannabetrello}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-WannabeTrello2024!}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
       POSTGRES_DB: ${POSTGRES_DB:-wannabetrello}
-    
+
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
-    
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wannabetrello} -d ${POSTGRES_DB:-wannabetrello}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-wannabetrello} -d ${POSTGRES_DB:-wannabetrello}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    
-    # Mreža za komunikaciju sa drugim servisima
+
     networks:
       - wannabetrello-network
 
-  # ---------------------------------------------------------------------------
-  # WannabeTrello API
-  # Naša .NET aplikacija
-  # ---------------------------------------------------------------------------
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    
+
     container_name: wannabetrello-api
     restart: unless-stopped
-    
-    # Mapiramo port 5000 na host na port 8080 u kontejneru
+
     ports:
       - "${API_PORT:-5000}:8080"
-    
+
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
-      
-      
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-wannabetrello};Username=${POSTGRES_USER:-wannabetrello};Password=${POSTGRES_PASSWORD:-WannabeTrello2024!}
-      
+
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-wannabetrello};Username=${POSTGRES_USER:-wannabetrello};Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+
       # JWT konfiguracija
-      - Jwt__Key=${JWT_KEY:-k3N9v+Y1zVrQ4axZtLhK5MP2w8JNlVhd9qIbMzr0M1A=}
+      - Jwt__Key=${JWT_KEY:?JWT_KEY must be set in .env}
       - Jwt__Issuer=${JWT_ISSUER:-WannabeTrelloIssuer}
       - Jwt__Audience=${JWT_AUDIENCE:-WannabeTrelloAudience}
       - Jwt__ExpiryMinutes=${JWT_EXPIRY_MINUTES:-60}
-      
+
       # Email konfiguracija
       - Email__SmtpHost=${SMTP_HOST:-smtp.gmail.com}
       - Email__SmtpPort=${SMTP_PORT:-587}
@@ -64,60 +60,58 @@ services:
       - Email__SmtpPassword=${SMTP_PASSWORD:-your-app-password}
       - Email__FromEmail=${FROM_EMAIL:-noreply@wannabetrello.com}
       - Email__FromName=${FROM_NAME:-WannabeTrello}
-      
+
       # Email confirmation
       - EmailConfirmation__TokenLifespanHours=${EMAIL_CONFIRMATION_TOKEN_LIFESPAN_HOURS:-24}
-      
+
       # Frontend URL za CORS i email linkove
       - FrontendUrl=${FRONTEND_URL:-http://localhost:3000}
       - Cors__AllowedOrigins__0=${CORS_ORIGIN:-http://localhost:3000}
-      
+
       # Redis konfiguracija (opciono)
       - Redis__Enabled=${REDIS_ENABLED:-false}
       - Redis__ConnectionString=${REDIS_CONNECTION_STRING:-redis:6379}
       - Redis__InstanceName=${REDIS_INSTANCE_NAME:-wannabetrello}
       - Redis__DefaultExpirationMinutes=${REDIS_DEFAULT_EXPIRATION_MINUTES:-5}
-  
 
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 90s
-    
+
     networks:
       - wannabetrello-network
-
 
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: wannabetrello-pgadmin
     restart: unless-stopped
-    
+
     profiles:
       - tools
-    
+
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@wannabetrello.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?PGADMIN_PASSWORD must be set in .env}
       PGADMIN_CONFIG_SERVER_MODE: "False"
-    
+
     ports:
       - "${PGADMIN_PORT:-5050}:80"
-    
+
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-    
+
     depends_on:
       - postgres
-    
+
     networks:
       - wannabetrello-network
 
@@ -125,30 +119,28 @@ services:
     image: redis:7-alpine
     container_name: wannabetrello-redis
     restart: unless-stopped
-    
+
     # Komanda sa konfiguracijom
     command: >
       redis-server
       --appendonly yes
       --maxmemory 256mb
       --maxmemory-policy allkeys-lru
-    
+
     ports:
       - "${REDIS_PORT:-6379}:6379"
-    
+
     volumes:
       - redis_data:/data
-    
+
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    
+
     networks:
       - wannabetrello-network
-
-  
 
   redis-commander:
     image: rediscommander/redis-commander:latest
@@ -156,19 +148,18 @@ services:
     restart: unless-stopped
     profiles:
       - tools
-    
+
     environment:
       - REDIS_HOSTS=local:redis:6379
-    
+
     ports:
       - "${REDIS_COMMANDER_PORT:-8081}:8081"
-    
+
     depends_on:
       - redis
-    
+
     networks:
       - wannabetrello-network
-
 
 volumes:
   postgres_data:
@@ -177,7 +168,6 @@ volumes:
     driver: local
   redis_data:
     driver: local
-
 
 networks:
   wannabetrello-network:
