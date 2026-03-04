@@ -8,33 +8,33 @@ using WannabeTrello.Infrastructure.SignalR.Services;
 namespace WannabeTrello.Infrastructure.SignalR.Hubs;
 
 /// <summary>
-/// Hub for board-level real-time communication.
-/// Clients join board groups to receive board, column, task, and comment events.
+/// Hub for project-level real-time communication.
+/// Clients join project groups to receive project and member events.
 /// </summary>
-public class BoardHub(
-    ILogger<BoardHub> logger,
-    IBoardRepository boardRepository,
+public class ProjectHub(
+    ILogger<ProjectHub> logger,
+    IProjectRepository projectRepository,
     IConnectionManager connectionManager,
     IHubGroupManager groupManager,
     IPresenceTracker presenceTracker)
-    : AuthorizedHub<IBoardHubClient>(logger, connectionManager, groupManager, presenceTracker)
+    : AuthorizedHub<IProjectHubClient>(logger, connectionManager, groupManager, presenceTracker)
 {
     /// <summary>
-    /// Subscribes the caller to all real-time events for a board.
-    /// Only board members are allowed to join.
+    /// Subscribes the caller to all real-time events for a project.
+    /// Only project members are allowed to join.
     /// </summary>
-    [HubMethod(RequiresAudit = true, Description = "Join a board's real-time group")]
-    public async Task JoinBoardAsync(long boardId)
+    [HubMethod(RequiresAudit = true, Description = "Join a project's real-time group")]
+    public async Task JoinProjectAsync(long projectId)
     {
         var userId = GetCurrentUserId();
 
-        var board = await boardRepository.GetBoardWithDetailsAsync(boardId);
-        if (board == null || board.BoardMembers.All(bm => bm.UserId != userId))
+        var isMember = await projectRepository.IsProjectMemberAsync(projectId, userId);
+        if (!isMember)
         {
-            throw new HubException("Not authorized to join this board group.");
+            throw new HubException("Not authorized to join this project group.");
         }
 
-        var group = BoardGroup(boardId);
+        var group = ProjectGroup(projectId);
         await Groups.AddToGroupAsync(Context.ConnectionId, group);
         await GroupManager.TrackGroupMembershipAsync(Context.ConnectionId, group);
 
@@ -45,12 +45,12 @@ public class BoardHub(
     }
 
     /// <summary>
-    /// Unsubscribes the caller from a board's real-time events.
+    /// Unsubscribes the caller from a project's real-time events.
     /// </summary>
-    [HubMethod(Description = "Leave a board's real-time group")]
-    public async Task LeaveBoardAsync(long boardId)
+    [HubMethod(Description = "Leave a project's real-time group")]
+    public async Task LeaveProjectAsync(long projectId)
     {
-        var group = BoardGroup(boardId);
+        var group = ProjectGroup(projectId);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, group);
         await GroupManager.UntrackGroupMembershipAsync(Context.ConnectionId, group);
 

@@ -22,7 +22,9 @@ using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
 using WannabeTrello.Infrastructure.Services.Notifications;
 using WannabeTrello.Infrastructure.SignalR.Configuration;
+using WannabeTrello.Infrastructure.SignalR.Filters;
 using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+using WannabeTrello.Infrastructure.SignalR.Services;
 
 namespace WannabeTrello.Infrastructure;
 
@@ -198,7 +200,15 @@ public static class ConfigureServices
             options.MaximumParallelInvocationsPerClient = signalROptions.MaximumParallelInvocationsPerClient;
         });
 
+        // HubMethodFilter (outer) – structured logging + catch-all
+        // HubExceptionFilter (inner) – maps domain exceptions to HubException
         services.AddSingleton<IHubFilter, HubMethodFilter>();
+        services.AddSingleton<IHubFilter, HubExceptionFilter>();
+
+        // Phase 2: connection / group / presence services
+        services.AddSingleton<IConnectionManager, InMemoryConnectionManager>();
+        services.AddSingleton<IHubGroupManager, GroupManager>();
+        services.AddSingleton<IPresenceTracker, InMemoryPresenceTracker>();
 
         return services;
     }

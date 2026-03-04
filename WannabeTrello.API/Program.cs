@@ -135,6 +135,9 @@ app.MapHealthChecks("/health");
 app.MapControllers();
 app.MapHub<TrellyHub>("/trelly");
 app.MapHub<BoardHub>("/hubs/boards").RequireAuthorization();
+app.MapHub<ProjectHub>("/hubs/projects").RequireAuthorization();
+app.MapHub<NotificationHub>("/hubs/notifications").RequireAuthorization();
+app.MapHub<PresenceHub>("/hubs/presence").RequireAuthorization();
 app.Run();
 
 
