@@ -54,7 +54,7 @@ public class Board: AuditableEntity
         );
         board.AddActivity(activity);
 
-        board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId));
+        board.AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId, board.ProjectId));
 
         return board;
     }

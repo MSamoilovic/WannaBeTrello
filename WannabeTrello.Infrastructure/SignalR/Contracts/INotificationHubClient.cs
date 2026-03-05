@@ -9,4 +9,5 @@ public interface INotificationHubClient
     Task UserProfileUpdated(UserProfileUpdatedNotification notification);
     Task UserDeactivated(UserDeactivatedNotification notification);
     Task UserReactivated(UserReactivatedNotification notification);
+    Task TaskAssigned(TaskAssignedNotification notification);
 }

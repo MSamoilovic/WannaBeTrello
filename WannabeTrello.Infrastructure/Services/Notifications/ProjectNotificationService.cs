@@ -1,38 +1,80 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Infrastructure.SignalR;
+using WannabeTrello.Infrastructure.SignalR.Contracts;
+using WannabeTrello.Infrastructure.SignalR.Hubs;
 
 namespace WannabeTrello.Infrastructure.Services.Notifications;
 
-public class ProjectNotificationService(IHubContext<TrellyHub, ITrellyHub> hubContext): IProjectNotificationService
+public class ProjectNotificationService(
+    IHubContext<ProjectHub, IProjectHubClient> projectHub) : IProjectNotificationService
 {
     public async Task NotifyProjectCreated(long createdProjectId, string? projectName, long creatorUserId)
     {
-        await hubContext.Clients.All.ProjectCreated(createdProjectId, projectName, creatorUserId);
+        await projectHub.Clients
+            .Group($"Project:{createdProjectId}")
+            .ProjectCreated(new ProjectCreatedNotification
+            {
+                ProjectId = createdProjectId,
+                ProjectName = projectName ?? string.Empty,
+                CreatedBy = creatorUserId
+            });
     }
 
     public async Task NotifyProjectUpdated(long modifiedProjectId, long modifierUserId)
     {
-        await hubContext.Clients.All.ProjectUpdated(modifiedProjectId, modifierUserId);
+        await projectHub.Clients
+            .Group($"Project:{modifiedProjectId}")
+            .ProjectUpdated(new ProjectUpdatedNotification
+            {
+                ProjectId = modifiedProjectId,
+                ModifiedBy = modifierUserId
+            });
     }
 
     public async Task NotifyProjectArchived(long projectId, long modifierUserId)
     {
-        await hubContext.Clients.All.ProjectArchived(projectId, modifierUserId);
+        await projectHub.Clients
+            .Group($"Project:{projectId}")
+            .ProjectArchived(new ProjectArchivedNotification
+            {
+                ProjectId = projectId,
+                ArchivedBy = modifierUserId
+            });
     }
 
     public async Task NotifyProjectMemberAdded(long projectId, long newMemberId, string? projectName, long inviterUserId)
     {
-        await hubContext.Clients.All.AddedProjectMember(projectId, newMemberId,  inviterUserId);
+        await projectHub.Clients
+            .Group($"Project:{projectId}")
+            .MemberAdded(new ProjectMemberAddedNotification
+            {
+                ProjectId = projectId,
+                MemberId = newMemberId,
+                AddedBy = inviterUserId
+            });
     }
 
     public async Task NotifyProjectMemberRemoved(long projectId, long memberId, long modifierUserId)
     {
-        await hubContext.Clients.All.RemovedProjectMember(projectId, memberId, modifierUserId);
+        await projectHub.Clients
+            .Group($"Project:{projectId}")
+            .MemberRemoved(new ProjectMemberRemovedNotification
+            {
+                ProjectId = projectId,
+                MemberId = memberId,
+                RemovedBy = modifierUserId
+            });
     }
 
     public async Task NotifyProjectMemberUpdated(long modifiedProjectId, long modifiedMemberId, long modifierUserId)
     {
-        await hubContext.Clients.All.UpdatedProjectMember(modifiedProjectId, modifiedMemberId, modifierUserId);
+        await projectHub.Clients
+            .Group($"Project:{modifiedProjectId}")
+            .MemberUpdated(new ProjectMemberUpdatedNotification
+            {
+                ProjectId = modifiedProjectId,
+                MemberId = modifiedMemberId,
+                ModifiedBy = modifierUserId
+            });
     }
 }

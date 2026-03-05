@@ -20,6 +20,7 @@ internal class TaskCommentedEventHandler(
 
         await taskNotificationService.NotifyTaskCommented(
             notification.TaskId,
+            notification.BoardId,
             notification.CommentId,
             notification.CommentAuthorId,
             comment.Content,

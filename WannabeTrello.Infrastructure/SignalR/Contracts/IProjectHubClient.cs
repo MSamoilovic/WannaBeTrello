@@ -12,4 +12,5 @@ public interface IProjectHubClient
     Task MemberAdded(ProjectMemberAddedNotification notification);
     Task MemberRemoved(ProjectMemberRemovedNotification notification);
     Task MemberUpdated(ProjectMemberUpdatedNotification notification);
+    Task BoardCreated(BoardCreatedNotification notification);
 }
