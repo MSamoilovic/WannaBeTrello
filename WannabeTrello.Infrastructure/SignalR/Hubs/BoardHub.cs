@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Infrastructure.SignalR.Authorization;
 using WannabeTrello.Infrastructure.SignalR.Contracts;
 using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
 using WannabeTrello.Infrastructure.SignalR.Services;
@@ -13,7 +14,7 @@ namespace WannabeTrello.Infrastructure.SignalR.Hubs;
 /// </summary>
 public class BoardHub(
     ILogger<BoardHub> logger,
-    IBoardRepository boardRepository,
+    IAuthorizationService authorizationService,
     IConnectionManager connectionManager,
     IHubGroupManager groupManager,
     IPresenceTracker presenceTracker)
@@ -26,13 +27,11 @@ public class BoardHub(
     [HubMethod(RequiresAudit = true, Description = "Join a board's real-time group")]
     public async Task JoinBoardAsync(long boardId)
     {
-        var userId = GetCurrentUserId();
+        var result = await authorizationService.AuthorizeAsync(
+            Context.User!, null, new BoardAccessRequirement(boardId));
 
-        var board = await boardRepository.GetBoardWithDetailsAsync(boardId);
-        if (board == null || board.BoardMembers.All(bm => bm.UserId != userId))
-        {
+        if (!result.Succeeded)
             throw new HubException("Not authorized to join this board group.");
-        }
 
         var group = BoardGroup(boardId);
         await Groups.AddToGroupAsync(Context.ConnectionId, group);
@@ -40,7 +39,7 @@ public class BoardHub(
 
         logger.LogInformation(
             "User {UserId} joined {Group} ({Count} viewers)",
-            userId, group,
+            GetCurrentUserId(), group,
             await GroupManager.GetConnectionCountInGroupAsync(group));
     }
 
@@ -55,8 +54,6 @@ public class BoardHub(
         await GroupManager.UntrackGroupMembershipAsync(Context.ConnectionId, group);
 
         if (TryGetCurrentUserId(out long userId))
-        {
             logger.LogInformation("User {UserId} left {Group}", userId, group);
-        }
     }
 }

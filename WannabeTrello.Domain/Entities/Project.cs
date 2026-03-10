@@ -126,7 +126,6 @@ public class Project : AuditableEntity
 
         var board = Board.Create(name, description, Id, creatorUserId);
         Boards.Add(board);
-        AddDomainEvent(new BoardCreatedEvent(board.Id, board.Name, board.Description, creatorUserId));
 
         return board;
     }

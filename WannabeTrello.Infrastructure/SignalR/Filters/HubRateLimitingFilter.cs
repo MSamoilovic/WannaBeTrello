@@ -1,0 +1,36 @@
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
+using WannabeTrello.Infrastructure.SignalR.Configuration;
+using WannabeTrello.Infrastructure.SignalR.Security;
+
+namespace WannabeTrello.Infrastructure.SignalR.Filters;
+
+/// <summary>
+/// Hub filter that enforces per-user, per-method rate limiting.
+/// Runs between <see cref="WannabeTrello.Infrastructure.SignalR.Hubs.Base.HubMethodFilter"/> (outer)
+/// and <see cref="HubExceptionFilter"/> (inner).
+/// </summary>
+public sealed class HubRateLimitingFilter(IRateLimiter rateLimiter, IOptions<SignalROptions> options)
+    : IHubFilter
+{
+    private readonly SignalRRateLimitOptions _rateLimitOptions = options.Value.RateLimiting;
+
+    public async ValueTask<object?> InvokeMethodAsync(
+        HubInvocationContext invocationContext,
+        Func<HubInvocationContext, ValueTask<object?>> next)
+    {
+        if (!_rateLimitOptions.Enabled)
+            return await next(invocationContext);
+
+        // Key is per-user per-method so each method has its own allowance
+        var userId = invocationContext.Context.UserIdentifier
+                     ?? invocationContext.Context.ConnectionId;
+        var method = invocationContext.HubMethodName;
+        var key = $"rl:{userId}:{method}";
+
+        if (!rateLimiter.IsAllowed(key, _rateLimitOptions.MaxRequestsPerSecond, TimeSpan.FromSeconds(1)))
+            throw new HubException("Rate limit exceeded. Please slow down.");
+
+        return await next(invocationContext);
+    }
+}

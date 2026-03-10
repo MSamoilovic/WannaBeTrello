@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using WannabeTrello.Infrastructure.SignalR.Authorization;
 using WannabeTrello.Infrastructure.SignalR.Contracts;
 using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
 using WannabeTrello.Infrastructure.SignalR.Services;
@@ -13,7 +14,7 @@ namespace WannabeTrello.Infrastructure.SignalR.Hubs;
 /// </summary>
 public class ProjectHub(
     ILogger<ProjectHub> logger,
-    IProjectRepository projectRepository,
+    IAuthorizationService authorizationService,
     IConnectionManager connectionManager,
     IHubGroupManager groupManager,
     IPresenceTracker presenceTracker)
@@ -26,13 +27,11 @@ public class ProjectHub(
     [HubMethod(RequiresAudit = true, Description = "Join a project's real-time group")]
     public async Task JoinProjectAsync(long projectId)
     {
-        var userId = GetCurrentUserId();
+        var result = await authorizationService.AuthorizeAsync(
+            Context.User!, null, new ProjectAccessRequirement(projectId));
 
-        var isMember = await projectRepository.IsProjectMemberAsync(projectId, userId);
-        if (!isMember)
-        {
+        if (!result.Succeeded)
             throw new HubException("Not authorized to join this project group.");
-        }
 
         var group = ProjectGroup(projectId);
         await Groups.AddToGroupAsync(Context.ConnectionId, group);
@@ -40,7 +39,7 @@ public class ProjectHub(
 
         logger.LogInformation(
             "User {UserId} joined {Group} ({Count} viewers)",
-            userId, group,
+            GetCurrentUserId(), group,
             await GroupManager.GetConnectionCountInGroupAsync(group));
     }
 
@@ -55,8 +54,6 @@ public class ProjectHub(
         await GroupManager.UntrackGroupMembershipAsync(Context.ConnectionId, group);
 
         if (TryGetCurrentUserId(out long userId))
-        {
             logger.LogInformation("User {UserId} left {Group}", userId, group);
-        }
     }
 }
