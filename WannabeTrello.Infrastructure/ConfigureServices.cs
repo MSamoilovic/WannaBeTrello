@@ -22,10 +22,13 @@ using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
 using WannabeTrello.Infrastructure.Services.Notifications;
+using Microsoft.Extensions.Logging;
+using Polly;
 using WannabeTrello.Infrastructure.SignalR.Authorization;
 using WannabeTrello.Infrastructure.SignalR.Configuration;
 using WannabeTrello.Infrastructure.SignalR.Filters;
 using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+using WannabeTrello.Infrastructure.SignalR.Resilience;
 using WannabeTrello.Infrastructure.SignalR.Security;
 using WannabeTrello.Infrastructure.SignalR.Services;
 
@@ -221,6 +224,14 @@ public static class ConfigureServices
         services.AddSingleton<IAuthorizationHandler, BoardAccessHandler>();
         services.AddSingleton<IAuthorizationHandler, ProjectAccessHandler>();
         services.AddSingleton<IRateLimiter, InMemoryRateLimiter>();
+
+        // Phase 6: resilience pipeline (retry + circuit breaker) for notification services
+        services.AddSingleton<ResiliencePipeline>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("SignalR.Notifications.Resilience");
+            return NotificationResiliencePipelineFactory.Create(logger);
+        });
 
         return services;
     }

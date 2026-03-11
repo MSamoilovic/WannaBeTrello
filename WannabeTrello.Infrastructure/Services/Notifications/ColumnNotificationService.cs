@@ -1,16 +1,22 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using Polly;
 using WannabeTrello.Application.Common.Interfaces;
 using WannabeTrello.Infrastructure.SignalR.Contracts;
 using WannabeTrello.Infrastructure.SignalR.Hubs;
+using WannabeTrello.Infrastructure.SignalR.Resilience;
 
 namespace WannabeTrello.Infrastructure.Services.Notifications;
 
 public class ColumnNotificationService(
-    IHubContext<BoardHub, IBoardHubClient> boardHub) : IColumnNotificationService
+    IHubContext<BoardHub, IBoardHubClient> boardHub,
+    ResiliencePipeline pipeline,
+    ILogger<ColumnNotificationService> logger)
+    : ResilientNotificationBase(pipeline, logger), IColumnNotificationService
 {
     public async Task NotifyColumnCreated(long createdColumnId, string? columnName, long boardId, long creatorUserId)
     {
-        await boardHub.Clients
+        await SendAsync(_ => new ValueTask(boardHub.Clients
             .Group($"Board:{boardId}")
             .ColumnCreated(new ColumnCreatedNotification
             {
@@ -18,12 +24,12 @@ public class ColumnNotificationService(
                 ColumnId = createdColumnId,
                 ColumnName = columnName ?? string.Empty,
                 CreatedBy = creatorUserId
-            });
+            })));
     }
 
     public async Task NotifyColumnUpdated(long columnId, string oldName, string newName, long boardId, long modifierUserId)
     {
-        await boardHub.Clients
+        await SendAsync(_ => new ValueTask(boardHub.Clients
             .Group($"Board:{boardId}")
             .ColumnUpdated(new ColumnUpdatedNotification
             {
@@ -32,12 +38,12 @@ public class ColumnNotificationService(
                 OldName = oldName,
                 NewName = newName,
                 ModifiedBy = modifierUserId
-            });
+            })));
     }
 
     public async Task NotifyColumnOrderChanged(long columnId, long boardId, int oldOrder, int newOrder, long modifierUserId)
     {
-        await boardHub.Clients
+        await SendAsync(_ => new ValueTask(boardHub.Clients
             .Group($"Board:{boardId}")
             .ColumnOrderChanged(new ColumnOrderChangedNotification
             {
@@ -46,12 +52,12 @@ public class ColumnNotificationService(
                 OldOrder = oldOrder,
                 NewOrder = newOrder,
                 ModifiedBy = modifierUserId
-            });
+            })));
     }
 
     public async Task NotifyColumnWipLimitChanged(long columnId, long boardId, int? oldWipLimit, int? newWipLimit, long modifierUserId)
     {
-        await boardHub.Clients
+        await SendAsync(_ => new ValueTask(boardHub.Clients
             .Group($"Board:{boardId}")
             .ColumnWipLimitChanged(new ColumnWipLimitChangedNotification
             {
@@ -60,18 +66,18 @@ public class ColumnNotificationService(
                 OldWipLimit = oldWipLimit,
                 NewWipLimit = newWipLimit,
                 ModifiedBy = modifierUserId
-            });
+            })));
     }
 
     public async Task NotifyColumnDeletedEvent(long columnId, long boardId, long modifierUserId)
     {
-        await boardHub.Clients
+        await SendAsync(_ => new ValueTask(boardHub.Clients
             .Group($"Board:{boardId}")
             .ColumnDeleted(new ColumnDeletedNotification
             {
                 BoardId = boardId,
                 ColumnId = columnId,
                 DeletedBy = modifierUserId
-            });
+            })));
     }
 }
