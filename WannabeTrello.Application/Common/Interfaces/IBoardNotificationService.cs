@@ -2,8 +2,8 @@
 
 public interface IBoardNotificationService
 {
-    Task NotifyBoardCreated(long createdBoardId, string? boardName, long creatorUserId);
-    Task NotifyBoardUpdated(long createdBoardId, long modifierUserId);
-    Task NotifyBoardArchived(long archivedBoardId, long modifierUserId);
-    Task NotifyBoardRestored(long restoredBoardId, long modifierUserId);
+    Task NotifyBoardCreated(long boardId, long projectId, string? boardName, long creatorUserId);
+    Task NotifyBoardUpdated(long boardId, long modifierUserId);
+    Task NotifyBoardArchived(long boardId, long modifierUserId);
+    Task NotifyBoardRestored(long boardId, long modifierUserId);
 }

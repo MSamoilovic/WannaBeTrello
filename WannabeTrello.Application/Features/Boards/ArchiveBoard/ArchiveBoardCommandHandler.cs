@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using WannabeTrello.Application.Common.Caching;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
 using WannabeTrello.Domain.Entities.Common;
 using WannabeTrello.Domain.Interfaces.Services;
 

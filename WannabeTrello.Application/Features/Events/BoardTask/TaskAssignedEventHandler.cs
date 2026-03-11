@@ -12,9 +12,10 @@ internal class TaskAssignedEventHandler(
 {
     public async Task Handle(TaskAssignedEvent notification, CancellationToken cancellationToken)
     {
-      
+        var boardId = await boardTaskRepository.GetBoardIdByTaskIdAsync(notification.TaskId, cancellationToken);
         await taskNotificationService.NotifyTaskAssigned(
             notification.TaskId,
+            boardId,
             notification.OldAssigneeId,
             notification.NewAssigneeId,
             notification.AssignedByUserId,

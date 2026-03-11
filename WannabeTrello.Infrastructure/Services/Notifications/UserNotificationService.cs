@@ -1,11 +1,18 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using Polly;
 using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Infrastructure.SignalR;
+using WannabeTrello.Infrastructure.SignalR.Contracts;
+using WannabeTrello.Infrastructure.SignalR.Hubs;
+using WannabeTrello.Infrastructure.SignalR.Resilience;
 
 namespace WannabeTrello.Infrastructure.Services.Notifications;
 
 public class UserNotificationService(
-    IHubContext<TrellyHub, ITrellyHub> hubContext) : IUserNotificationService
+    IHubContext<NotificationHub, INotificationHubClient> notificationHub,
+    ResiliencePipeline pipeline,
+    ILogger<UserNotificationService> logger)
+    : ResilientNotificationBase(pipeline, logger), IUserNotificationService
 {
     public async Task NotifyUserProfileUpdated(
         long userId,
@@ -14,9 +21,13 @@ public class UserNotificationService(
         long modifyingUserId,
         CancellationToken cancellationToken)
     {
-        
-        await hubContext.Clients.All.UserProfileUpdated(userId, modifyingUserId);
-
+        await SendAsync(_ => new ValueTask(notificationHub.Clients
+            .Group($"User:{userId}")
+            .UserProfileUpdated(new UserProfileUpdatedNotification
+            {
+                UserId = userId,
+                ModifiedBy = modifyingUserId
+            })), cancellationToken);
     }
 
     public async Task NotifyUserDeactivated(
@@ -24,8 +35,13 @@ public class UserNotificationService(
         long deactivatedByUserId,
         CancellationToken cancellationToken)
     {
-        
-        await hubContext.Clients.All.UserDeactivated(userId, deactivatedByUserId);
+        await SendAsync(_ => new ValueTask(notificationHub.Clients
+            .Group($"User:{userId}")
+            .UserDeactivated(new UserDeactivatedNotification
+            {
+                UserId = userId,
+                DeactivatedBy = deactivatedByUserId
+            })), cancellationToken);
     }
 
     public async Task NotifyUserReactivated(
@@ -33,8 +49,12 @@ public class UserNotificationService(
         long reactivatedByUserId,
         CancellationToken cancellationToken)
     {
-        
-        await hubContext.Clients.All.UserReactivated(userId, reactivatedByUserId);
+        await SendAsync(_ => new ValueTask(notificationHub.Clients
+            .Group($"User:{userId}")
+            .UserReactivated(new UserReactivatedNotification
+            {
+                UserId = userId,
+                ReactivatedBy = reactivatedByUserId
+            })), cancellationToken);
     }
 }
-

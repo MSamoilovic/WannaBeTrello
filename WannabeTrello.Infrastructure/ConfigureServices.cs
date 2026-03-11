@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,15 @@ using WannabeTrello.Infrastructure.Persistence;
 using WannabeTrello.Infrastructure.Persistence.Repositories;
 using WannabeTrello.Infrastructure.Services;
 using WannabeTrello.Infrastructure.Services.Notifications;
+using Microsoft.Extensions.Logging;
+using Polly;
+using WannabeTrello.Infrastructure.SignalR.Authorization;
+using WannabeTrello.Infrastructure.SignalR.Configuration;
+using WannabeTrello.Infrastructure.SignalR.Filters;
+using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+using WannabeTrello.Infrastructure.SignalR.Resilience;
+using WannabeTrello.Infrastructure.SignalR.Security;
+using WannabeTrello.Infrastructure.SignalR.Services;
 
 namespace WannabeTrello.Infrastructure;
 
@@ -178,7 +189,49 @@ public static class ConfigureServices
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddSignalR();
+        // SignalR
+        services.Configure<SignalROptions>(configuration.GetSection(SignalROptions.SectionName));
+
+        var signalROptions = configuration.GetSection(SignalROptions.SectionName).Get<SignalROptions>()
+            ?? new SignalROptions();
+
+        services.AddSignalR(options =>
+        {
+            options.MaximumReceiveMessageSize = signalROptions.MaximumReceiveMessageSize;
+            options.StreamBufferCapacity = signalROptions.StreamBufferCapacity;
+            options.EnableDetailedErrors = signalROptions.EnableDetailedErrors;
+            options.ClientTimeoutInterval = signalROptions.ClientTimeoutInterval;
+            options.HandshakeTimeout = signalROptions.HandshakeTimeout;
+            options.KeepAliveInterval = signalROptions.KeepAliveInterval;
+            options.MaximumParallelInvocationsPerClient = signalROptions.MaximumParallelInvocationsPerClient;
+        });
+
+        // Hub filter chain (outer → inner):
+        //   HubMethodFilter → HubRateLimitingFilter → HubValidationFilter → HubExceptionFilter
+        services.AddSingleton<IHubFilter, HubMethodFilter>();
+        services.AddSingleton<IHubFilter, HubRateLimitingFilter>();
+        services.AddSingleton<IHubFilter, HubValidationFilter>();
+        services.AddSingleton<IHubFilter, HubExceptionFilter>();
+
+        // Phase 2: connection / group / presence services
+        services.AddSingleton<IConnectionManager, InMemoryConnectionManager>();
+        services.AddSingleton<IHubGroupManager, GroupManager>();
+        services.AddSingleton<IPresenceTracker, InMemoryPresenceTracker>();
+
+        // Phase 3: authorization handlers + rate limiter
+        // IMemoryCache is used by authorization handlers for caching membership checks
+        services.AddMemoryCache();
+        services.AddSingleton<IAuthorizationHandler, BoardAccessHandler>();
+        services.AddSingleton<IAuthorizationHandler, ProjectAccessHandler>();
+        services.AddSingleton<IRateLimiter, InMemoryRateLimiter>();
+
+        // Phase 6: resilience pipeline (retry + circuit breaker) for notification services
+        services.AddSingleton<ResiliencePipeline>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("SignalR.Notifications.Resilience");
+            return NotificationResiliencePipelineFactory.Create(logger);
+        });
 
         return services;
     }

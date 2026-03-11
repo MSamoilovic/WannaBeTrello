@@ -25,4 +25,12 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
         var specification = new SearchTasksSpecification();
         return ApplySpecification(specification);
     }
+
+    public async Task<long> GetBoardIdByTaskIdAsync(long taskId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Set<BoardTask>()
+            .Where(t => t.Id == taskId)
+            .Select(t => t.Column.BoardId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }
