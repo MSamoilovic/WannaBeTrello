@@ -34,6 +34,8 @@ public class User : IdentityUser<long>
     public DateTime? EmailConfirmationRequestedAt { get; private set; }
     public string? EmailConfirmationRequestIpAddress { get; private set; }
     public DateTime? EmailConfirmedAt { get; private set; }
+    public string? RefreshToken { get; private set; }
+    public DateTime? RefreshTokenExpiresAt { get; private set; }
 
     public string DisplayName
     {
@@ -261,6 +263,18 @@ public class User : IdentityUser<long>
         {
             throw new BusinessRuleValidationException("Actor identifier must be a positive number.");
         }
+    }
+
+    public void SetRefreshToken(string token, DateTime expiresAt)
+    {
+        RefreshToken = token;
+        RefreshTokenExpiresAt = expiresAt;
+    }
+
+    public void ClearRefreshToken()
+    {
+        RefreshToken = null;
+        RefreshTokenExpiresAt = null;
     }
 
     public void RequestPasswordReset(string ipAddress)
