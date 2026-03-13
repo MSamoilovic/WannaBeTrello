@@ -290,6 +290,7 @@ public class User : IdentityUser<long>
         PasswordResetRequestedAt = null;
         PasswordResetRequestIpAddress = null;
         SecurityStamp = Guid.NewGuid().ToString(); // Invalidates all JWT tokens
+        ClearRefreshToken(); 
 
         AddDomainEvent(new PasswordResetCompletedEvent(Id, Email!, ipAddress, DateTime.UtcNow));
     }
