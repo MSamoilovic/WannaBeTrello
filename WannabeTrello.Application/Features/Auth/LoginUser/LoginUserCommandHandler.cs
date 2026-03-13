@@ -29,9 +29,11 @@ public class LoginUserCommandHandler(
         }
 
         user.UpdateLastLogin();
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
+        user.SetRefreshToken(refreshToken, jwtTokenService.GetRefreshTokenExpiry());
         await userManager.UpdateAsync(user);
 
         var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
-        return new LoginUserCommandResponse(token, user.Email, user.EmailConfirmed);
+        return new LoginUserCommandResponse(token, user.Email, user.EmailConfirmed, refreshToken, user.RefreshTokenExpiresAt!.Value);
     }
 }

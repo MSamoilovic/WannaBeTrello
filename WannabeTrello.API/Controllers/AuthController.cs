@@ -7,6 +7,7 @@ using WannabeTrello.Application.Features.Auth.ConfirmEmail;
 using WannabeTrello.Application.Features.Auth.ForgotPassword;
 using WannabeTrello.Application.Features.Auth.LoginUser;
 using WannabeTrello.Application.Features.Auth.RegisterUser;
+using WannabeTrello.Application.Features.Auth.RefreshToken;
 using WannabeTrello.Application.Features.Auth.ResendConfirmationEmail;
 using WannabeTrello.Application.Features.Auth.ResetPassword;
 using WannabeTrello.Domain.Exceptions;
@@ -48,6 +49,23 @@ public class AuthController(IMediator mediator) : ControllerBase
             return Unauthorized(new { message = ex.Message });
         }
        
+    }
+
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(RefreshTokenCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command)
+    {
+        try
+        {
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
     }
 
     [Authorize]
