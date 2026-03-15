@@ -40,6 +40,9 @@ public class ChangePasswordCommandHandler(UserManager<User> userManager, IUserSe
             throw new ValidationException(changeResult.Errors.ToString());
         }
 
+        user.ClearRefreshToken();
+        await userManager.UpdateAsync(user);
+
         return new ChangePasswordCommandResponse(Result<long>.Success(user.Id, "Password updated successfully"));
 
     }
