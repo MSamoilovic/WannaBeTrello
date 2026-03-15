@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Threading.RateLimiting;
 using WannabeTrello.Application;
 using WannabeTrello.Domain;
 using WannabeTrello.Extensions;
@@ -48,6 +51,44 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddHealthChecks();
+
+builder.Services.AddRateLimiter(options =>
+{
+    // Global limiter: 100 req/min per user (authenticated) or per IP (anonymous)
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+    {
+        var key = httpContext.User.Identity?.IsAuthenticated == true
+            ? httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous"
+            : httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous";
+
+        return RateLimitPartition.GetSlidingWindowLimiter(key, _ => new SlidingWindowRateLimiterOptions
+        {
+            PermitLimit = 100,
+            Window = TimeSpan.FromMinutes(1),
+            SegmentsPerWindow = 6,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0
+        });
+    });
+
+    // Strict policy for auth endpoints (login, register, forgot-password, etc.)
+    options.AddSlidingWindowLimiter("auth", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.SegmentsPerWindow = 6;
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new { message = "Too many requests. Please slow down and try again later." },
+            cancellationToken: cancellationToken);
+    };
+});
 
 builder.Services.AddDomainServices();
 builder.Services.AddInfrastructure(builder.Configuration, builder);
@@ -123,9 +164,11 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseRouting(); 
+app.UseRouting();
 
 app.UseCors("Default");
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

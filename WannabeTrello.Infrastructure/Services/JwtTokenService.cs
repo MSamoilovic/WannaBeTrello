@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -42,4 +43,13 @@ public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> us
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public string GenerateRefreshToken()
+    {
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(bytes);
+    }
+
+    public DateTime GetRefreshTokenExpiry()
+        => DateTime.UtcNow.AddDays(Options.RefreshTokenExpiryDays);
 }

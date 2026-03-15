@@ -30,6 +30,8 @@ public class RegisterUserCommandHandler(IUserService userService, UserManager<Us
         var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         // Tracking
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
+        user.SetRefreshToken(refreshToken, jwtTokenService.GetRefreshTokenExpiry());
 
         //TODO: Transfer to user service to request EmailCofirmation
         var ipAddress = currentUserService.UserIPAddress;
@@ -52,7 +54,9 @@ public class RegisterUserCommandHandler(IUserService userService, UserManager<Us
         return new RegisterUserCommandResponse(
             Token: token,
             Email: user.Email!,
-            EmailConfirmed: user.EmailConfirmed);
+            EmailConfirmed: user.EmailConfirmed,
+            RefreshToken: refreshToken,
+            RefreshTokenExpiresAt: user.RefreshTokenExpiresAt!.Value);
     }
 
     private static string BuildConfirmationUrl(string email, string token)
