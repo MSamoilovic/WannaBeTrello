@@ -8,4 +8,5 @@ public interface IBoardTaskRepository: IRepository<BoardTask>
     Task<BoardTask>? GetTaskDetailsByIdAsync(long id, CancellationToken cancellationToken);
     IQueryable<BoardTask> SearchTasks();
     Task<long> GetBoardIdByTaskIdAsync(long taskId, CancellationToken cancellationToken = default);
+    Task<BoardTask?> GetTaskWithLabelsAsync(long taskId, CancellationToken cancellationToken = default);
 }
