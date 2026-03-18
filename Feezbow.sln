@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.API", "WannabeTrello.API\WannabeTrello.API.csproj", "{614F7203-264D-4456-BFA6-935EAAFE4DE3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.API", "Feezbow.API\Feezbow.API.csproj", "{614F7203-264D-4456-BFA6-935EAAFE4DE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Application", "WannabeTrello.Application\WannabeTrello.Application.csproj", "{FD60329E-C4B6-482A-B386-DF309193BB57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Application", "Feezbow.Application\Feezbow.Application.csproj", "{FD60329E-C4B6-482A-B386-DF309193BB57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Domain", "WannabeTrello.Domain\WannabeTrello.Domain.csproj", "{248AA486-CCE1-40BF-BF0D-AACD127BE867}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Domain", "Feezbow.Domain\Feezbow.Domain.csproj", "{248AA486-CCE1-40BF-BF0D-AACD127BE867}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Infrastructure", "WannabeTrello.Infrastructure\WannabeTrello.Infrastructure.csproj", "{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Infrastructure", "Feezbow.Infrastructure\Feezbow.Infrastructure.csproj", "{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Domain.Tests", "WannabeTrello.Domain.Tests\WannabeTrello.Domain.Tests.csproj", "{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Domain.Tests", "Feezbow.Domain.Tests\Feezbow.Domain.Tests.csproj", "{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WannabeTrello.Application.Tests", "WannabeTrello.Application.Tests\WannabeTrello.Application.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Application.Tests", "Feezbow.Application.Tests\Feezbow.Application.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
