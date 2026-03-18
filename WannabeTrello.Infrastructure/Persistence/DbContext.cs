@@ -26,6 +26,8 @@ public class ApplicationDbContext(
     public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
     public DbSet<BoardMember> BoardMembers { get; set; } = null!;
     public DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
+    public DbSet<Label> Labels { get; set; } = null!;
+    public DbSet<BoardTaskLabel> BoardTaskLabels { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

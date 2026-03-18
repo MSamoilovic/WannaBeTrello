@@ -23,6 +23,9 @@ public class BoardTask : AuditableEntity
 
     public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
 
+    private readonly List<BoardTaskLabel> _taskLabels = [];
+    public IReadOnlyCollection<BoardTaskLabel> TaskLabels => _taskLabels.AsReadOnly();
+
     private readonly List<Activity> _activities = [];
     public IReadOnlyCollection<Activity> Activities => _activities.AsReadOnly();
 
@@ -279,6 +282,27 @@ public class BoardTask : AuditableEntity
             new Dictionary<string, object?> { { nameof(IsArchived), true } },
             new Dictionary<string, object?> { { nameof(IsArchived), false } }
         ));
+    }
+
+    public void AddLabel(Label label, long userId)
+    {
+        if (_taskLabels.Any(tl => tl.LabelId == label.Id))
+            throw new BusinessRuleValidationException($"Label '{label.Name}' is already on this task.");
+
+        _taskLabels.Add(new BoardTaskLabel { TaskId = Id, LabelId = label.Id });
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = userId;
+    }
+
+    public void RemoveLabel(long labelId, long userId)
+    {
+        var taskLabel = _taskLabels.FirstOrDefault(tl => tl.LabelId == labelId);
+        if (taskLabel is null)
+            throw new BusinessRuleValidationException("This label is not on the task.");
+
+        _taskLabels.Remove(taskLabel);
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = userId;
     }
 
     public void AddActivity(Activity activity)

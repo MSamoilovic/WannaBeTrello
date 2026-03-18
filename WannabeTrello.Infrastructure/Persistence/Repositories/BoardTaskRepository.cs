@@ -33,4 +33,12 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
             .Select(t => t.Column.BoardId)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<BoardTask?> GetTaskWithLabelsAsync(long taskId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(t => t.TaskLabels)
+                .ThenInclude(tl => tl.Label)
+            .FirstOrDefaultAsync(t => t.Id == taskId, cancellationToken);
+    }
 }
