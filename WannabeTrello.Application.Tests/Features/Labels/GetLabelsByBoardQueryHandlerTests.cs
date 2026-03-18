@@ -37,7 +37,7 @@ public class GetLabelsByBoardQueryHandlerTests
         _cacheServiceMock.Setup(c => c.GetOrSetAsync(
                 CacheKeys.BoardLabels(boardId),
                 It.IsAny<Func<Task<IReadOnlyList<Label>>>>(),
-                It.IsAny<CacheExpiration>(),
+                It.IsAny<TimeSpan>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(labels.AsReadOnly());
 
@@ -63,7 +63,7 @@ public class GetLabelsByBoardQueryHandlerTests
 
         _cacheServiceMock.Verify(c => c.GetOrSetAsync<IReadOnlyList<Label>>(
             It.IsAny<string>(), It.IsAny<Func<Task<IReadOnlyList<Label>>>>(),
-            It.IsAny<CacheExpiration>(), It.IsAny<CancellationToken>()), Times.Never);
+            It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class GetLabelsByBoardQueryHandlerTests
         _cacheServiceMock.Setup(c => c.GetOrSetAsync(
                 CacheKeys.BoardLabels(boardId),
                 It.IsAny<Func<Task<IReadOnlyList<Label>>>>(),
-                It.IsAny<CacheExpiration>(),
+                It.IsAny<TimeSpan>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Label>().AsReadOnly());
 
