@@ -1,0 +1,38 @@
+﻿using MediatR;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.Services;
+
+namespace Feezbow.Application.Features.Projects.AddProjectMember;
+
+public class AddProjectMemberCommandHandler(
+    IProjectService projectService,
+    ICurrentUserService currentUserService,
+    ICacheService cacheService
+) : IRequestHandler<AddProjectMemberCommand, AddProjectMemberCommandResponse>
+{
+    public async Task<AddProjectMemberCommandResponse> Handle(AddProjectMemberCommand request,
+        CancellationToken cancellationToken)
+    {
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
+        {
+            throw new UnauthorizedAccessException("User is not authenticated");
+        }
+
+        var projectId = await projectService.AddProjectMember(request.ProjectId, request.NewMemberId, request.Role,
+            currentUserService.UserId.Value, cancellationToken);
+
+        await InvalidateCacheAsync(request.ProjectId, cancellationToken);
+
+        var result = Result<long>.Success(projectId, $"{request.NewMemberId} is now added to the project.");
+
+        return new AddProjectMemberCommandResponse(result);
+    }
+
+    private async Task InvalidateCacheAsync(long projectId, CancellationToken ct)
+    {
+        await cacheService.RemoveAsync(CacheKeys.ProjectMembers(projectId), ct);
+    }
+}

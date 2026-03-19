@@ -2,26 +2,26 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy solution and project files first for better layer caching
-COPY ["WannabeTrello.sln", "./"]
+COPY ["Feezbow.sln", "./"]
 COPY ["global.json", "./"]
-COPY ["WannabeTrello.API/WannabeTrello.API.csproj", "WannabeTrello.API/"]
-COPY ["WannabeTrello.Application/WannabeTrello.Application.csproj", "WannabeTrello.Application/"]
-COPY ["WannabeTrello.Domain/WannabeTrello.Domain.csproj", "WannabeTrello.Domain/"]
-COPY ["WannabeTrello.Infrastructure/WannabeTrello.Infrastructure.csproj", "WannabeTrello.Infrastructure/"]
+COPY ["Feezbow.API/Feezbow.API.csproj", "Feezbow.API/"]
+COPY ["Feezbow.Application/Feezbow.Application.csproj", "Feezbow.Application/"]
+COPY ["Feezbow.Domain/Feezbow.Domain.csproj", "Feezbow.Domain/"]
+COPY ["Feezbow.Infrastructure/Feezbow.Infrastructure.csproj", "Feezbow.Infrastructure/"]
 
 # Restore dependencies (this layer will be cached if project files don't change)
-RUN dotnet restore "WannabeTrello.API/WannabeTrello.API.csproj"
+RUN dotnet restore "Feezbow.API/Feezbow.API.csproj"
 
 # Copy source code (only this layer will be rebuilt when code changes)
 COPY . .
 
 # Build the application
-WORKDIR "/src/WannabeTrello.API"
-RUN dotnet build "WannabeTrello.API.csproj" -c Release -o /app/build --no-restore
+WORKDIR "/src/Feezbow.API"
+RUN dotnet build "Feezbow.API.csproj" -c Release -o /app/build --no-restore
 
 # Publish the application
 FROM build AS publish
-RUN dotnet publish "WannabeTrello.API.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
+RUN dotnet publish "Feezbow.API.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
@@ -52,4 +52,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-ENTRYPOINT ["dotnet", "WannabeTrello.API.dll"]
+ENTRYPOINT ["dotnet", "Feezbow.API.dll"]

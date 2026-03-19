@@ -1,0 +1,14 @@
+﻿using Feezbow.Domain.Entities;
+
+namespace Feezbow.Domain.Interfaces.Repositories;
+
+public interface IUserRepository: IRepository<User>
+{
+    Task<User?> GetUserProfileDetailsAsync(long userId, CancellationToken cancellationToken);
+    Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken);
+    IQueryable<User> SearchUsers();
+    Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Board>> GetUserBoardsAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken);
+}

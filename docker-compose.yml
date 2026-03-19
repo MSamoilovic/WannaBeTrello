@@ -1,14 +1,14 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: wannabetrello-db
+    container_name: feezbow-db
 
     restart: unless-stopped
 
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-wannabetrello}
+      POSTGRES_USER: ${POSTGRES_USER:-feezbow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
-      POSTGRES_DB: ${POSTGRES_DB:-wannabetrello}
+      POSTGRES_DB: ${POSTGRES_DB:-feezbow}
 
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -21,7 +21,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-wannabetrello} -d ${POSTGRES_DB:-wannabetrello}",
+          "pg_isready -U ${POSTGRES_USER:-feezbow} -d ${POSTGRES_DB:-feezbow}",
         ]
       interval: 10s
       timeout: 5s
@@ -29,14 +29,14 @@ services:
       start_period: 10s
 
     networks:
-      - wannabetrello-network
+      - feezbow-network
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
 
-    container_name: wannabetrello-api
+    container_name: feezbow-api
     restart: unless-stopped
 
     ports:
@@ -45,12 +45,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
 
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-wannabetrello};Username=${POSTGRES_USER:-wannabetrello};Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-feezbow};Username=${POSTGRES_USER:-feezbow};Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
 
       # JWT konfiguracija
       - Jwt__Key=${JWT_KEY:?JWT_KEY must be set in .env}
-      - Jwt__Issuer=${JWT_ISSUER:-WannabeTrelloIssuer}
-      - Jwt__Audience=${JWT_AUDIENCE:-WannabeTrelloAudience}
+      - Jwt__Issuer=${JWT_ISSUER:-FeezBowIssuer}
+      - Jwt__Audience=${JWT_AUDIENCE:-FeezBowAudience}
       - Jwt__ExpiryMinutes=${JWT_EXPIRY_MINUTES:-60}
 
       # Email konfiguracija
@@ -58,8 +58,8 @@ services:
       - Email__SmtpPort=${SMTP_PORT:-587}
       - Email__SmtpUsername=${SMTP_USERNAME:-your-email@gmail.com}
       - Email__SmtpPassword=${SMTP_PASSWORD:-your-app-password}
-      - Email__FromEmail=${FROM_EMAIL:-noreply@wannabetrello.com}
-      - Email__FromName=${FROM_NAME:-WannabeTrello}
+      - Email__FromEmail=${FROM_EMAIL:-noreply@feezbow.com}
+      - Email__FromName=${FROM_NAME:-Feezbow}
 
       # Email confirmation
       - EmailConfirmation__TokenLifespanHours=${EMAIL_CONFIRMATION_TOKEN_LIFESPAN_HOURS:-24}
@@ -71,7 +71,7 @@ services:
       # Redis konfiguracija (opciono)
       - Redis__Enabled=${REDIS_ENABLED:-false}
       - Redis__ConnectionString=${REDIS_CONNECTION_STRING:-redis:6379}
-      - Redis__InstanceName=${REDIS_INSTANCE_NAME:-wannabetrello}
+      - Redis__InstanceName=${REDIS_INSTANCE_NAME:-feezbow}
       - Redis__DefaultExpirationMinutes=${REDIS_DEFAULT_EXPIRATION_MINUTES:-5}
 
     depends_on:
@@ -88,18 +88,18 @@ services:
       start_period: 90s
 
     networks:
-      - wannabetrello-network
+      - feezbow-network
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: wannabetrello-pgadmin
+    container_name: feezbow-pgadmin
     restart: unless-stopped
 
     profiles:
       - tools
 
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@wannabetrello.com}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@feezbow.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?PGADMIN_PASSWORD must be set in .env}
       PGADMIN_CONFIG_SERVER_MODE: "False"
 
@@ -113,11 +113,11 @@ services:
       - postgres
 
     networks:
-      - wannabetrello-network
+      - feezbow-network
 
   redis:
     image: redis:7-alpine
-    container_name: wannabetrello-redis
+    container_name: feezbow-redis
     restart: unless-stopped
 
     # Komanda sa konfiguracijom
@@ -140,11 +140,11 @@ services:
       retries: 5
 
     networks:
-      - wannabetrello-network
+      - feezbow-network
 
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: wannabetrello-redis-ui
+    container_name: feezbow-redis-ui
     restart: unless-stopped
     profiles:
       - tools
@@ -159,7 +159,7 @@ services:
       - redis
 
     networks:
-      - wannabetrello-network
+      - feezbow-network
 
 volumes:
   postgres_data:
@@ -170,5 +170,5 @@ volumes:
     driver: local
 
 networks:
-  wannabetrello-network:
+  feezbow-network:
     driver: bridge

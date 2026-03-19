@@ -1,0 +1,109 @@
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
+
+namespace Feezbow.Domain.Services;
+
+public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork) : IUserService
+{
+    public async Task<User> CreateUserAsync(string userName, string email, string? firstName = null, string? lastName = null, string? bio = null, string? profilePictureUrl = null, long? createdBy = null, CancellationToken cancellationToken = default)
+    {
+        if(string.IsNullOrWhiteSpace(userName))
+            throw new ArgumentNullException(nameof(userName));
+
+        if(string.IsNullOrWhiteSpace(email))
+            throw new ArgumentNullException(nameof(email));
+
+        var user = User.Create(userName, email, firstName, lastName, bio, profilePictureUrl, createdBy);
+
+        await userRepository.AddAsync(user, cancellationToken);
+        await unitOfWork.CompleteAsync(cancellationToken);
+
+        return user;
+
+    }
+
+    public User CreateUserForAuth(string userName, string email, string? firstName = null, string? lastName = null, string? bio = null, string? profilePictureUrl = null, long? createdBy = null)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new ArgumentNullException(nameof(userName));
+
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentNullException(nameof(email));
+
+       return User.Create(userName, email, firstName, lastName, bio, profilePictureUrl, createdBy);
+    }
+
+    public async Task DeactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        user.Deactivate(modifierUserId);
+
+        await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken)
+    {
+        return userRepository.GetUserAssignedTasksAsync(userId, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<Board>> GetUserBoardMemberships(long userId, CancellationToken cancellationToken)
+    {
+       return userRepository.GetUserBoardsAsync(userId, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken)
+    {
+        //TODO:
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken)
+    {
+        return userRepository.GetUserOwnedProjectsAsync(userId, cancellationToken);
+    }
+
+    public async Task<User?> GetUserProfileAsync(long userId, CancellationToken cancellationToken)
+    {
+        return await userRepository.GetUserProfileDetailsAsync(userId, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken)
+    {
+        return userRepository.GetUserProjectsAsync(userId, cancellationToken);
+    }
+
+    public async Task ReactivateUserAsync(long userId, long modifierUserId, CancellationToken cancellationToken)
+    {
+        var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        user.Reactivate(modifierUserId);
+        await unitOfWork.CompleteAsync(cancellationToken);
+    }
+
+    public IQueryable<User> SearchUsers() => userRepository.SearchUsers();
+    
+    public async Task UpdateUserProfileAsync(long userId, string? firstName, string? lastName, string? bio, string profilePictureUrl, long modifiedBy, CancellationToken cancellationToken)
+    {
+       var user = await userRepository.GetUserProfileAsync(userId, cancellationToken) ?? throw new NotFoundException(nameof(User), userId);
+
+        if (!string.IsNullOrWhiteSpace(firstName) && firstName.Length > 100)
+            throw new BusinessRuleValidationException("First name cannot exceed 100 characters");
+
+        if (!string.IsNullOrWhiteSpace(lastName) && lastName.Length > 300)
+            throw new BusinessRuleValidationException("Last name cannot exceed 100 characters");
+
+        if (!string.IsNullOrWhiteSpace(bio) && bio.Length > 500)
+            throw new BusinessRuleValidationException("Bio cannot exceed 500 characters");
+
+        //TODO: Add validation for profile picture
+
+        user.UpdateProfile(firstName, lastName, bio, profilePictureUrl, modifiedBy);
+        await unitOfWork.CompleteAsync(cancellationToken);
+
+    }
+}

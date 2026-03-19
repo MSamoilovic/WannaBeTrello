@@ -1,0 +1,109 @@
+﻿using Moq;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Columns.ReorderColumn;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
+
+namespace Feezbow.Application.Tests.Features.Columns;
+
+public class ReorderColumnCommandHandlerTests
+{
+     [Fact]
+    public async Task Handle_WhenUserIsAuthenticated_ShouldCallServiceAndReturnSuccessResponse()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 1L;
+        var columnOrders = new Dictionary<long, int> { { 10L, 1 }, { 11L, 2 } };
+        var command = new ReorderColumnCommand { BoardId = boardId, ColumnOrders = columnOrders };
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        var response = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.True(response.Result.IsSuccess);
+        Assert.Equal(boardId, response.Result.Value);
+        Assert.Equal("Columns reordered successfully", response.Result.Message);
+
+        boardServiceMock.Verify(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.Is<string>(k => k == CacheKeys.BoardColumns(boardId)), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIsNotAuthenticated_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var command = new ReorderColumnCommand();
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            handler.Handle(command, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIdIsNull_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var command = new ReorderColumnCommand();
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            handler.Handle(command, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_WhenServiceThrowsNotFoundException_ShouldPropagateException()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 999L;
+        var columnOrders = new Dictionary<long, int>();
+        var command = new ReorderColumnCommand { BoardId = boardId, ColumnOrders = columnOrders };
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.ReorderColumnsAsync(boardId, columnOrders, userId, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new NotFoundException(nameof(Domain.Entities.Board), boardId));
+
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ReorderColumnCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() =>
+            handler.Handle(command, CancellationToken.None));
+    }
+}

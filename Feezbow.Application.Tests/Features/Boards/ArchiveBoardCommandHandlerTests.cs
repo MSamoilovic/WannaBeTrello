@@ -1,0 +1,185 @@
+﻿using System.Reflection;
+using System.Runtime.Serialization;
+using Moq;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Boards.ArchiveBoard;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
+
+namespace Feezbow.Application.Tests.Features.Boards;
+
+public class ArchiveBoardCommandHandlerTests
+{
+    private static void SetPrivatePropertyValue<T>(T obj, string propertyName, object value) where T : class
+    {
+        var property = typeof(T).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+        var currentType = typeof(T).BaseType;
+        while (currentType != null && property == null)
+        {
+            property = currentType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            currentType = currentType.BaseType;
+        }
+        property?.SetValue(obj, value, null);
+    }
+    
+    // Pomoćna metoda za kreiranje instance bez pozivanja konstruktora
+    private static T CreateInstanceWithoutConstructor<T>() where T : class
+    {
+        return (T)FormatterServices.GetUninitializedObject(typeof(T));
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIsAuthenticated_ShouldArchiveBoardAndReturnSuccessResponse()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 456L;
+        var projectId = 789L;
+        var command = new ArchiveBoardCommand(boardId);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var board = ApplicationTestUtils.CreateInstanceWithoutConstructor<Board>();
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.Id), boardId);
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.ProjectId), projectId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, CancellationToken.None))
+            .ReturnsAsync(board);
+        boardServiceMock
+            .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
+            .ReturnsAsync(boardId);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        var response = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.True(response.Result.IsSuccess);
+        Assert.Equal(boardId, response.Result.Value);
+        Assert.Equal($"Board {boardId} is now archived.", response.Result.Message);
+
+        boardServiceMock.Verify(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), CancellationToken.None), Times.Exactly(4));
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIsNotAuthenticated_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var command = new ArchiveBoardCommand(1L);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(false);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
+            handler.Handle(command, CancellationToken.None));
+            
+        Assert.Equal("User is not authenticated", exception.Message);
+        boardServiceMock.Verify(s => s.ArchiveBoardAsync(It.IsAny<long>(), It.IsAny<long>(), CancellationToken.None), Times.Never);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIdIsNull_ShouldThrowUnauthorizedAccessException()
+    {
+        // Arrange
+        var command = new ArchiveBoardCommand(1L);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns((long?)null);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => 
+            handler.Handle(command, CancellationToken.None));
+            
+        Assert.Equal("User is not authenticated", exception.Message);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenServiceThrowsNotFoundException_ShouldPropagateException()
+    {
+        // Arrange
+        var userId = 123L;
+        var nonExistentBoardId = 999L;
+        var command = new ArchiveBoardCommand(nonExistentBoardId);
+        
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.ArchiveBoardAsync(nonExistentBoardId, userId, CancellationToken.None))
+            .ThrowsAsync(new NotFoundException(nameof(Board), nonExistentBoardId));
+
+        var cacheServiceMock = new Mock<ICacheService>();
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+            handler.Handle(command, CancellationToken.None));
+            
+        Assert.Equal($"Entity \'Board\' ({nonExistentBoardId}) was not found.", exception.Message);
+        cacheServiceMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenBoardIsArchived_ShouldInvalidateCorrectCacheKeys()
+    {
+        // Arrange
+        var userId = 123L;
+        var boardId = 456L;
+        var projectId = 789L;
+        var command = new ArchiveBoardCommand(boardId);
+
+        var currentUserServiceMock = new Mock<ICurrentUserService>();
+        currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
+        currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
+
+        var board = ApplicationTestUtils.CreateInstanceWithoutConstructor<Board>();
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.Id), boardId);
+        ApplicationTestUtils.SetPrivatePropertyValue(board, nameof(Board.ProjectId), projectId);
+
+        var boardServiceMock = new Mock<IBoardService>();
+        boardServiceMock
+            .Setup(s => s.GetBoardWithDetailsAsync(boardId, CancellationToken.None))
+            .ReturnsAsync(board);
+        boardServiceMock
+            .Setup(s => s.ArchiveBoardAsync(boardId, userId, CancellationToken.None))
+            .ReturnsAsync(boardId);
+
+        var cacheServiceMock = new Mock<ICacheService>();
+
+        var handler = new ArchiveBoardCommandHandler(boardServiceMock.Object, currentUserServiceMock.Object, cacheServiceMock.Object);
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"project:{projectId}:boards", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}:columns", CancellationToken.None), Times.Once);
+        cacheServiceMock.Verify(c => c.RemoveAsync($"board:{boardId}:tasks", CancellationToken.None), Times.Once);
+    }
+}

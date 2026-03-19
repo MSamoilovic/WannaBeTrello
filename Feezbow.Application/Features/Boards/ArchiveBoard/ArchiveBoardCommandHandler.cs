@@ -1,0 +1,45 @@
+﻿using MediatR;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Interfaces.Services;
+
+namespace Feezbow.Application.Features.Boards.ArchiveBoard;
+
+public class ArchiveBoardCommandHandler(
+    IBoardService boardService, 
+    ICurrentUserService currentUserService, 
+    ICacheService cacheService)
+    : IRequestHandler<ArchiveBoardCommand, ArchiveBoardCommandResponse>
+{
+    public async Task<ArchiveBoardCommandResponse> Handle(ArchiveBoardCommand request,
+        CancellationToken cancellationToken)
+    {
+        if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
+        {
+            throw new UnauthorizedAccessException("User is not authenticated");
+        }
+
+        var boardId =
+            await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value, cancellationToken);
+        
+        await InvalidateCacheAsync(request.BoardId, cancellationToken);
+        
+        var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now archived.");
+
+        return new ArchiveBoardCommandResponse(result);
+    }
+    
+    private async Task InvalidateCacheAsync(long boardId, CancellationToken ct)
+    {
+        var board = await boardService.GetBoardWithDetailsAsync(boardId, ct);
+        
+        if (board is not null)
+        {
+            await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
+            await cacheService.RemoveAsync(CacheKeys.ProjectBoards(board.ProjectId), ct);
+            await cacheService.RemoveAsync(CacheKeys.BoardColumns(boardId), ct);
+            await cacheService.RemoveAsync(CacheKeys.BoardTasks(boardId), ct);
+        }
+    }
+}

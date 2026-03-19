@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.API", "Feezbow.API\Feezbow.API.csproj", "{614F7203-264D-4456-BFA6-935EAAFE4DE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Application", "Feezbow.Application\Feezbow.Application.csproj", "{FD60329E-C4B6-482A-B386-DF309193BB57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Domain", "Feezbow.Domain\Feezbow.Domain.csproj", "{248AA486-CCE1-40BF-BF0D-AACD127BE867}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Infrastructure", "Feezbow.Infrastructure\Feezbow.Infrastructure.csproj", "{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Domain.Tests", "Feezbow.Domain.Tests\Feezbow.Domain.Tests.csproj", "{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feezbow.Application.Tests", "Feezbow.Application.Tests\Feezbow.Application.Tests.csproj", "{03447EDE-5477-4635-A62A-576D06261EA1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{614F7203-264D-4456-BFA6-935EAAFE4DE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{614F7203-264D-4456-BFA6-935EAAFE4DE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{614F7203-264D-4456-BFA6-935EAAFE4DE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{614F7203-264D-4456-BFA6-935EAAFE4DE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD60329E-C4B6-482A-B386-DF309193BB57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD60329E-C4B6-482A-B386-DF309193BB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD60329E-C4B6-482A-B386-DF309193BB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD60329E-C4B6-482A-B386-DF309193BB57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{248AA486-CCE1-40BF-BF0D-AACD127BE867}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{248AA486-CCE1-40BF-BF0D-AACD127BE867}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{248AA486-CCE1-40BF-BF0D-AACD127BE867}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{248AA486-CCE1-40BF-BF0D-AACD127BE867}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC34682-02CD-474A-A2AF-6FBE9ED1AB9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAE28156-D74E-4874-A8F2-FD6A62E0D7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03447EDE-5477-4635-A62A-576D06261EA1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
