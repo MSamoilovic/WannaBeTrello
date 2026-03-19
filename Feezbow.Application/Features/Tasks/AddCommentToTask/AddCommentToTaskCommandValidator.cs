@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.AddCommentToTask;
+namespace Feezbow.Application.Features.Tasks.AddCommentToTask;
 
 public class AddCommentToTaskCommandValidator : AbstractValidator<AddCommentToTaskCommand>
 {

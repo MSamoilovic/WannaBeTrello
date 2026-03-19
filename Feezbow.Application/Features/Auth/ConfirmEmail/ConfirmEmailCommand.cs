@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Auth.ConfirmEmail;
+namespace Feezbow.Application.Features.Auth.ConfirmEmail;
 
 public record ConfirmEmailCommand(
 string Email,

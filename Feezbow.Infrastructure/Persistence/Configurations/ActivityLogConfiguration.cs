@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Text.Json;
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Infrastructure.Persistence.Configurations;
+namespace Feezbow.Infrastructure.Persistence.Configurations;
 
 public class ActivityLogConfiguration: IEntityTypeConfiguration<ActivityLog>
 {

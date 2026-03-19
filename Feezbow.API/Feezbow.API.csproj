@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>WannabeTrello</RootNamespace>
+        <RootNamespace>Feezbow</RootNamespace>
       <UserSecretsId>dc223fdd-52ee-470a-b169-b2015a26895f</UserSecretsId>
   </PropertyGroup>
 
@@ -21,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WannabeTrello.Application\WannabeTrello.Application.csproj" />
-      <ProjectReference Include="..\WannabeTrello.Infrastructure\WannabeTrello.Infrastructure.csproj" />
+      <ProjectReference Include="..\Feezbow.Application\Feezbow.Application.csproj" />
+      <ProjectReference Include="..\Feezbow.Infrastructure\Feezbow.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

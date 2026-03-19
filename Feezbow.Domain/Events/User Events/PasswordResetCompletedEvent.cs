@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.UserEvents;
+﻿namespace Feezbow.Domain.Events.UserEvents;
 
 public class PasswordResetCompletedEvent(long userId, string email, string ipAddress, DateTime CompletedAt): DomainEvent
 {

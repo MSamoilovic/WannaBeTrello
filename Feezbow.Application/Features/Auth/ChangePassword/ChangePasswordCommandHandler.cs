@@ -2,13 +2,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Entities.Common;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Auth.ChangePassword;
+namespace Feezbow.Application.Features.Auth.ChangePassword;
 
 public class ChangePasswordCommandHandler(UserManager<User> userManager, IUserService userService, ICurrentUserService currentUserService) : IRequestHandler<ChangePasswordCommand, ChangePasswordCommandResponse>
 {

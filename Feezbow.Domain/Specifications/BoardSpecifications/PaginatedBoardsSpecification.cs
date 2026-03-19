@@ -1,7 +1,7 @@
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Specifications;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Specifications;
 
-namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
+namespace Feezbow.Domain.Specifications.BoardSpecifications;
 
 /// <summary>
 /// Specification za paginaciju Board-ova projekta

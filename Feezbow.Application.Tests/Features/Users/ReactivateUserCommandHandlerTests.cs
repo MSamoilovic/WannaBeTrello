@@ -1,11 +1,11 @@
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Users.ReactivateUser;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Users.ReactivateUser;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Users;
+namespace Feezbow.Application.Tests.Features.Users;
 
 public class ReactivateUserCommandHandlerTests
 {

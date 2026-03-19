@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Users.SearchUsers;
+namespace Feezbow.Application.Features.Users.SearchUsers;
 
 public class SearchUsersQueryHandler(IUserService userService, ICurrentUserService currentUserService) : IRequestHandler<SearchUsersQuery, IQueryable<SearchUsersQueryResponse>>
 {

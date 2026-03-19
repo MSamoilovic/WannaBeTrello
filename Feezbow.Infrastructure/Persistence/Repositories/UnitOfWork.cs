@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Interfaces;
+﻿using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces;
 
-namespace WannabeTrello.Infrastructure.Persistence.Repositories;
+namespace Feezbow.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork(ApplicationDbContext dbContext,
     IBoardRepository boardRepository,

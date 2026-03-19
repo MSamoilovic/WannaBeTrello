@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.UpdateTask;
+namespace Feezbow.Application.Features.Tasks.UpdateTask;
 
 public class UpdateTaskCommandValidator : AbstractValidator<UpdateTaskCommand>
 {

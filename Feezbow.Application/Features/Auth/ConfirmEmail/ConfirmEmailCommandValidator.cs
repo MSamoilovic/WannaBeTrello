@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Auth.ConfirmEmail;
+namespace Feezbow.Application.Features.Auth.ConfirmEmail;
 
 public class ConfirmEmailCommandValidator : AbstractValidator<ConfirmEmailCommand>
 {

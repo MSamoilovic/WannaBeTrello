@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Events.Column_Events;
-using WannabeTrello.Domain.Exceptions;
+﻿using Feezbow.Domain.Events.Column_Events;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class Column: AuditableEntity
 {

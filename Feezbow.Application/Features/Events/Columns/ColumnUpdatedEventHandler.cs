@@ -1,8 +1,8 @@
 using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.Column_Events;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events.Column_Events;
 
-namespace WannabeTrello.Application.Features.Events.Columns;
+namespace Feezbow.Application.Features.Events.Columns;
 
 public class ColumnUpdatedEventHandler(
     IColumnNotificationService columnNotificationService) : INotificationHandler<ColumnUpdatedEvent>

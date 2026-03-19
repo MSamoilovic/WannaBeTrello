@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Column = WannabeTrello.Domain.Entities.Column;
+using Column = Feezbow.Domain.Entities.Column;
 
-namespace WannabeTrello.Infrastructure.Persistence.Configurations;
+namespace Feezbow.Infrastructure.Persistence.Configurations;
 
 public class ColumnConfiguration : IEntityTypeConfiguration<Column>
 {

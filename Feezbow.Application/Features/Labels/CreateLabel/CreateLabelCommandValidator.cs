@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Labels.CreateLabel;
+namespace Feezbow.Application.Features.Labels.CreateLabel;
 
 public class CreateLabelCommandValidator : AbstractValidator<CreateLabelCommand>
 {

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.GetCommentsByTaskId;
+namespace Feezbow.Application.Features.Tasks.GetCommentsByTaskId;
 
 public class GetCommentsByTaskIdCommandValidator : AbstractValidator<GetCommentsByTaskIdCommand>
 {

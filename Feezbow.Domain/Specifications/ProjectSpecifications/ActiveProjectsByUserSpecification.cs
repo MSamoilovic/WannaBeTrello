@@ -1,7 +1,7 @@
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Domain.Specifications.ProjectSpecifications;
+namespace Feezbow.Domain.Specifications.ProjectSpecifications;
 
 /// <summary>
 /// Specification za dobijanje aktivnih projekata za određenog korisnika

@@ -1,10 +1,10 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events.TaskEvents;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Tests.Utils;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Events.TaskEvents;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Tests.Utils;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class BoardTaskTests
 {

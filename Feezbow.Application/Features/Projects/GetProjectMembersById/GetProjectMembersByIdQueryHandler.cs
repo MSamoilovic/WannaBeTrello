@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectMembersById;
+namespace Feezbow.Application.Features.Projects.GetProjectMembersById;
 
 public class GetProjectMembersByIdQueryHandler(
     IProjectRepository projectRepository,

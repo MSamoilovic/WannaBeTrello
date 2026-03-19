@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Projects.AddProjectMember;
+namespace Feezbow.Application.Features.Projects.AddProjectMember;
 
 public record AddProjectMemberCommandResponse(Result<long> Result);

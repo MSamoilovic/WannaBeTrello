@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Activities.GetActivityByBoard;
-using WannabeTrello.Application.Features.Activities.GetActivityByProject;
-using WannabeTrello.Application.Features.Activities.GetActivityByTask;
-using WannabeTrello.Application.Features.Activities.GetActivityByUser;
+using Feezbow.Application.Features.Activities.GetActivityByBoard;
+using Feezbow.Application.Features.Activities.GetActivityByProject;
+using Feezbow.Application.Features.Activities.GetActivityByTask;
+using Feezbow.Application.Features.Activities.GetActivityByUser;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

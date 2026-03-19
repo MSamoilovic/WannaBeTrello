@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Polly;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Infrastructure.SignalR.Contracts;
-using WannabeTrello.Infrastructure.SignalR.Hubs;
-using WannabeTrello.Infrastructure.SignalR.Resilience;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Infrastructure.SignalR.Contracts;
+using Feezbow.Infrastructure.SignalR.Hubs;
+using Feezbow.Infrastructure.SignalR.Resilience;
 
-namespace WannabeTrello.Infrastructure.Services.Notifications;
+namespace Feezbow.Infrastructure.Services.Notifications;
 
 public class ColumnNotificationService(
     IHubContext<BoardHub, IBoardHubClient> boardHub,

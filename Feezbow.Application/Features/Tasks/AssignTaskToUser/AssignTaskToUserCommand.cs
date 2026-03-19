@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
+namespace Feezbow.Application.Features.Tasks.AssignTaskToUser;
 
 public record AssignTaskToUserCommand(long TaskId, long newAssigneeId): IRequest<AssignTaskToUserCommandResponse>;

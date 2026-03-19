@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Infrastructure.SignalR.Filters;
+namespace Feezbow.Infrastructure.SignalR.Filters;
 
 /// <summary>
 /// Hub filter that maps domain exceptions to descriptive <see cref="HubException"/> messages.

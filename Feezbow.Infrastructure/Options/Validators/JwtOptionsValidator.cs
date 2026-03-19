@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace WannabeTrello.Infrastructure.Options.Validators;
+namespace Feezbow.Infrastructure.Options.Validators;
 
 public class JwtOptionsValidator : IValidateOptions<JwtOptions >
 {

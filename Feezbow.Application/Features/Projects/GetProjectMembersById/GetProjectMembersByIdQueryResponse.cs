@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectMembersById;
+namespace Feezbow.Application.Features.Projects.GetProjectMembersById;
 
 public record GetProjectMembersByIdQueryResponse(
     long UserId,

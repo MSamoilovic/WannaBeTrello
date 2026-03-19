@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Comments.RestoreComment;
+namespace Feezbow.Application.Features.Comments.RestoreComment;
 
 public record RestoreCommentCommandResponse(Result<long> Result);

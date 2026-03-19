@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Infrastructure.SignalR.Services;
+using Feezbow.Infrastructure.SignalR.Services;
 
-namespace WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+namespace Feezbow.Infrastructure.SignalR.Hubs.Base;
 
 /// <summary>
 /// Base class for all application hubs. Enforces authentication,

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.ArchiveTask;
+namespace Feezbow.Application.Features.Tasks.ArchiveTask;
 
 public class ArchiveTaskCommandValidator : AbstractValidator<ArchiveTaskCommand>
 {

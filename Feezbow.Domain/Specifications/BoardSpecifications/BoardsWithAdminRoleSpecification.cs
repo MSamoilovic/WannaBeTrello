@@ -1,8 +1,8 @@
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Specifications;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Specifications;
 
-namespace WannabeTrello.Domain.Specifications.BoardSpecifications;
+namespace Feezbow.Domain.Specifications.BoardSpecifications;
 
 /// <summary>
 /// Specification za dohvatanje svih Board-ova gde korisnik ima Admin rolu

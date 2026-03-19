@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.RestoreTask;
+namespace Feezbow.Application.Features.Tasks.RestoreTask;
 
 public class RestoreTaskCommandValidator : AbstractValidator<RestoreTaskCommand>
 {

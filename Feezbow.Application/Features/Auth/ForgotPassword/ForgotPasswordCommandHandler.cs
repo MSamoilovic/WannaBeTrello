@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
 
-namespace WannabeTrello.Application.Features.Auth.ForgotPassword;
+namespace Feezbow.Application.Features.Auth.ForgotPassword;
 
 public class ForgotPasswordCommandHandler(UserManager<User> userManager, IEmailService emailService, IUnitOfWork unitOfWork, ICurrentUserService currentUserService): IRequestHandler<ForgotPasswordCommand, ForgotPasswordCommandResponse>
 {

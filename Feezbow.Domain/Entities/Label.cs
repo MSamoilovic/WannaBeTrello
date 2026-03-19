@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class Label : AuditableEntity
 {

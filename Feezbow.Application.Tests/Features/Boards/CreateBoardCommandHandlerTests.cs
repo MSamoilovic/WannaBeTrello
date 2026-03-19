@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
 using Moq;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Boards.CreateBoard;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Boards.CreateBoard;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Boards;
+namespace Feezbow.Application.Tests.Features.Boards;
 
 
 public class CreateBoardCommandHandlerTests

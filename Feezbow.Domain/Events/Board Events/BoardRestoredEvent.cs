@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Board_Events;
+﻿namespace Feezbow.Domain.Events.Board_Events;
 
 public class BoardRestoredEvent(long boardId, long modifierUserId): DomainEvent
 {

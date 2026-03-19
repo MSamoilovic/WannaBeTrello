@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Comments.UpdateCommentContent;
+namespace Feezbow.Application.Features.Comments.UpdateCommentContent;
 
 public record UpdateCommentContentCommand(long CommentId, string? NewContent): IRequest<UpdateCommentContentCommandResponse>;

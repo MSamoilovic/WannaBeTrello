@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.Project_Events;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events.Project_Events;
 
-namespace WannabeTrello.Application.Features.Events.Project;
+namespace Feezbow.Application.Features.Events.Project;
 
 public class ProjectMemberAddedEventHandler(
     IProjectNotificationService projectNotificationService

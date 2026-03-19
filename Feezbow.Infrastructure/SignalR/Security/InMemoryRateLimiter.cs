@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace WannabeTrello.Infrastructure.SignalR.Security;
+namespace Feezbow.Infrastructure.SignalR.Security;
 
 public sealed class InMemoryRateLimiter : IRateLimiter
 {

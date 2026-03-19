@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.UpdateUserProfile;
+namespace Feezbow.Application.Features.Users.UpdateUserProfile;
 
 public class UpdateUserProfileCommandValidator: AbstractValidator<UpdateUserProfileCommand>
 {

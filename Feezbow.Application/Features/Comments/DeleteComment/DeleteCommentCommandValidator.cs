@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Comments.DeleteComment;
+namespace Feezbow.Application.Features.Comments.DeleteComment;
 
 public class DeleteCommentCommandValidator : AbstractValidator<DeleteCommentCommand>
 {

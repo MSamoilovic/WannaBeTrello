@@ -1,14 +1,14 @@
 ﻿using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Tasks.CreateTask;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Domain.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Tasks.CreateTask;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.Services;
 
-namespace WannabeTrello.Application.Tests.Features.BoardTasks;
+namespace Feezbow.Application.Tests.Features.BoardTasks;
 
 public class CreateTaskCommandHandlerTests
 {

@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Specifications;
+using Feezbow.Domain.Specifications;
 
-namespace WannabeTrello.Infrastructure.Persistence.Repositories;
+namespace Feezbow.Infrastructure.Persistence.Repositories;
 
 public class Repository<TEntity> where TEntity : class
 {

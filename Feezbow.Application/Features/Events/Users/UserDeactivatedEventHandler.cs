@@ -1,8 +1,8 @@
 using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.UserEvents;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events.UserEvents;
 
-namespace WannabeTrello.Application.Features.Events.Users;
+namespace Feezbow.Application.Features.Events.Users;
 
 public class UserDeactivatedEventHandler(IUserNotificationService userNotificationService)
     : INotificationHandler<UserDeactivatedEvent>

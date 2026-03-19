@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using WannabeTrello.Domain.Enums;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Projects.AddProjectMember;
+namespace Feezbow.Application.Features.Projects.AddProjectMember;
 
 public record AddProjectMemberCommand(
     long ProjectId,

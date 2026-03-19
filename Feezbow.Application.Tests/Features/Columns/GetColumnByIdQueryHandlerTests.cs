@@ -1,13 +1,13 @@
 ﻿using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Columns.GetColumn;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Columns.GetColumn;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Columns;
+namespace Feezbow.Application.Tests.Features.Columns;
 
 public class GetColumnByIdQueryHandlerTests
 {

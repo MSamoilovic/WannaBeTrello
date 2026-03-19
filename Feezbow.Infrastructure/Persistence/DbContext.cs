@@ -3,11 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Events;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Events;
 
-namespace WannabeTrello.Infrastructure.Persistence;
+namespace Feezbow.Infrastructure.Persistence;
 
 public class ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options, 

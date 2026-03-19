@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Boards.GetBoardById;
+namespace Feezbow.Application.Features.Boards.GetBoardById;
 
 public class GetBoardByIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService, ICacheService cacheService)
     : IRequestHandler<GetBoardByIdQuery, GetBoardByIdQueryResponse>

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Activities.GetActivityByProject;
+namespace Feezbow.Application.Features.Activities.GetActivityByProject;
 
 internal class GetActivityByProjectQueryValidator: AbstractValidator<GetActivityByProjectQuery>
 {

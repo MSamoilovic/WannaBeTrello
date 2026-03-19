@@ -1,9 +1,9 @@
-﻿using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events.Board_Events;
-using WannabeTrello.Domain.Events.Project_Events;
-using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.Enums;
+using Feezbow.Domain.Events.Board_Events;
+using Feezbow.Domain.Events.Project_Events;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class Project : AuditableEntity
 {

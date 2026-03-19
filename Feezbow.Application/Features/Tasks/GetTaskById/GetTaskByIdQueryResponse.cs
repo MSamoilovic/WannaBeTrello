@@ -1,8 +1,8 @@
-﻿using WannabeTrello.Application.Features.Boards.GetBoardById;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Application.Features.Boards.GetBoardById;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Tasks.GetTaskById;
+namespace Feezbow.Application.Features.Tasks.GetTaskById;
 
 public class GetTaskByIdQueryResponse
 {

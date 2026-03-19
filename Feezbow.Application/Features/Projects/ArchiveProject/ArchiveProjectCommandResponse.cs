@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Projects.ArchiveProject;
+namespace Feezbow.Application.Features.Projects.ArchiveProject;
 
 public record ArchiveProjectCommandResponse(Result<long> Result);

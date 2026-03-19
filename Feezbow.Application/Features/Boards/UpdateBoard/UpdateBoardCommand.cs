@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Boards.UpdateBoard;
+namespace Feezbow.Application.Features.Boards.UpdateBoard;
 
 public class UpdateBoardCommand: IRequest<UpdateBoardCommandResponse>
 {

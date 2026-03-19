@@ -1,7 +1,7 @@
-using WannabeTrello.Application.Features.Users.GetUserProjects;
-using WannabeTrello.Domain.Entities;
+using Feezbow.Application.Features.Users.GetUserProjects;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Users.GetUserOwnedProjects;
+namespace Feezbow.Application.Features.Users.GetUserOwnedProjects;
 
 public class GetUserOwnedProjectsQueryResponse
 {

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.UpdateBoard;
+namespace Feezbow.Application.Features.Boards.UpdateBoard;
 
 public class UpdateBoardCommandValidator: AbstractValidator<UpdateBoardCommand>
 {

@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Interfaces.Repositories;
+﻿using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Domain.Interfaces;
+namespace Feezbow.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {

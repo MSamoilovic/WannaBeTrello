@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Columns.GetColumn;
+namespace Feezbow.Application.Features.Columns.GetColumn;
 
 public class GetColumnByIdQueryResponse
 {

@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Projects.UpdateProject;
+namespace Feezbow.Application.Features.Projects.UpdateProject;
 
 public record UpdateProjectCommandResponse(
     string? Name,

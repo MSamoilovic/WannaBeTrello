@@ -1,11 +1,11 @@
 ﻿using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Projects;
+namespace Feezbow.Application.Tests.Features.Projects;
 
 public class UpdateProjectMemberRoleCommandHandlerTests
 {

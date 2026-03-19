@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class ActivityLog : AuditableEntity
 {

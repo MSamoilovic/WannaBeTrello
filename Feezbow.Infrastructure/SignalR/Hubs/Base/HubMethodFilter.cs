@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+namespace Feezbow.Infrastructure.SignalR.Hubs.Base;
 
 /// <summary>
 /// Global hub filter that provides structured logging, error handling,

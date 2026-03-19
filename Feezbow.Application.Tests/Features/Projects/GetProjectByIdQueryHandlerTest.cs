@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using Moq;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Projects.GetProjectById;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Projects.GetProjectById;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Projects;
+namespace Feezbow.Application.Tests.Features.Projects;
 
 public class GetProjectByIdQueryHandlerTest
 {

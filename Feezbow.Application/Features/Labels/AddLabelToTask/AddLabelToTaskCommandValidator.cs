@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Labels.AddLabelToTask;
+namespace Feezbow.Application.Features.Labels.AddLabelToTask;
 
 public class AddLabelToTaskCommandValidator : AbstractValidator<AddLabelToTaskCommand>
 {

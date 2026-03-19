@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events;
+﻿namespace Feezbow.Domain.Events;
 
 public class BoardMemberRemovedEvent(long boardId, long userId, long removerUserId) : DomainEvent
 {

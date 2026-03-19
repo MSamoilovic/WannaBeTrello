@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Interfaces.Services;
+namespace Feezbow.Domain.Interfaces.Services;
 
 public interface IUserService
 {

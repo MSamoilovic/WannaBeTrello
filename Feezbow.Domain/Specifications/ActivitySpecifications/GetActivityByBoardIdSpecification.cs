@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.ActivitySpecifications;
+namespace Feezbow.Domain.Specifications.ActivitySpecifications;
 
 public class GetActivityByBoardIdSpecification: BaseSpecification<ActivityLog>
 {

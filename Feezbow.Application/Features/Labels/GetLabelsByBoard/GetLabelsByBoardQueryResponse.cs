@@ -1,6 +1,6 @@
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Labels.GetLabelsByBoard;
+namespace Feezbow.Application.Features.Labels.GetLabelsByBoard;
 
 public record GetLabelsByBoardQueryResponse(long Id, string Name, string Color)
 {

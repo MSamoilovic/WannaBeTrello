@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.User_Events;
+﻿namespace Feezbow.Domain.Events.User_Events;
 
 public class EmailConfirmationRequestedEvent(long id, string? email, string ipAddress, DateTime date): DomainEvent
 {

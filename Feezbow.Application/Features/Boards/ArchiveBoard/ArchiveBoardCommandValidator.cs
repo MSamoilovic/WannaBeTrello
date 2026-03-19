@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.ArchiveBoard;
+namespace Feezbow.Application.Features.Boards.ArchiveBoard;
 
 public class ArchiveBoardCommandValidator : AbstractValidator<ArchiveBoardCommand>
 {

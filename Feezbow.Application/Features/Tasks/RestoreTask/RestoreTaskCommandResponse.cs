@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Tasks.RestoreTask;
+namespace Feezbow.Application.Features.Tasks.RestoreTask;
 
 public record RestoreTaskCommandResponse(Result<long> Result);

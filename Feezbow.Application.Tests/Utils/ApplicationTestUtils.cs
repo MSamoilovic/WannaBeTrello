@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Events;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Events;
 
-namespace WannabeTrello.Application.Tests.Utils;
+namespace Feezbow.Application.Tests.Utils;
 
 public class ApplicationTestUtils
 {

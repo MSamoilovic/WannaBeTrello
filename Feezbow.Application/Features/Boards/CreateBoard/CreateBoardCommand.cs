@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Boards.CreateBoard;
+namespace Feezbow.Application.Features.Boards.CreateBoard;
 
 public class CreateBoardCommand : IRequest<CreateBoardCommandResponse>
 {

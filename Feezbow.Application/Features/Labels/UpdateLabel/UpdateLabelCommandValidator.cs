@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Labels.UpdateLabel;
+namespace Feezbow.Application.Features.Labels.UpdateLabel;
 
 public class UpdateLabelCommandValidator : AbstractValidator<UpdateLabelCommand>
 {

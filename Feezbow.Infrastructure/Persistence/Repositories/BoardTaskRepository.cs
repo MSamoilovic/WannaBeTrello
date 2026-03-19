@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Specifications.TaskSpecifications;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Specifications.TaskSpecifications;
 
-namespace WannabeTrello.Infrastructure.Persistence.Repositories;
+namespace Feezbow.Infrastructure.Persistence.Repositories;
 
 public class BoardTaskRepository(ApplicationDbContext dbContext)
     : Repository<BoardTask>(dbContext),IBoardTaskRepository

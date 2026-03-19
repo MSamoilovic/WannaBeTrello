@@ -5,10 +5,10 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Infrastructure.Options;
+using Feezbow.Domain.Entities;
+using Feezbow.Infrastructure.Options;
 
-namespace WannabeTrello.Infrastructure.Services;
+namespace Feezbow.Infrastructure.Services;
 
 public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> userManager)
     : IJwtTokenService

@@ -2,11 +2,11 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using WannabeTrello.Application.Common.Behaviors;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Services;
+using Feezbow.Application.Common.Behaviors;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Services;
 
-namespace WannabeTrello.Application;
+namespace Feezbow.Application;
 
 public static class ConfigureServices
 {

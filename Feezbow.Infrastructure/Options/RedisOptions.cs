@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Infrastructure.Options;
+﻿namespace Feezbow.Infrastructure.Options;
 
 public class RedisOptions
 {

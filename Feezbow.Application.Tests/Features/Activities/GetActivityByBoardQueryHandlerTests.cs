@@ -1,12 +1,12 @@
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Activities.GetActivityByBoard;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Domain.ValueObjects;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Activities.GetActivityByBoard;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Application.Tests.Features.Activities;
+namespace Feezbow.Application.Tests.Features.Activities;
 
 public class GetActivityByBoardQueryHandlerTests
 {

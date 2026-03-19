@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Comments.UpdateCommentContent;
+namespace Feezbow.Application.Features.Comments.UpdateCommentContent;
 
 public record UpdateCommentContentCommandResponse(Result<long> Result);

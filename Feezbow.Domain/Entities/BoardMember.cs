@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class BoardMember
 {

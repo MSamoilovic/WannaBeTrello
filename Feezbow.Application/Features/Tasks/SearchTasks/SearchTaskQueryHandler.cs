@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Tasks.SearchTasks
+namespace Feezbow.Application.Features.Tasks.SearchTasks
 {
     internal class SearchTaskQueryHandler(IBoardTaskService taskService, ICurrentUserService currentUserService) 
         : IRequestHandler<SearchTaskQuery, IQueryable<SearchTaskQueryResponse>>

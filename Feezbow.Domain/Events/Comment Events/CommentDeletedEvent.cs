@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Comment_Events;
+﻿namespace Feezbow.Domain.Events.Comment_Events;
 
 public class CommentDeletedEvent(long commentId, long taskId, long modifierUserId): DomainEvent
 {

@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities.Common;
-using WannabeTrello.Domain.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Services;
 
-namespace WannabeTrello.Application.Features.Projects.RemoveProjectMember;
+namespace Feezbow.Application.Features.Projects.RemoveProjectMember;
 
 public class RemoveProjectMemberCommandHandler(
     ProjectService projectService, 

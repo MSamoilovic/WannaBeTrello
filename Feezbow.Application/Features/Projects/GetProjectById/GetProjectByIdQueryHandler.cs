@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Domain.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.Services;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectById;
+namespace Feezbow.Application.Features.Projects.GetProjectById;
 
 public class GetProjectByIdQueryHandler(
     IProjectService projectService, 

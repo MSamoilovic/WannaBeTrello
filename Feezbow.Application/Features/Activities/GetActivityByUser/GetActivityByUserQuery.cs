@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace WannabeTrello.Application.Features.Activities.GetActivityByUser;
+namespace Feezbow.Application.Features.Activities.GetActivityByUser;
 
 public record GetActivityByUserQuery(long UserId) : IRequest<IReadOnlyList<GetActivityByUserQueryResponse>>;
 

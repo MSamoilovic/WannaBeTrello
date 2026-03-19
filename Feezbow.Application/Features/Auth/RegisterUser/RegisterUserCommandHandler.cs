@@ -1,14 +1,14 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Exceptions;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Infrastructure.Services;
+using Feezbow.Application.Common.Exceptions;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Infrastructure.Services;
 
-namespace WannabeTrello.Application.Features.Auth.RegisterUser;
+namespace Feezbow.Application.Features.Auth.RegisterUser;
 
 public class RegisterUserCommandHandler(IUserService userService, UserManager<User> userManager, IJwtTokenService jwtTokenService, ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IEmailService emailService)
     : IRequestHandler<RegisterUserCommand, RegisterUserCommandResponse>

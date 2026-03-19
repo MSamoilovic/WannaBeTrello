@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Projects.RemoveProjectMember;
+namespace Feezbow.Application.Features.Projects.RemoveProjectMember;
 
 public class RemoveProjectMemberCommandValidator: AbstractValidator<RemoveProjectMemberCommand>
 {

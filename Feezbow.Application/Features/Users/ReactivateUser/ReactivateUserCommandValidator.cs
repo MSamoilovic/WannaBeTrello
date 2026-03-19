@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.ReactivateUser;
+namespace Feezbow.Application.Features.Users.ReactivateUser;
 
 public class ReactivateUserCommandValidator: AbstractValidator<ReactivateUserCommand>
 {

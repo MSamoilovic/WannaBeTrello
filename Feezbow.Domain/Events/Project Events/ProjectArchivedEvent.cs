@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Project_Events;
+﻿namespace Feezbow.Domain.Events.Project_Events;
 
 public class ProjectArchivedEvent(long projectId, string? projectName, long modifierUserId): DomainEvent
 {

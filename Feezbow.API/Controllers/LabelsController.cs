@@ -1,14 +1,14 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Labels.AddLabelToTask;
-using WannabeTrello.Application.Features.Labels.CreateLabel;
-using WannabeTrello.Application.Features.Labels.DeleteLabel;
-using WannabeTrello.Application.Features.Labels.GetLabelsByBoard;
-using WannabeTrello.Application.Features.Labels.RemoveLabelFromTask;
-using WannabeTrello.Application.Features.Labels.UpdateLabel;
+using Feezbow.Application.Features.Labels.AddLabelToTask;
+using Feezbow.Application.Features.Labels.CreateLabel;
+using Feezbow.Application.Features.Labels.DeleteLabel;
+using Feezbow.Application.Features.Labels.GetLabelsByBoard;
+using Feezbow.Application.Features.Labels.RemoveLabelFromTask;
+using Feezbow.Application.Features.Labels.UpdateLabel;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [Authorize]
 [ApiController]

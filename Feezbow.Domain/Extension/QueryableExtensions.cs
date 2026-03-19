@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities.Common;
+using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Domain.Extension;
+namespace Feezbow.Domain.Extension;
 
 public static class QueryableExtensions
 {

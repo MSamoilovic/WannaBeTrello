@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Auth.ChangePassword;
+namespace Feezbow.Application.Features.Auth.ChangePassword;
 
 public class ChangePasswordCommandValidator: AbstractValidator<ChangePasswordCommand>
 {

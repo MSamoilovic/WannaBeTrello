@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Columns.UpdateColumn;
+namespace Feezbow.Application.Features.Columns.UpdateColumn;
 
 public class UpdateColumnCommandValidator : AbstractValidator<UpdateColumnCommand>
 {

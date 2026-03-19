@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Tasks.AddCommentToTask;
+namespace Feezbow.Application.Features.Tasks.AddCommentToTask;
 
 public class AddCommentToTaskCommand: IRequest<long>
 {

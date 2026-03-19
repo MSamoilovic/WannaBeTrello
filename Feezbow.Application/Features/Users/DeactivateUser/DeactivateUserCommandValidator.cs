@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.DeactivateUser;
+namespace Feezbow.Application.Features.Users.DeactivateUser;
 
 public class DeactivateUserCommandValidator: AbstractValidator<DeactivateUserCommand>
 {

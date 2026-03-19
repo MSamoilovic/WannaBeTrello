@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Application.Common.Caching;
+﻿namespace Feezbow.Application.Common.Caching;
 
 public static class CacheExpiration
 {

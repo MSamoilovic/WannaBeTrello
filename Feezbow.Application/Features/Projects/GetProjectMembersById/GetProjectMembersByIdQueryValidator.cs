@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectMembersById;
+namespace Feezbow.Application.Features.Projects.GetProjectMembersById;
 
 public class GetProjectMembersByIdQueryValidator: AbstractValidator<GetProjectMembersByIdQuery>
 {

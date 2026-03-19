@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Infrastructure.SignalR.Contracts;
-using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
-using WannabeTrello.Infrastructure.SignalR.Services;
+using Feezbow.Infrastructure.SignalR.Contracts;
+using Feezbow.Infrastructure.SignalR.Hubs.Base;
+using Feezbow.Infrastructure.SignalR.Services;
 
-namespace WannabeTrello.Infrastructure.SignalR.Hubs;
+namespace Feezbow.Infrastructure.SignalR.Hubs;
 
 /// <summary>
 /// Hub for user presence tracking.

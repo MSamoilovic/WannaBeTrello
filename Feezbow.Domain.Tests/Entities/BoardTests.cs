@@ -1,13 +1,13 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events;
-using WannabeTrello.Domain.Events.Board_Events;
-using WannabeTrello.Domain.Events.Column_Events;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Tests.Utils;
-using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Events;
+using Feezbow.Domain.Events.Board_Events;
+using Feezbow.Domain.Events.Column_Events;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Tests.Utils;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class BoardTests
 {

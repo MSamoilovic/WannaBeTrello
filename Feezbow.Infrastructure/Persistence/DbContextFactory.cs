@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace WannabeTrello.Infrastructure.Persistence;
+namespace Feezbow.Infrastructure.Persistence;
 
 public class DbContextFactory: IDesignTimeDbContextFactory<ApplicationDbContext>
 {

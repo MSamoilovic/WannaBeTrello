@@ -1,6 +1,6 @@
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.UserSpecifications;
+namespace Feezbow.Domain.Specifications.UserSpecifications;
 
 public class GetUserProjectsSpecification : BaseSpecification<Project>
 {

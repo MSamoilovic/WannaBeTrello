@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Interfaces.Repositories;
+namespace Feezbow.Domain.Interfaces.Repositories;
 
 public interface IColumnRepository : IRepository<Column>
 {

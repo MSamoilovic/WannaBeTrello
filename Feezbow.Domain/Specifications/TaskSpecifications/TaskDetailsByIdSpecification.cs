@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.TaskSpecifications;
+namespace Feezbow.Domain.Specifications.TaskSpecifications;
 
 public class TaskDetailsByIdSpecification: BaseSpecification<BoardTask>
 {

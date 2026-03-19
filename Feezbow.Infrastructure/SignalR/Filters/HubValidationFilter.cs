@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace WannabeTrello.Infrastructure.SignalR.Filters;
+namespace Feezbow.Infrastructure.SignalR.Filters;
 
 /// <summary>
 /// Hub filter that validates hub method arguments before the method executes.

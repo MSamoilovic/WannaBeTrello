@@ -1,8 +1,8 @@
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.ValueObjects;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class ActivityLogTests
 {

@@ -1,4 +1,4 @@
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class BoardTaskLabel
 {

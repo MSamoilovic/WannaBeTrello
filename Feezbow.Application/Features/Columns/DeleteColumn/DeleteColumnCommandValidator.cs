@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Columns.DeleteColumn;
+namespace Feezbow.Application.Features.Columns.DeleteColumn;
 
 public class DeleteColumnCommandValidator : AbstractValidator<DeleteColumnCommand>
 {

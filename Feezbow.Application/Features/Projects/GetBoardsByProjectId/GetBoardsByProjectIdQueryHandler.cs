@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Projects.GetBoardsByProjectId;
+namespace Feezbow.Application.Features.Projects.GetBoardsByProjectId;
 
 public class GetBoardsByProjectIdQueryHandler(
     IBoardService boardService, 

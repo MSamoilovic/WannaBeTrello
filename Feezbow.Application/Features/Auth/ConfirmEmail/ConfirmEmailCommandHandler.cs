@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Infrastructure.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Infrastructure.Services;
 
-namespace WannabeTrello.Application.Features.Auth.ConfirmEmail
+namespace Feezbow.Application.Features.Auth.ConfirmEmail
 {
     public class ConfirmEmailCommandHandler(
     UserManager<User> userManager,

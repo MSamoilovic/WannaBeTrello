@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
+namespace Feezbow.Application.Features.Tasks.AssignTaskToUser;
 
 public record AssignTaskToUserCommandResponse(Result<long> Result);

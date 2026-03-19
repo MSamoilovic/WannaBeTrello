@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Columns.CreateColumn;
+namespace Feezbow.Application.Features.Columns.CreateColumn;
 
 public class CreateColumnCommand: IRequest<CreateColumnCommandResponse>
 {

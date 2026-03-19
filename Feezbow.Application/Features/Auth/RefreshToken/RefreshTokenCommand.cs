@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace WannabeTrello.Application.Features.Auth.RefreshToken;
+namespace Feezbow.Application.Features.Auth.RefreshToken;
 
 public record RefreshTokenCommand(string RefreshToken) : IRequest<RefreshTokenCommandResponse>;

@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text.Json;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Infrastructure.Options;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Infrastructure.Options;
 
-namespace WannabeTrello.Infrastructure.Services
+namespace Feezbow.Infrastructure.Services
 {
     public class RedisCacheService : ICacheService
     {

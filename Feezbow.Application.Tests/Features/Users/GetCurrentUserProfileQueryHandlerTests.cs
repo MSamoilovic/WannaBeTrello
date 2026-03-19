@@ -1,12 +1,12 @@
 using System.Runtime.Serialization;
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Users.GetCurrentUserProfile;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Users;
+namespace Feezbow.Application.Tests.Features.Users;
 
 public class GetCurrentUserProfileQueryHandlerTests
 {

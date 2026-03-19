@@ -1,11 +1,11 @@
 ﻿using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Projects.GetProjectMembersById;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Tests.Features.Projects;
+namespace Feezbow.Application.Tests.Features.Projects;
 
 public class GetProjectMembersByIdQueryHandlerTests
 {

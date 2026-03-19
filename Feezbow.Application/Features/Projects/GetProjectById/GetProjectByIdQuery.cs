@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectById;
+namespace Feezbow.Application.Features.Projects.GetProjectById;
 
 public record GetProjectByIdQuery(long ProjectId): IRequest<GetProjectByIdQueryResponse>;

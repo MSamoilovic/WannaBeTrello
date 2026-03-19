@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Contracts;
+namespace Feezbow.Infrastructure.SignalR.Contracts;
 
 public record BoardCreatedNotification
 {

@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events;
 
-namespace WannabeTrello.Application.Features.Events.Board;
+namespace Feezbow.Application.Features.Events.Board;
 
 public class BoardUpdatedEventHandler(
     IBoardNotificationService notificationService)

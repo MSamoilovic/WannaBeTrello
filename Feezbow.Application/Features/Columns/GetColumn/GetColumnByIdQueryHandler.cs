@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Columns.GetColumn;
+namespace Feezbow.Application.Features.Columns.GetColumn;
 
 public class GetColumnByIdQueryHandler(
     IColumnService columnService, 

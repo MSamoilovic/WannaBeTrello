@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Auth.ForgotPassword;
+namespace Feezbow.Application.Features.Auth.ForgotPassword;
 
 public class ForgotPasswordCommandValidator: AbstractValidator<ForgotPasswordCommand>
 {

@@ -1,13 +1,13 @@
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Labels.UpdateLabel;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Labels.UpdateLabel;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Tests.Features.Labels;
+namespace Feezbow.Application.Tests.Features.Labels;
 
 public class UpdateLabelCommandHandlerTests
 {

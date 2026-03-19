@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using WannabeTrello.Domain.Enums;
+using Feezbow.Domain.Enums;
 
 #nullable disable
 
-namespace WannabeTrello.Infrastructure.Migrations
+namespace Feezbow.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class SeedData : Migration

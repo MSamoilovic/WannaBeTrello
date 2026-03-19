@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Users.GetUserProfile;
+namespace Feezbow.Application.Features.Users.GetUserProfile;
 
 public class GetUserProfileQueryResponse
 {

@@ -3,7 +3,7 @@ using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
 
-namespace WannabeTrello.Infrastructure.SignalR.Resilience;
+namespace Feezbow.Infrastructure.SignalR.Resilience;
 
 public static class NotificationResiliencePipelineFactory
 {

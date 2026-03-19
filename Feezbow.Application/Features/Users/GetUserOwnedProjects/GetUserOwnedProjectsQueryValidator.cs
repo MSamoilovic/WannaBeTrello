@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.GetUserOwnedProjects;
+namespace Feezbow.Application.Features.Users.GetUserOwnedProjects;
 
 public class GetUserOwnedProjectsQueryValidator : AbstractValidator<GetUserOwnedProjectsQuery>
 {

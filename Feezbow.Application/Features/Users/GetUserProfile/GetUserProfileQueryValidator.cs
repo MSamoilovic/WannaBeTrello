@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.GetUserProfile;
+namespace Feezbow.Application.Features.Users.GetUserProfile;
 
 public class GetUserProfileQueryValidator: AbstractValidator<GetUserProfileQuery>
 {

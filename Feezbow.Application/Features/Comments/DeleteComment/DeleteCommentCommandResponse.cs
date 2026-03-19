@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Comments.DeleteComment;
+namespace Feezbow.Application.Features.Comments.DeleteComment;
 
 public record DeleteCommentCommandResponse(Result<long> Result);

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Domain.Services;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.Services;
 
-namespace WannabeTrello.Domain;
+namespace Feezbow.Domain;
 
 public static class ConfigureServices
 {

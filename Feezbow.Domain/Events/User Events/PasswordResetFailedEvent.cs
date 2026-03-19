@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.UserEvents;
+﻿namespace Feezbow.Domain.Events.UserEvents;
 
 public class PasswordResetFailedEvent(string email,
     string reason,

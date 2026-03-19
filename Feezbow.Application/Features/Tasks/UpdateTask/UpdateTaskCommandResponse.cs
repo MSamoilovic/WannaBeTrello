@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Tasks.UpdateTask;
+namespace Feezbow.Application.Features.Tasks.UpdateTask;
 
 public record UpdateTaskCommandResponse(Result<long> Result);

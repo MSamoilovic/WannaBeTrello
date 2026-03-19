@@ -1,15 +1,15 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Boards.ArchiveBoard;
-using WannabeTrello.Application.Features.Boards.CreateBoard;
-using WannabeTrello.Application.Features.Boards.GetBoardById;
-using WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
-using WannabeTrello.Application.Features.Boards.RestoreBoard;
-using WannabeTrello.Application.Features.Boards.UpdateBoard;
-using WannabeTrello.Application.Features.Columns.ReorderColumn;
+using Feezbow.Application.Features.Boards.ArchiveBoard;
+using Feezbow.Application.Features.Boards.CreateBoard;
+using Feezbow.Application.Features.Boards.GetBoardById;
+using Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+using Feezbow.Application.Features.Boards.RestoreBoard;
+using Feezbow.Application.Features.Boards.UpdateBoard;
+using Feezbow.Application.Features.Columns.ReorderColumn;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [Authorize]
 [ApiController]

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
+namespace Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
 
 public class GetColumnsByBoardIdQueryValidator : AbstractValidator<GetColumnsByBoardIdQuery>
 {

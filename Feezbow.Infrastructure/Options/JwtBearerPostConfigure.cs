@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace WannabeTrello.Infrastructure.Options;
+namespace Feezbow.Infrastructure.Options;
 
 public class JwtBearerPostConfigure : IPostConfigureOptions<JwtBearerOptions>
 {

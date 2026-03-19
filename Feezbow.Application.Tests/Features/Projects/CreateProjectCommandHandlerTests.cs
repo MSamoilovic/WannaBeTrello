@@ -1,13 +1,13 @@
 ﻿using System.Data;
 using System.Reflection;
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Projects.CreateProject;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Projects.CreateProject;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Projects;
+namespace Feezbow.Application.Tests.Features.Projects;
 
 public class CreateProjectCommandHandlerTests
 {

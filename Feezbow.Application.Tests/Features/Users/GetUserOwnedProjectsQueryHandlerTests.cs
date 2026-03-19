@@ -1,10 +1,10 @@
 using Moq;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Users.GetUserOwnedProjects;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Users.GetUserOwnedProjects;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Users;
+namespace Feezbow.Application.Tests.Features.Users;
 
 public class GetUserOwnedProjectsQueryHandlerTests
 {

@@ -1,8 +1,8 @@
 using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Users.GetUserOwnedProjects;
+namespace Feezbow.Application.Features.Users.GetUserOwnedProjects;
 
 public class GetUserOwnedProjectsQueryHandler(IUserService userService, ICurrentUserService currentUserService)
     : IRequestHandler<GetUserOwnedProjectsQuery, GetUserOwnedProjectsQueryResponse>

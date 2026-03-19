@@ -1,4 +1,4 @@
-namespace WannabeTrello.Domain.Events.Column_Events;
+namespace Feezbow.Domain.Events.Column_Events;
 
 public class ColumnUpdatedEvent(long columnId, string oldName, string newName, long boardId, long modifierUserId) : DomainEvent
 {

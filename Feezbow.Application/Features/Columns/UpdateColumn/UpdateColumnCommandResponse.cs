@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Columns.UpdateColumn;
+namespace Feezbow.Application.Features.Columns.UpdateColumn;
 
 public class UpdateColumnCommandResponse
 {

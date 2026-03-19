@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Tasks.ArchiveTask;
+namespace Feezbow.Application.Features.Tasks.ArchiveTask;
 
 public record ArchiveTaskCommand(long TaskId): IRequest<ArchiveTaskCommandResponse>;

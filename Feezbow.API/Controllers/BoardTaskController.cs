@@ -1,18 +1,18 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Tasks.AddCommentToTask;
-using WannabeTrello.Application.Features.Tasks.ArchiveTask;
-using WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
-using WannabeTrello.Application.Features.Tasks.CreateTask;
-using WannabeTrello.Application.Features.Tasks.GetCommentsByTaskId;
-using WannabeTrello.Application.Features.Tasks.GetTaskById;
-using WannabeTrello.Application.Features.Tasks.GetTasksByBoardId;
-using WannabeTrello.Application.Features.Tasks.MoveTask;
-using WannabeTrello.Application.Features.Tasks.RestoreTask;
-using WannabeTrello.Application.Features.Tasks.UpdateTask;
+using Feezbow.Application.Features.Tasks.AddCommentToTask;
+using Feezbow.Application.Features.Tasks.ArchiveTask;
+using Feezbow.Application.Features.Tasks.AssignTaskToUser;
+using Feezbow.Application.Features.Tasks.CreateTask;
+using Feezbow.Application.Features.Tasks.GetCommentsByTaskId;
+using Feezbow.Application.Features.Tasks.GetTaskById;
+using Feezbow.Application.Features.Tasks.GetTasksByBoardId;
+using Feezbow.Application.Features.Tasks.MoveTask;
+using Feezbow.Application.Features.Tasks.RestoreTask;
+using Feezbow.Application.Features.Tasks.UpdateTask;
 
 
-namespace WannabeTrello.Controllers
+namespace Feezbow.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

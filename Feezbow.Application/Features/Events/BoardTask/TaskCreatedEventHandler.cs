@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.TaskEvents;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events.TaskEvents;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Features.Events.BoardTask
+namespace Feezbow.Application.Features.Events.BoardTask
 {
     internal class TaskCreatedEventHandler(
         ITaskNotificationService taskNotificationService,

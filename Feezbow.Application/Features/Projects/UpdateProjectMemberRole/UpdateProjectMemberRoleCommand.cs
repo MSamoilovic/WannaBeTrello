@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using WannabeTrello.Domain.Enums;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
+namespace Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
 
 public record UpdateProjectMemberRoleCommand(long ProjectId, long MemberId, ProjectRole Role)
     : IRequest<UpdateProjectMemberRoleCommandResponse>;

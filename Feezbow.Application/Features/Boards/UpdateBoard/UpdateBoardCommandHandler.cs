@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Boards.UpdateBoard;
+namespace Feezbow.Application.Features.Boards.UpdateBoard;
 
 public class UpdateBoardCommandHandler(IBoardService boardService, ICurrentUserService currentUserService, ICacheService cacheService)
     : IRequestHandler<UpdateBoardCommand, UpdateBoardCommandResponse>

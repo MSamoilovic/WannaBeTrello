@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Domain.Interfaces;
+using Feezbow.Domain.Interfaces;
 
-namespace WannabeTrello.Application.Common.Behaviors;
+namespace Feezbow.Application.Common.Behaviors;
 
 public class TransactionBehavior<TRequest, TResponse>(
     IUnitOfWork unitOfWork,

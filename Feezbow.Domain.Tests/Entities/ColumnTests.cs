@@ -1,8 +1,8 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Tests.Utils;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Tests.Utils;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class ColumnTests
 {

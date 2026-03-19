@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace WannabeTrello.Infrastructure.Migrations
+namespace Feezbow.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Added_WIPLimit_To_Column : Migration

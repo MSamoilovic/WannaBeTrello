@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Interfaces.Services;
+namespace Feezbow.Domain.Interfaces.Services;
 
 public interface IActivityLogService
 {

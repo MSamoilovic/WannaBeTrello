@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Boards.RestoreBoard;
+namespace Feezbow.Application.Features.Boards.RestoreBoard;
 
 public record RestoreBoardCommandResponse(Result<long> Result);

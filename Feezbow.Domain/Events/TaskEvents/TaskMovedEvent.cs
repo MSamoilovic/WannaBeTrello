@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.TaskEvents;
+﻿namespace Feezbow.Domain.Events.TaskEvents;
 
 public class TaskMovedEvent(long taskId, long originalColumnId, long newColumnId, long performedByUserId)
     : DomainEvent

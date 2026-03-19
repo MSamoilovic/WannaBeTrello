@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Domain.ValueObjects;
+namespace Feezbow.Domain.ValueObjects;
 
 public class Activity
 {

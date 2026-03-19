@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace WannabeTrello.Application.Features.Tasks.GetTaskById;
+namespace Feezbow.Application.Features.Tasks.GetTaskById;
 
 public record GetTaskByIdQuery(long taskId): IRequest<GetTaskByIdQueryResponse>;

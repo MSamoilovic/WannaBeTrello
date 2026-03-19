@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
-using WannabeTrello.Application;
-using WannabeTrello.Domain;
-using WannabeTrello.Extensions;
-using WannabeTrello.Infrastructure;
-using WannabeTrello.Infrastructure.Options;
-using WannabeTrello.Infrastructure.Persistence;
-using WannabeTrello.Infrastructure.SignalR.Hubs;
+using Feezbow.Application;
+using Feezbow.Domain;
+using Feezbow.Extensions;
+using Feezbow.Infrastructure;
+using Feezbow.Infrastructure.Options;
+using Feezbow.Infrastructure.Persistence;
+using Feezbow.Infrastructure.SignalR.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "WannabeTrello", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Feezbow", Version = "v1" });
     
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

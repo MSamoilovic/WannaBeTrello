@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Comments.RestoreComment;
+namespace Feezbow.Application.Features.Comments.RestoreComment;
 
 public class RestoreCommentCommandValidator: AbstractValidator<RestoreCommentCommand>
 {

@@ -1,10 +1,10 @@
 using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Features.Labels.UpdateLabel;
+namespace Feezbow.Application.Features.Labels.UpdateLabel;
 
 public class UpdateLabelCommandHandler(
     ILabelRepository labelRepository,

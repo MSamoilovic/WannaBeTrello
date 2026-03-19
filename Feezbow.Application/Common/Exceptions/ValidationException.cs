@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace WannabeTrello.Application.Common.Exceptions;
+namespace Feezbow.Application.Common.Exceptions;
 
 public class ValidationException() : Exception("Došlo je do jedne ili više grešaka validacije.")
 {

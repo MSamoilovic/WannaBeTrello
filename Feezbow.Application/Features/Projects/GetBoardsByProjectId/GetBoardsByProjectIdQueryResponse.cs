@@ -1,3 +1,3 @@
-﻿namespace WannabeTrello.Application.Features.Projects.GetBoardsByProjectId;
+﻿namespace Feezbow.Application.Features.Projects.GetBoardsByProjectId;
 
 public record GetBoardsByProjectIdQueryResponse(long BoardId, string? BoardName);

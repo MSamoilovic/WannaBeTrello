@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
 
-namespace WannabeTrello.Application.Features.Auth.ResendConfirmationEmail
+namespace Feezbow.Application.Features.Auth.ResendConfirmationEmail
 {
     public class ResendConfirmationCommandHandler(
     UserManager<User> userManager,

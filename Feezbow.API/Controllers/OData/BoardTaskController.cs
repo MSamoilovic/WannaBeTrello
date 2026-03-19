@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using WannabeTrello.Application.Features.Tasks.SearchTasks;
+using Feezbow.Application.Features.Tasks.SearchTasks;
 
-namespace WannabeTrello.Controllers.OData
+namespace Feezbow.Controllers.OData
 {
     [ApiController]
     [Route("api/Tasks")]

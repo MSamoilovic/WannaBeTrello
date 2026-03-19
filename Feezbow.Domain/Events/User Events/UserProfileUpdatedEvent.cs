@@ -1,6 +1,6 @@
-using WannabeTrello.Domain.Events;
+using Feezbow.Domain.Events;
 
-namespace WannabeTrello.Domain.Events.UserEvents;
+namespace Feezbow.Domain.Events.UserEvents;
 
 public class UserProfileUpdatedEvent(
     long userId,

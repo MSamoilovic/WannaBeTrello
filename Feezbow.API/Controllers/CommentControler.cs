@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Comments.DeleteComment;
-using WannabeTrello.Application.Features.Comments.RestoreComment;
-using WannabeTrello.Application.Features.Comments.UpdateCommentContent;
+using Feezbow.Application.Features.Comments.DeleteComment;
+using Feezbow.Application.Features.Comments.RestoreComment;
+using Feezbow.Application.Features.Comments.UpdateCommentContent;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

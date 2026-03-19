@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Domain.Events.Project_Events;
+namespace Feezbow.Domain.Events.Project_Events;
 
 public class ProjectMemberRemovedEvent(long projectId, long removedUserId, ProjectRole removedUserRole, long removingUserId): DomainEvent
 {

@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
-using WannabeTrello.Application.Common.Interfaces;
+using Feezbow.Application.Common.Interfaces;
 
-namespace WannabeTrello.Services;
+namespace Feezbow.Services;
 
 public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {

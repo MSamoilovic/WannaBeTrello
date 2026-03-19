@@ -1,14 +1,14 @@
 ﻿
-using WannabeTrello.Filters;
+using Feezbow.Filters;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
-using WannabeTrello.Application.Features.Tasks.SearchTasks;
+using Feezbow.Application.Features.Tasks.SearchTasks;
 using OData.Swagger.Services;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Services;
-using WannabeTrello.Application.Features.Users.SearchUsers;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Services;
+using Feezbow.Application.Features.Users.SearchUsers;
 
-namespace WannabeTrello.Extensions;
+namespace Feezbow.Extensions;
 
 public static class ConfigureServices
 {

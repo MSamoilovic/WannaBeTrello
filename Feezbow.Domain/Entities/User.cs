@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Domain.Events;
-using WannabeTrello.Domain.Events.User_Events;
-using WannabeTrello.Domain.Events.UserEvents;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Domain.Events;
+using Feezbow.Domain.Events.User_Events;
+using Feezbow.Domain.Events.UserEvents;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 public class User : IdentityUser<long>
 {
     private const int MaxNameLength = 100;

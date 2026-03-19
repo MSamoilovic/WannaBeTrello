@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Column_Events;
+﻿namespace Feezbow.Domain.Events.Column_Events;
 
 public class ColumnDeletedEvent(long columnId, long boardId, long modifierUserId): DomainEvent
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Infrastructure.Persistence.Configurations;
+namespace Feezbow.Infrastructure.Persistence.Configurations;
 
 public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember>
 {

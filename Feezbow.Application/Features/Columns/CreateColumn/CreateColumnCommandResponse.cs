@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Columns.CreateColumn;
+namespace Feezbow.Application.Features.Columns.CreateColumn;
 
 public record CreateColumnCommandResponse(Result<long> Result);

@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
 using Moq;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Boards.ArchiveBoard;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Boards.ArchiveBoard;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Boards;
+namespace Feezbow.Application.Tests.Features.Boards;
 
 public class ArchiveBoardCommandHandlerTests
 {

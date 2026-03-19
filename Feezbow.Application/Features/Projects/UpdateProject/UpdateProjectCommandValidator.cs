@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Projects.UpdateProject;
+namespace Feezbow.Application.Features.Projects.UpdateProject;
 
 public class UpdateProjectCommandValidator: AbstractValidator<UpdateProjectCommand>
 {

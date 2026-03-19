@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.CircuitBreaker;
 
-namespace WannabeTrello.Infrastructure.SignalR.Resilience;
+namespace Feezbow.Infrastructure.SignalR.Resilience;
 
 public abstract class ResilientNotificationBase(ResiliencePipeline pipeline, ILogger logger)
 {

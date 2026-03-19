@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.MoveTask;
+namespace Feezbow.Application.Features.Tasks.MoveTask;
 
 public class MoveTaskCommandValidator : AbstractValidator<MoveTaskCommand>
 {

@@ -1,9 +1,9 @@
 using MediatR;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Events.Comment_Events;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Events.Comment_Events;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Application.Features.Events.Comment;
+namespace Feezbow.Application.Features.Events.Comment;
 
 public class CommentUpdatedEventHandler(
     ITaskNotificationService taskNotificationService,

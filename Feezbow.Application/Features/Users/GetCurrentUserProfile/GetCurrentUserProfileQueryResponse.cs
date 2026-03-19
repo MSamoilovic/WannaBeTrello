@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
+namespace Feezbow.Application.Features.Users.GetCurrentUserProfile;
 
 public class GetCurrentUserProfileQueryResponse
 {

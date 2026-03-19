@@ -1,7 +1,7 @@
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.ValueObjects;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Tests.ValueObjects;
+namespace Feezbow.Domain.Tests.ValueObjects;
 
 public class ActivityTests
 {

@@ -1,6 +1,6 @@
-using WannabeTrello.Domain.Entities;
+using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.ColumnSpecifications;
+namespace Feezbow.Domain.Specifications.ColumnSpecifications;
 
 /// <summary>
 /// Specification za dohvatanje Column-a sa Board i BoardMembers (za autorizaciju)

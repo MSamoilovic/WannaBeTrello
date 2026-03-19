@@ -1,16 +1,16 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Users.DeactivateUser;
-using WannabeTrello.Application.Features.Users.GetCurrentUserProfile;
-using WannabeTrello.Application.Features.Users.GetUserAssignedTasks;
-using WannabeTrello.Application.Features.Users.GetUserBoards;
-using WannabeTrello.Application.Features.Users.GetUserOwnedProjects;
-using WannabeTrello.Application.Features.Users.GetUserProfile;
-using WannabeTrello.Application.Features.Users.GetUserProjects;
-using WannabeTrello.Application.Features.Users.ReactivateUser;
-using WannabeTrello.Application.Features.Users.UpdateUserProfile;
+using Feezbow.Application.Features.Users.DeactivateUser;
+using Feezbow.Application.Features.Users.GetCurrentUserProfile;
+using Feezbow.Application.Features.Users.GetUserAssignedTasks;
+using Feezbow.Application.Features.Users.GetUserBoards;
+using Feezbow.Application.Features.Users.GetUserOwnedProjects;
+using Feezbow.Application.Features.Users.GetUserProfile;
+using Feezbow.Application.Features.Users.GetUserProjects;
+using Feezbow.Application.Features.Users.ReactivateUser;
+using Feezbow.Application.Features.Users.UpdateUserProfile;
 
-namespace WannabeTrello.Controllers
+namespace Feezbow.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Comments.UpdateCommentContent;
+namespace Feezbow.Application.Features.Comments.UpdateCommentContent;
 
 public class UpdateCommentContentCommandValidator : AbstractValidator<UpdateCommentContentCommand>
 {

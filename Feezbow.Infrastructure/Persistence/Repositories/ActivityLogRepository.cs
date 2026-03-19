@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Specifications.ActivitySpecifications;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Specifications.ActivitySpecifications;
 
-namespace WannabeTrello.Infrastructure.Persistence.Repositories;
+namespace Feezbow.Infrastructure.Persistence.Repositories;
 
 public class ActivityLogRepository(ApplicationDbContext dbContext)
     : Repository<ActivityLog>(dbContext), IActivityLogRepository

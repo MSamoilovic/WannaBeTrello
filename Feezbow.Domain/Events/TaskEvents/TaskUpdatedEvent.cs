@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.TaskEvents;
+﻿namespace Feezbow.Domain.Events.TaskEvents;
 
 public class TaskUpdatedEvent(long taskId, string? taskTitle, long modifierUserId, Dictionary<string, object?> oldValues, Dictionary<string, object?> newValues) : DomainEvent
 {

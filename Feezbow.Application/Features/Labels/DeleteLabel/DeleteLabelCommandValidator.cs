@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Labels.DeleteLabel;
+namespace Feezbow.Application.Features.Labels.DeleteLabel;
 
 public class DeleteLabelCommandValidator : AbstractValidator<DeleteLabelCommand>
 {

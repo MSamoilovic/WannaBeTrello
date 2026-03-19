@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
-using WannabeTrello.Infrastructure.SignalR.Configuration;
-using WannabeTrello.Infrastructure.SignalR.Security;
+using Feezbow.Infrastructure.SignalR.Configuration;
+using Feezbow.Infrastructure.SignalR.Security;
 
-namespace WannabeTrello.Infrastructure.SignalR.Filters;
+namespace Feezbow.Infrastructure.SignalR.Filters;
 
 /// <summary>
 /// Hub filter that enforces per-user, per-method rate limiting.
-/// Runs between <see cref="WannabeTrello.Infrastructure.SignalR.Hubs.Base.HubMethodFilter"/> (outer)
+/// Runs between <see cref="Feezbow.Infrastructure.SignalR.Hubs.Base.HubMethodFilter"/> (outer)
 /// and <see cref="HubExceptionFilter"/> (inner).
 /// </summary>
 public sealed class HubRateLimitingFilter(IRateLimiter rateLimiter, IOptions<SignalROptions> options)

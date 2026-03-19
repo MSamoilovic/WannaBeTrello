@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.ProjectSpecifications;
+namespace Feezbow.Domain.Specifications.ProjectSpecifications;
 
 /// <summary>
 /// Specification za dobijanje članova projekta po projectId-u

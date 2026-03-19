@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Infrastructure.Options;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Infrastructure.Options;
 
-namespace WannabeTrello.Infrastructure.Services;
+namespace Feezbow.Infrastructure.Services;
 
 public class EmailService : IEmailService
 {
@@ -14,7 +14,7 @@ public class EmailService : IEmailService
 
     public async Task SendPasswordResetConfirmationEmailAsync(string toEmail, string userName, CancellationToken cancellationToken = default)
     {
-        var subject = "Password Reset Successful - WannabeTrello";
+        var subject = "Password Reset Successful - Feezbow";
         var body = BuildPasswordResetConfirmationEmailBody(userName);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
@@ -22,7 +22,7 @@ public class EmailService : IEmailService
 
     public async Task SendPasswordResetEmailAsync(string toEmail, string userName, string resetUrl, CancellationToken cancellationToken = default)
     {
-        var subject = "Reset Your Password - WannabeTrello";
+        var subject = "Reset Your Password - Feezbow";
         var body = BuildPasswordResetEmailBody(userName, resetUrl);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
@@ -30,7 +30,7 @@ public class EmailService : IEmailService
 
     public async Task SendEmailConfirmationEmailAsync(string toEmail, string userName, string confirmationUrl, CancellationToken cancellationToken = default)
     {
-        var subject = "Confirm Your Email - WannabeTrello";
+        var subject = "Confirm Your Email - Feezbow";
         var body = BuildEmailConfirmationEmailBody(userName, confirmationUrl);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
@@ -92,7 +92,7 @@ public class EmailService : IEmailService
                         </div>
                         <div class=""content"">
                             <p>Hello {userName},</p>
-                            <p>We received a request to reset your password for your WannabeTrello account.</p>
+                            <p>We received a request to reset your password for your Feezbow account.</p>
                             <p>Click the button below to reset your password:</p>
                             <p style=""text-align: center;"">
                                 <a href=""{resetUrl}"" class=""button"">Reset Password</a>
@@ -134,7 +134,7 @@ public class EmailService : IEmailService
                     <div class=""content"">
                         <p>Hello {userName},</p>
                         <p>Your password has been successfully reset.</p>
-                        <p>You can now log in to your WannabeTrello account using your new password.</p>
+                        <p>You can now log in to your Feezbow account using your new password.</p>
                         <div class=""alert"">
                             <strong>⚠️ Security Notice:</strong>
                             <p>If you did not make this change, please contact our support team immediately.</p>
@@ -180,7 +180,7 @@ public class EmailService : IEmailService
                         </div>
                         <div class=""content"">
                             <p>Hello {userName},</p>
-                            <p>Thank you for registering with WannabeTrello!</p>
+                            <p>Thank you for registering with Feezbow!</p>
                             <p>Please confirm your email address by clicking the button below:</p>
                             <p style=""text-align: center;"">
                                 <a href=""{confirmationUrl}"" class=""button"">Confirm Email</a>
@@ -188,7 +188,7 @@ public class EmailService : IEmailService
                             <p>Or copy and paste this link into your browser:</p>
                             <p style=""word-break: break-all; color: #4CAF50;"">{confirmationUrl}</p>
                             <p><strong>This link will expire in 24 hours.</strong></p>
-                            <p>If you didn't create an account with WannabeTrello, you can safely ignore this email.</p>
+                            <p>If you didn't create an account with Feezbow, you can safely ignore this email.</p>
                         </div>
                         <div class=""footer"">
                             <p>&copy; 2025 Feezbow. All rights reserved.</p>

@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WannabeTrello.Application.Common.Exceptions;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Application.Common.Exceptions;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Filters;
+namespace Feezbow.Filters;
 
 public class CustomExceptionFilter : IExceptionFilter
     {

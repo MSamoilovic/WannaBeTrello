@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Services;
+namespace Feezbow.Infrastructure.SignalR.Services;
 
 public interface IConnectionManager
 {

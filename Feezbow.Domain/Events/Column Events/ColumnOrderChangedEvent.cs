@@ -1,4 +1,4 @@
-namespace WannabeTrello.Domain.Events.Column_Events;
+namespace Feezbow.Domain.Events.Column_Events;
 
 public class ColumnOrderChangedEvent(long columnId, long boardId, int oldOrder, int newOrder, long modifierUserId) : DomainEvent
 {

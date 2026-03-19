@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Boards.GetColumnsByBoardIId;
+namespace Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
 
 public class GetColumnsByBoardIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService, ICacheService cacheService)
     : IRequestHandler<GetColumnsByBoardIdQuery, List<GetColumnsByBoardIdQueryResponse>>

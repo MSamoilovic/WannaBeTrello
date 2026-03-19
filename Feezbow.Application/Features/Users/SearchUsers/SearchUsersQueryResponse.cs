@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Users.SearchUsers;
+namespace Feezbow.Application.Features.Users.SearchUsers;
 
 public class SearchUsersQueryResponse
 {

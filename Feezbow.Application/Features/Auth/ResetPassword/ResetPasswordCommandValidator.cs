@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Auth.ResetPassword;
+namespace Feezbow.Application.Features.Auth.ResetPassword;
 
 public class ResetPasswordCommandValidator: AbstractValidator<ResetPasswordCommand>
 {

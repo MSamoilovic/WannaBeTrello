@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
+namespace Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
 
 public class UpdateProjectMemberRoleCommandValidator: AbstractValidator<UpdateProjectMemberRoleCommand>
 {

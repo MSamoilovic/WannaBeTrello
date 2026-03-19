@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain;
+﻿namespace Feezbow.Domain;
 
 public abstract class BaseEntity<T> where T : struct
 {

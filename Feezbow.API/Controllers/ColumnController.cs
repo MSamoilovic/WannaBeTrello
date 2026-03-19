@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Columns.CreateColumn;
-using WannabeTrello.Application.Features.Columns.DeleteColumn;
-using WannabeTrello.Application.Features.Columns.GetColumn;
-using WannabeTrello.Application.Features.Columns.UpdateColumn;
+using Feezbow.Application.Features.Columns.CreateColumn;
+using Feezbow.Application.Features.Columns.DeleteColumn;
+using Feezbow.Application.Features.Columns.GetColumn;
+using Feezbow.Application.Features.Columns.UpdateColumn;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [Authorize]
 [ApiController]

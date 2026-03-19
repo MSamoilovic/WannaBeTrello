@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Project_Events;
+﻿namespace Feezbow.Domain.Events.Project_Events;
 
 public class ProjectCreatedEvent(long projectId, string? projectName, long ownerId, string? projectDescription): DomainEvent
 {

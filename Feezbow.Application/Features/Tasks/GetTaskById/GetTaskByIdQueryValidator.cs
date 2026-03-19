@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Application.Features.Tasks.GetTaskById;
+﻿namespace Feezbow.Application.Features.Tasks.GetTaskById;
 
 public class GetTaskByIdQueryValidator
 {

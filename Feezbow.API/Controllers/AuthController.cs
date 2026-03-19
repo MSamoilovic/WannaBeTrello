@@ -2,19 +2,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using WannabeTrello.Application.Common.Exceptions;
-using WannabeTrello.Application.Features.Auth.ChangePassword;
-using WannabeTrello.Application.Features.Auth.ConfirmEmail;
-using WannabeTrello.Application.Features.Auth.ForgotPassword;
-using WannabeTrello.Application.Features.Auth.LoginUser;
-using WannabeTrello.Application.Features.Auth.RegisterUser;
-using WannabeTrello.Application.Features.Auth.Logout;
-using WannabeTrello.Application.Features.Auth.RefreshToken;
-using WannabeTrello.Application.Features.Auth.ResendConfirmationEmail;
-using WannabeTrello.Application.Features.Auth.ResetPassword;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Application.Common.Exceptions;
+using Feezbow.Application.Features.Auth.ChangePassword;
+using Feezbow.Application.Features.Auth.ConfirmEmail;
+using Feezbow.Application.Features.Auth.ForgotPassword;
+using Feezbow.Application.Features.Auth.LoginUser;
+using Feezbow.Application.Features.Auth.RegisterUser;
+using Feezbow.Application.Features.Auth.Logout;
+using Feezbow.Application.Features.Auth.RefreshToken;
+using Feezbow.Application.Features.Auth.ResendConfirmationEmail;
+using Feezbow.Application.Features.Auth.ResetPassword;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

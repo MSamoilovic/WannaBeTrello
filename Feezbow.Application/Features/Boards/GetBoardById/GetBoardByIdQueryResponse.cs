@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Boards.GetBoardById;
+namespace Feezbow.Application.Features.Boards.GetBoardById;
 
 public class GetBoardByIdQueryResponse
 {

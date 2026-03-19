@@ -7,7 +7,7 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <RootNamespace>WannabeTrello.Appilcation.Tests</RootNamespace>
+        <RootNamespace>Feezbow.Application.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WannabeTrello.Application\WannabeTrello.Application.csproj" />
+      <ProjectReference Include="..\Feezbow.Application\Feezbow.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>

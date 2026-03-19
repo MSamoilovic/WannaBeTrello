@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Columns.GetColumn;
+namespace Feezbow.Application.Features.Columns.GetColumn;
 
 public class GetColumnByIdQueryValidator : AbstractValidator<GetColumnByIdQuery>
 {

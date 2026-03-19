@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.RestoreBoard;
+namespace Feezbow.Application.Features.Boards.RestoreBoard;
 
 public class RestoreBoardCommandValidator: AbstractValidator<RestoreBoardCommand>
 {

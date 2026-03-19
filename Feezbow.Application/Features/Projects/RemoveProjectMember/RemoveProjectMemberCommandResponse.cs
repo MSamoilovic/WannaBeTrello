@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Projects.RemoveProjectMember;
+namespace Feezbow.Application.Features.Projects.RemoveProjectMember;
 
 public record RemoveProjectMemberCommandResponse(Result<long> Result);

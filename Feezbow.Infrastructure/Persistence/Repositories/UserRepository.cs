@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Specifications.UserSpecifications;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Specifications.UserSpecifications;
 
-namespace WannabeTrello.Infrastructure.Persistence.Repositories;
+namespace Feezbow.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(dbContext), IUserRepository
 {

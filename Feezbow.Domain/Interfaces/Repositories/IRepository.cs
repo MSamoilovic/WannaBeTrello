@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using WannabeTrello.Domain.Specifications;
+using Feezbow.Domain.Specifications;
 
-namespace WannabeTrello.Domain.Interfaces.Repositories;
+namespace Feezbow.Domain.Interfaces.Repositories;
 
 public interface IRepository<TEntity> where TEntity : class
 {

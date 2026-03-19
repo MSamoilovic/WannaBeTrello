@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Projects.GetProjectById;
+namespace Feezbow.Application.Features.Projects.GetProjectById;
 
 public class GetProjectByIdQueryResponse
 {

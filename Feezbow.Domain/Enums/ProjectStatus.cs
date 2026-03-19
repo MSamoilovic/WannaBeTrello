@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Enums;
+﻿namespace Feezbow.Domain.Enums;
 
 public enum ProjectStatus
 {

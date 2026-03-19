@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Application.Common.Interfaces;
+﻿namespace Feezbow.Application.Common.Interfaces;
 
 public interface ITaskNotificationService
 {

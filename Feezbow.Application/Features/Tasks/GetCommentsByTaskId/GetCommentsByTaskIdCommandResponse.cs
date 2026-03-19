@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Application.Features.Tasks.GetCommentsByTaskId;
+namespace Feezbow.Application.Features.Tasks.GetCommentsByTaskId;
 
 public class GetCommentsByTaskIdCommandResponse
 {

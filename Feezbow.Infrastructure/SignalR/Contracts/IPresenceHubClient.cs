@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Contracts;
+namespace Feezbow.Infrastructure.SignalR.Contracts;
 
 /// <summary>
 /// Strongly-typed client contract for user presence tracking.

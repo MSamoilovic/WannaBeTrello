@@ -1,10 +1,10 @@
 using Moq;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Tasks.AddCommentToTask;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Tasks.AddCommentToTask;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.BoardTasks;
+namespace Feezbow.Application.Tests.Features.BoardTasks;
 
 public class AddCommentToTaskCommandHandlerTests
 {

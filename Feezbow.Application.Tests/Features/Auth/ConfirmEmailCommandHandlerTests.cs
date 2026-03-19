@@ -1,15 +1,15 @@
 using Moq;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Auth.ConfirmEmail;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Events;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Infrastructure.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Auth.ConfirmEmail;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Events;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Infrastructure.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Auth;
+namespace Feezbow.Application.Tests.Features.Auth;
 
 public class ConfirmEmailCommandHandlerTests
 {

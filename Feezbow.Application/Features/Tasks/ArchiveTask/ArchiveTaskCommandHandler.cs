@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WannabeTrello.Application.Common.Caching;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities.Common;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Caching;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Features.Tasks.ArchiveTask;
+namespace Feezbow.Application.Features.Tasks.ArchiveTask;
 
 public class ArchiveTaskCommandHandler(
     IBoardTaskService boardTaskService, 

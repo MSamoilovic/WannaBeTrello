@@ -1,3 +1,3 @@
-namespace WannabeTrello.Application.Features.Auth.RefreshToken;
+namespace Feezbow.Application.Features.Auth.RefreshToken;
 
 public record RefreshTokenCommandResponse(string AccessToken, string RefreshToken, DateTime RefreshTokenExpiresAt);

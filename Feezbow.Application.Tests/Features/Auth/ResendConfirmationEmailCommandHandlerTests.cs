@@ -1,13 +1,13 @@
 using Moq;
 using Microsoft.AspNetCore.Identity;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Auth.ResendConfirmationEmail;
-using WannabeTrello.Application.Tests.Utils;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Events;
-using WannabeTrello.Domain.Interfaces;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Auth.ResendConfirmationEmail;
+using Feezbow.Application.Tests.Utils;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Events;
+using Feezbow.Domain.Interfaces;
 
-namespace WannabeTrello.Application.Tests.Features.Auth;
+namespace Feezbow.Application.Tests.Features.Auth;
 
 public class ResendConfirmationEmailCommandHandlerTests
 {

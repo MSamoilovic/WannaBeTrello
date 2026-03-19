@@ -1,9 +1,9 @@
-﻿using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events.TaskEvents;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.Enums;
+using Feezbow.Domain.Events.TaskEvents;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class BoardTask : AuditableEntity
 {

@@ -12,27 +12,27 @@ using Npgsql;
 using StackExchange.Redis;
 using System.Security.Claims;
 using System.Text;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Infrastructure.Options;
-using WannabeTrello.Infrastructure.Options.Validators;
-using WannabeTrello.Infrastructure.Persistence;
-using WannabeTrello.Infrastructure.Persistence.Repositories;
-using WannabeTrello.Infrastructure.Services;
-using WannabeTrello.Infrastructure.Services.Notifications;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Infrastructure.Options;
+using Feezbow.Infrastructure.Options.Validators;
+using Feezbow.Infrastructure.Persistence;
+using Feezbow.Infrastructure.Persistence.Repositories;
+using Feezbow.Infrastructure.Services;
+using Feezbow.Infrastructure.Services.Notifications;
 using Microsoft.Extensions.Logging;
 using Polly;
-using WannabeTrello.Infrastructure.SignalR.Authorization;
-using WannabeTrello.Infrastructure.SignalR.Configuration;
-using WannabeTrello.Infrastructure.SignalR.Filters;
-using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
-using WannabeTrello.Infrastructure.SignalR.Resilience;
-using WannabeTrello.Infrastructure.SignalR.Security;
-using WannabeTrello.Infrastructure.SignalR.Services;
+using Feezbow.Infrastructure.SignalR.Authorization;
+using Feezbow.Infrastructure.SignalR.Configuration;
+using Feezbow.Infrastructure.SignalR.Filters;
+using Feezbow.Infrastructure.SignalR.Hubs.Base;
+using Feezbow.Infrastructure.SignalR.Resilience;
+using Feezbow.Infrastructure.SignalR.Security;
+using Feezbow.Infrastructure.SignalR.Services;
 
-namespace WannabeTrello.Infrastructure;
+namespace Feezbow.Infrastructure;
 
 public static class ConfigureServices
 {

@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Infrastructure.Services;
+namespace Feezbow.Infrastructure.Services;
 
 public interface IJwtTokenService
 {

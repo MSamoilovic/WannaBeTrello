@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WannabeTrello.Domain.Specifications;
+namespace Feezbow.Domain.Specifications;
 
 public abstract class BaseSpecification<T> : ISpecification<T>
 {

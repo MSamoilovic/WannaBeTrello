@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Column_Events;
+﻿namespace Feezbow.Domain.Events.Column_Events;
 
 public class ColumnAddedEvent(long boardId, long columnId, string columnName, long creatorUserId)
     : DomainEvent

@@ -1,17 +1,17 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WannabeTrello.Application.Features.Projects.GetBoardsByProjectId;
-using WannabeTrello.Application.Features.Projects.AddProjectMember;
-using WannabeTrello.Application.Features.Projects.ArchiveProject;
-using WannabeTrello.Application.Features.Projects.CreateProject;
-using WannabeTrello.Application.Features.Projects.GetProjectById;
-using WannabeTrello.Application.Features.Projects.GetProjectMembersById;
-using WannabeTrello.Application.Features.Projects.RemoveProjectMember;
-using WannabeTrello.Application.Features.Projects.UpdateProject;
-using WannabeTrello.Application.Features.Projects.UpdateProjectMemberRole;
+using Feezbow.Application.Features.Projects.GetBoardsByProjectId;
+using Feezbow.Application.Features.Projects.AddProjectMember;
+using Feezbow.Application.Features.Projects.ArchiveProject;
+using Feezbow.Application.Features.Projects.CreateProject;
+using Feezbow.Application.Features.Projects.GetProjectById;
+using Feezbow.Application.Features.Projects.GetProjectMembersById;
+using Feezbow.Application.Features.Projects.RemoveProjectMember;
+using Feezbow.Application.Features.Projects.UpdateProject;
+using Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
 
-namespace WannabeTrello.Controllers;
+namespace Feezbow.Controllers;
 
 [Authorize]
 [ApiController]

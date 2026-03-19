@@ -1,9 +1,9 @@
 ﻿
 
 using System.Collections.Immutable;
-using WannabeTrello.Domain.ValueObjects;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Application.Features.Activities.GetActivityByBoard
+namespace Feezbow.Application.Features.Activities.GetActivityByBoard
 {
     public class GetActivityByBoardQueryResponse
     {

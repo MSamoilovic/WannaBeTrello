@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.Comment_Events;
+﻿namespace Feezbow.Domain.Events.Comment_Events;
 
 public class CommentUpdatedEvent(long commentId, long taskId, Dictionary<string, object?> oldContent, Dictionary<string, object?> newContent, long modifyingUserId): DomainEvent
 {

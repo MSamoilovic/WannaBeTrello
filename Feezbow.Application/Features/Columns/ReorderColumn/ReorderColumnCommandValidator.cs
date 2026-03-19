@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Application.Features.Columns.ReorderColumn;
+﻿namespace Feezbow.Application.Features.Columns.ReorderColumn;
 
 public class ReorderColumnCommandValidator
 {

@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Configuration;
+namespace Feezbow.Infrastructure.SignalR.Configuration;
 
 public class SignalROptions
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Users.GetUserAssignedTasks;
+namespace Feezbow.Application.Features.Users.GetUserAssignedTasks;
 
 public class GetUserAssignedTasksQueryValidator : AbstractValidator<GetUserAssignedTasksQuery>
 {

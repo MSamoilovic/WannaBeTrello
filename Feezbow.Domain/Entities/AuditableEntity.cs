@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Events;
+﻿using Feezbow.Domain.Events;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public abstract class AuditableEntity: BaseEntity<long>
 {

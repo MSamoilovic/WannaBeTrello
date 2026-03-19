@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Application.Features.Auth.ConfirmEmail;
+﻿namespace Feezbow.Application.Features.Auth.ConfirmEmail;
 
 public record ConfirmEmailCommandResponse(
     bool Success,

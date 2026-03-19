@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Users.ReactivateUser;
+namespace Feezbow.Application.Features.Users.ReactivateUser;
 
 public record ReactivateUserCommandResponse(Result<long> Result);

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.CreateBoard;
+namespace Feezbow.Application.Features.Boards.CreateBoard;
 
 public class CreateBoardCommandValidator: AbstractValidator<CreateBoardCommand>
 {

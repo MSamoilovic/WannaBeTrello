@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Labels.RemoveLabelFromTask;
+namespace Feezbow.Application.Features.Labels.RemoveLabelFromTask;
 
 public class RemoveLabelFromTaskCommandValidator : AbstractValidator<RemoveLabelFromTaskCommand>
 {

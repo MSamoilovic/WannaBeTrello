@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace WannabeTrello.Infrastructure.Migrations
+namespace Feezbow.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class CreateActivityLogTable : Migration

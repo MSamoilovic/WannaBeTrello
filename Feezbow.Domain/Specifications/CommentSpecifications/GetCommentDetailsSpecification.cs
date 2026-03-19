@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.Entities;
+﻿using Feezbow.Domain.Entities;
 
-namespace WannabeTrello.Domain.Specifications.CommentSpecifications;
+namespace Feezbow.Domain.Specifications.CommentSpecifications;
 
 public class GetCommentDetailsSpecification: BaseSpecification<Comment>
 {

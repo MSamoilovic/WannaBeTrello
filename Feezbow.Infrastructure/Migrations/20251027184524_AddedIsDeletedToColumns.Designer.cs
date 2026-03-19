@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WannabeTrello.Infrastructure.Persistence;
+using Feezbow.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace WannabeTrello.Infrastructure.Migrations
+namespace Feezbow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251027184524_AddedIsDeletedToColumns")]
@@ -158,7 +158,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.ActivityTracker", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.ActivityTracker", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,7 +213,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("ActivityTrackers");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Board", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Board", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,7 +257,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("Boards");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.BoardMember", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.BoardMember", b =>
                 {
                     b.Property<long>("BoardId")
                         .HasColumnType("bigint");
@@ -276,7 +276,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("BoardMembers");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.BoardTask", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.BoardTask", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -330,7 +330,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Column", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Column", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -378,7 +378,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("Columns");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Comment", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Comment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -417,7 +417,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Project", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Project", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -469,7 +469,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.ProjectMember", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.ProjectMember", b =>
                 {
                     b.Property<long>("ProjectId")
                         .HasColumnType("bigint");
@@ -488,7 +488,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.ToTable("ProjectMembers");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.User", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -578,7 +578,7 @@ namespace WannabeTrello.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", null)
+                    b.HasOne("Feezbow.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -587,7 +587,7 @@ namespace WannabeTrello.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", null)
+                    b.HasOne("Feezbow.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -602,7 +602,7 @@ namespace WannabeTrello.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WannabeTrello.Domain.Entities.User", null)
+                    b.HasOne("Feezbow.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -611,16 +611,16 @@ namespace WannabeTrello.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<long>", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", null)
+                    b.HasOne("Feezbow.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.ActivityTracker", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.ActivityTracker", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "User")
+                    b.HasOne("Feezbow.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -629,9 +629,9 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Board", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Board", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.Project", "Project")
+                    b.HasOne("Feezbow.Domain.Entities.Project", "Project")
                         .WithMany("Boards")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -640,15 +640,15 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.BoardMember", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.BoardMember", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.Board", "Board")
+                    b.HasOne("Feezbow.Domain.Entities.Board", "Board")
                         .WithMany("BoardMembers")
                         .HasForeignKey("BoardId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "User")
+                    b.HasOne("Feezbow.Domain.Entities.User", "User")
                         .WithMany("BoardMemberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -659,14 +659,14 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.BoardTask", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.BoardTask", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "Assignee")
+                    b.HasOne("Feezbow.Domain.Entities.User", "Assignee")
                         .WithMany("AssignedTasks")
                         .HasForeignKey("AssigneeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("WannabeTrello.Domain.Entities.Column", "Column")
+                    b.HasOne("Feezbow.Domain.Entities.Column", "Column")
                         .WithMany("Tasks")
                         .HasForeignKey("ColumnId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -677,9 +677,9 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("Column");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Column", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Column", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.Board", "Board")
+                    b.HasOne("Feezbow.Domain.Entities.Board", "Board")
                         .WithMany("Columns")
                         .HasForeignKey("BoardId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -688,15 +688,15 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("Board");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Comment", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Comment", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.BoardTask", "Task")
+                    b.HasOne("Feezbow.Domain.Entities.BoardTask", "Task")
                         .WithMany("Comments")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "User")
+                    b.HasOne("Feezbow.Domain.Entities.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -707,9 +707,9 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Project", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "Owner")
+                    b.HasOne("Feezbow.Domain.Entities.User", "Owner")
                         .WithMany("OwnedProjects")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -718,15 +718,15 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.ProjectMember", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.ProjectMember", b =>
                 {
-                    b.HasOne("WannabeTrello.Domain.Entities.Project", "Project")
+                    b.HasOne("Feezbow.Domain.Entities.Project", "Project")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WannabeTrello.Domain.Entities.User", "User")
+                    b.HasOne("Feezbow.Domain.Entities.User", "User")
                         .WithMany("ProjectMemberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -737,31 +737,31 @@ namespace WannabeTrello.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Board", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Board", b =>
                 {
                     b.Navigation("BoardMembers");
 
                     b.Navigation("Columns");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.BoardTask", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.BoardTask", b =>
                 {
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Column", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Column", b =>
                 {
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.Project", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Boards");
 
                     b.Navigation("ProjectMembers");
                 });
 
-            modelBuilder.Entity("WannabeTrello.Domain.Entities.User", b =>
+            modelBuilder.Entity("Feezbow.Domain.Entities.User", b =>
                 {
                     b.Navigation("AssignedTasks");
 

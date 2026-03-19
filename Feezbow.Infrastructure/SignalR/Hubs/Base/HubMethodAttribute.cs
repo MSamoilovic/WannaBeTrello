@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Hubs.Base;
+namespace Feezbow.Infrastructure.SignalR.Hubs.Base;
 
 /// <summary>
 /// Decorates a hub method with metadata for audit logging and documentation.

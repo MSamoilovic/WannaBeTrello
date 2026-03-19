@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.CreateTask;
+namespace Feezbow.Application.Features.Tasks.CreateTask;
 
 public class CreateTaskCommandValidator: AbstractValidator<CreateTaskCommand>
 {

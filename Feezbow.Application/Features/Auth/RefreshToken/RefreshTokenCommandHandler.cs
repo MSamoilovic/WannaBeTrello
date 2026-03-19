@@ -1,10 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Infrastructure.Services;
+using Feezbow.Domain.Entities;
+using Feezbow.Infrastructure.Services;
 
-namespace WannabeTrello.Application.Features.Auth.RefreshToken;
+namespace Feezbow.Application.Features.Auth.RefreshToken;
 
 public class RefreshTokenCommandHandler(UserManager<User> userManager, IJwtTokenService jwtTokenService)
     : IRequestHandler<RefreshTokenCommand, RefreshTokenCommandResponse>

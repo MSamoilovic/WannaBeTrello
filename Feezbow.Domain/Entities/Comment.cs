@@ -1,7 +1,7 @@
-﻿using WannabeTrello.Domain.Events.Comment_Events;
-using WannabeTrello.Domain.Exceptions;
+﻿using Feezbow.Domain.Events.Comment_Events;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Domain.Entities;
+namespace Feezbow.Domain.Entities;
 
 public class Comment: AuditableEntity
 {

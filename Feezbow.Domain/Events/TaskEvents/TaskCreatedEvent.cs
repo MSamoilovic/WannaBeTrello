@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.TaskEvents;
+﻿namespace Feezbow.Domain.Events.TaskEvents;
 
 public class TaskCreatedEvent(long taskId, string taskTitle, long creatorUserId, long? assigneeId) : DomainEvent
 {

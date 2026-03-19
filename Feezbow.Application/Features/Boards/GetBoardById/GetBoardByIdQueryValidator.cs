@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Boards.GetBoardById;
+namespace Feezbow.Application.Features.Boards.GetBoardById;
 
 public class GetBoardByIdQueryValidator : AbstractValidator<GetBoardByIdQuery>
 {

@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.User_Events
+﻿namespace Feezbow.Domain.Events.User_Events
 {
     internal class EmailConfirmationFailedEvent(string email,
     string reason,

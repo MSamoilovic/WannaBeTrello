@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using WannabeTrello.Domain.Enums;
+using Feezbow.Domain.Enums;
 
-namespace WannabeTrello.Application.Features.Tasks.CreateTask;
+namespace Feezbow.Application.Features.Tasks.CreateTask;
 
 public class CreateTaskCommand: IRequest<CreateTaskCommandResponse>
 {

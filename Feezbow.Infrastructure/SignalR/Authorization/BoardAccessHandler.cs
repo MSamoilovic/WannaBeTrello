@@ -2,9 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using WannabeTrello.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Repositories;
 
-namespace WannabeTrello.Infrastructure.SignalR.Authorization;
+namespace Feezbow.Infrastructure.SignalR.Authorization;
 
 /// <summary>
 /// Handles <see cref="BoardAccessRequirement"/> by checking board membership via the repository.

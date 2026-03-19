@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using System.Globalization;
 
-namespace WannabeTrello.Extensions;
+namespace Feezbow.Extensions;
 
 public class LongRouteConstraint : IRouteConstraint
 {

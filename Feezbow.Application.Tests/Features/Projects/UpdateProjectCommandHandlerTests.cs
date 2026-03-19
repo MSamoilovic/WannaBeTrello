@@ -1,13 +1,13 @@
 ﻿using System.Data;
 using System.Reflection;
 using Moq;
-using WannabeTrello.Application.Common.Interfaces;
-using WannabeTrello.Application.Features.Projects.UpdateProject;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Interfaces.Services;
+using Feezbow.Application.Common.Interfaces;
+using Feezbow.Application.Features.Projects.UpdateProject;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Application.Tests.Features.Projects;
+namespace Feezbow.Application.Tests.Features.Projects;
 
 public class UpdateProjectCommandHandlerTests
 {

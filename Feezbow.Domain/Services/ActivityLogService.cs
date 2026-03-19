@@ -1,10 +1,10 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Interfaces.Services;
-using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Domain.Services;
+namespace Feezbow.Domain.Services;
 
 public class ActivityLogService(IActivityLogRepository activityLogRepository, IUnitOfWork unitOfWork)
     : IActivityLogService

@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Columns.DeleteColumn;
+namespace Feezbow.Application.Features.Columns.DeleteColumn;
 
 public record DeleteColumnCommandResponse(Result<long> Result);

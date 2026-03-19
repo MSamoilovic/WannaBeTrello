@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Enums;
-using WannabeTrello.Domain.Events.Project_Events;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
+using Feezbow.Domain.Events.Project_Events;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class ProjectTests
 {

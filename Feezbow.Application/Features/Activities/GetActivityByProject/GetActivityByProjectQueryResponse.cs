@@ -1,6 +1,6 @@
-﻿using WannabeTrello.Domain.ValueObjects;
+﻿using Feezbow.Domain.ValueObjects;
 
-namespace WannabeTrello.Application.Features.Activities.GetActivityByProject;
+namespace Feezbow.Application.Features.Activities.GetActivityByProject;
 
 public class GetActivityByProjectQueryResponse
 {

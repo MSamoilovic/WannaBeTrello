@@ -1,5 +1,5 @@
-﻿using WannabeTrello.Domain.Entities.Common;
+﻿using Feezbow.Domain.Entities.Common;
 
-namespace WannabeTrello.Application.Features.Auth.ChangePassword;
+namespace Feezbow.Application.Features.Auth.ChangePassword;
 
 public record ChangePasswordCommandResponse(Result<long> Result);

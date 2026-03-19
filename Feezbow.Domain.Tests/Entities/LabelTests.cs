@@ -1,7 +1,7 @@
-using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Exceptions;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
 
-namespace WannabeTrello.Domain.Tests.Entities;
+namespace Feezbow.Domain.Tests.Entities;
 
 public class LabelTests
 {

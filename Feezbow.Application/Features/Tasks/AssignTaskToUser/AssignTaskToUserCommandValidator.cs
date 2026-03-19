@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace WannabeTrello.Application.Features.Tasks.AssignTaskToUser;
+namespace Feezbow.Application.Features.Tasks.AssignTaskToUser;
 
 public class AssignTaskToUserCommandValidator : AbstractValidator<AssignTaskToUserCommand>
 {

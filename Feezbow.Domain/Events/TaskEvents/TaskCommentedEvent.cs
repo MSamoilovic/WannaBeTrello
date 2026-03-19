@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Events.TaskEvents;
+﻿namespace Feezbow.Domain.Events.TaskEvents;
 
 public class TaskCommentedEvent(long taskId, long commentId, long commentAuthorId, long boardId)
     : DomainEvent

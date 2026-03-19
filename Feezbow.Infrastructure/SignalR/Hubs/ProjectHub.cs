@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using WannabeTrello.Infrastructure.SignalR.Authorization;
-using WannabeTrello.Infrastructure.SignalR.Contracts;
-using WannabeTrello.Infrastructure.SignalR.Hubs.Base;
-using WannabeTrello.Infrastructure.SignalR.Services;
+using Feezbow.Infrastructure.SignalR.Authorization;
+using Feezbow.Infrastructure.SignalR.Contracts;
+using Feezbow.Infrastructure.SignalR.Hubs.Base;
+using Feezbow.Infrastructure.SignalR.Services;
 
-namespace WannabeTrello.Infrastructure.SignalR.Hubs;
+namespace Feezbow.Infrastructure.SignalR.Hubs;
 
 /// <summary>
 /// Hub for project-level real-time communication.

@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WannabeTrello.Domain\WannabeTrello.Domain.csproj" />
+      <ProjectReference Include="..\Feezbow.Domain\Feezbow.Domain.csproj" />
     </ItemGroup>
 
 </Project>

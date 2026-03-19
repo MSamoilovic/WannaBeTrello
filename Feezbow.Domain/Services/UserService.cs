@@ -1,11 +1,11 @@
-﻿using WannabeTrello.Domain.Entities;
-using WannabeTrello.Domain.Entities.Common;
-using WannabeTrello.Domain.Exceptions;
-using WannabeTrello.Domain.Interfaces;
-using WannabeTrello.Domain.Interfaces.Repositories;
-using WannabeTrello.Domain.Interfaces.Services;
+﻿using Feezbow.Domain.Entities;
+using Feezbow.Domain.Entities.Common;
+using Feezbow.Domain.Exceptions;
+using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 
-namespace WannabeTrello.Domain.Services;
+namespace Feezbow.Domain.Services;
 
 public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork) : IUserService
 {

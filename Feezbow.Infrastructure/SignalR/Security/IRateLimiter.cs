@@ -1,4 +1,4 @@
-namespace WannabeTrello.Infrastructure.SignalR.Security;
+namespace Feezbow.Infrastructure.SignalR.Security;
 
 /// <summary>
 /// Controls the rate of hub method invocations per user.

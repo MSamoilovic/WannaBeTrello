@@ -1,4 +1,4 @@
-﻿namespace WannabeTrello.Domain.Entities.Common;
+﻿namespace Feezbow.Domain.Entities.Common;
 
 public class PagedResult<T>
 {
