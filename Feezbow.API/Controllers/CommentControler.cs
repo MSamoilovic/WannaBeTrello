@@ -8,7 +8,7 @@ namespace Feezbow.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CommentControler(IMediator mediator): ControllerBase
+public class CommentsController(IMediator mediator): ControllerBase
 {
     [HttpPut("{commentId:long}")]
     [ProducesResponseType(typeof(UpdateCommentContentCommandResponse), StatusCodes.Status200OK)]
