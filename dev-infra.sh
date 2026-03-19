@@ -1,37 +1,33 @@
 #!/usr/bin/env bash
-# Starts only postgres and redis for local API development.
+# Starts postgres, redis and pgadmin for local API development.
 # Usage:
 #   ./dev-infra.sh          # start
-#   ./dev-infra.sh stop     # stop (keep data)
-#   ./dev-infra.sh down     # stop + remove containers (keep volumes)
+#   ./dev-infra.sh stop     # stop
+#   ./dev-infra.sh logs     # tail logs
 
 set -euo pipefail
 
 SERVICES="postgres redis"
+TOOLS_SERVICES="pgadmin"
 
 case "${1:-start}" in
   start)
-    echo "Starting dev infrastructure (postgres + redis)..."
+    echo "Starting dev infrastructure (postgres + redis + pgadmin)..."
     docker compose up -d $SERVICES
-    echo ""
-    echo "Waiting for services to be healthy..."
-    docker compose ps $SERVICES
-    echo ""
-    echo "postgres -> localhost:${POSTGRES_PORT:-5432}"
-    echo "redis    -> localhost:${REDIS_PORT:-6379}"
-    echo ""
-    echo "Run the API with: dotnet run --project Feezbow.API"
+    docker compose --profile tools up -d $TOOLS_SERVICES
+    echo "Done."
+    echo "  API:     dotnet run --project Feezbow.API"
+    echo "  pgAdmin: http://localhost:${PGADMIN_PORT:-5050}"
     ;;
   stop)
-    echo "Stopping dev infrastructure..."
+    docker compose --profile tools stop $TOOLS_SERVICES
     docker compose stop $SERVICES
     ;;
-  down)
-    echo "Removing dev infrastructure containers..."
-    docker compose rm -sf $SERVICES
+  logs)
+    docker compose --profile tools logs -f $SERVICES $TOOLS_SERVICES
     ;;
   *)
-    echo "Usage: $0 [start|stop|down]"
+    echo "Usage: $0 [start|stop|logs]"
     exit 1
     ;;
 esac
