@@ -161,12 +161,36 @@ services:
     networks:
       - feezbow-network
 
+  seq:
+    image: datalust/seq:latest
+    container_name: feezbow-seq
+    restart: unless-stopped
+
+    profiles:
+      - tools
+
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORDHASH: ""
+
+    ports:
+      - "${SEQ_PORT:-5341}:5341"
+      - "${SEQ_UI_PORT:-8002}:80"
+
+    volumes:
+      - seq_data:/data
+
+    networks:
+      - feezbow-network
+
 volumes:
   postgres_data:
     driver: local
   pgadmin_data:
     driver: local
   redis_data:
+    driver: local
+  seq_data:
     driver: local
 
 networks:

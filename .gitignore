@@ -92,3 +92,6 @@ appsettings.json.user
 *.db
 *.sqlite
 *.sqlite3
+
+# Serilog log fajlovi
+logs/
