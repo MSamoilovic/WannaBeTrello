@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Feezbow.Infrastructure.SignalR.Configuration;
 using Feezbow.Infrastructure.SignalR.Security;
@@ -10,7 +11,10 @@ namespace Feezbow.Infrastructure.SignalR.Filters;
 /// Runs between <see cref="Feezbow.Infrastructure.SignalR.Hubs.Base.HubMethodFilter"/> (outer)
 /// and <see cref="HubExceptionFilter"/> (inner).
 /// </summary>
-public sealed class HubRateLimitingFilter(IRateLimiter rateLimiter, IOptions<SignalROptions> options)
+public sealed class HubRateLimitingFilter(
+    IRateLimiter rateLimiter,
+    IOptions<SignalROptions> options,
+    ILogger<HubRateLimitingFilter> logger)
     : IHubFilter
 {
     private readonly SignalRRateLimitOptions _rateLimitOptions = options.Value.RateLimiting;
@@ -29,7 +33,10 @@ public sealed class HubRateLimitingFilter(IRateLimiter rateLimiter, IOptions<Sig
         var key = $"rl:{userId}:{method}";
 
         if (!rateLimiter.IsAllowed(key, _rateLimitOptions.MaxRequestsPerSecond, TimeSpan.FromSeconds(1)))
+        {
+            logger.LogWarning("Rate limit exceeded for user {UserId} on hub method {HubMethod}", userId, method);
             throw new HubException("Rate limit exceeded. Please slow down.");
+        }
 
         return await next(invocationContext);
     }

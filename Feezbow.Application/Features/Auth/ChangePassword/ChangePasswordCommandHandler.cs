@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
@@ -10,7 +11,12 @@ using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Auth.ChangePassword;
 
-public class ChangePasswordCommandHandler(UserManager<User> userManager, IUserService userService, ICurrentUserService currentUserService) : IRequestHandler<ChangePasswordCommand, ChangePasswordCommandResponse>
+public class ChangePasswordCommandHandler(
+    UserManager<User> userManager,
+    IUserService userService,
+    ICurrentUserService currentUserService,
+    ILogger<ChangePasswordCommandHandler> logger)
+    : IRequestHandler<ChangePasswordCommand, ChangePasswordCommandResponse>
 {
     public async Task<ChangePasswordCommandResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
@@ -26,10 +32,10 @@ public class ChangePasswordCommandHandler(UserManager<User> userManager, IUserSe
             throw new NotFoundException(nameof(User), currentUserService.UserId.Value);
         }
 
-
         var isOldPasswordValid = await userManager.CheckPasswordAsync(user, request.OldPassword);
         if (!isOldPasswordValid)
         {
+            logger.LogWarning("Change password failed: incorrect old password for user {UserId}", user.Id);
             return new ChangePasswordCommandResponse(Result<long>.Fail(user.Id, "Old Password is incorrect"));
         }
 
@@ -43,7 +49,8 @@ public class ChangePasswordCommandHandler(UserManager<User> userManager, IUserSe
         user.ClearRefreshToken();
         await userManager.UpdateAsync(user);
 
-        return new ChangePasswordCommandResponse(Result<long>.Success(user.Id, "Password updated successfully"));
+        logger.LogInformation("Password changed successfully for user {UserId}", user.Id);
 
+        return new ChangePasswordCommandResponse(Result<long>.Success(user.Id, "Password updated successfully"));
     }
 }

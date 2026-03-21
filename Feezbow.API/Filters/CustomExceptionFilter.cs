@@ -32,18 +32,27 @@ public class CustomExceptionFilter : IExceptionFilter
                 case NotFoundException notFoundException:
                     code = HttpStatusCode.NotFound;
                     message = notFoundException.Message;
+                    _logger.LogWarning("Resource not found. TraceId: {TraceId} Message: {Message}",
+                        traceId, notFoundException.Message);
                     break;
                 case AccessDeniedException accessDeniedException:
                     code = HttpStatusCode.Forbidden;
                     message = accessDeniedException.Message;
+                    _logger.LogWarning("Access denied for user {UserId}. TraceId: {TraceId} Message: {Message}",
+                        context.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
+                        traceId, accessDeniedException.Message);
                     break;
                 case UnauthorizedAccessException unauthorizedAccessException:
                     code = HttpStatusCode.Unauthorized;
                     message = unauthorizedAccessException.Message;
+                    _logger.LogWarning("Unauthorized access. TraceId: {TraceId} Message: {Message}",
+                        traceId, unauthorizedAccessException.Message);
                     break;
                 case DomainException domainException:
                     code = HttpStatusCode.BadRequest;
                     message = domainException.Message;
+                    _logger.LogWarning("Domain exception: {ExceptionType}. TraceId: {TraceId} Message: {Message}",
+                        domainException.GetType().Name, traceId, domainException.Message);
                     break;
                 default:
                     _logger.LogError(context.Exception, "Neobrađeni izuzetak se dogodio. TraceId: {TraceId}", traceId);
