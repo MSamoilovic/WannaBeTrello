@@ -102,8 +102,13 @@ public static class ConfigureServices
             {
                 OnAuthenticationFailed = context =>
                 {
-                    Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                    Console.WriteLine($"Error Type: {context.Exception.GetType().Name}");
+                    var logger = context.HttpContext.RequestServices
+                        .GetRequiredService<ILogger<JwtBearerHandler>>();
+
+                    logger.LogWarning(context.Exception,
+                        "JWT authentication failed: {ExceptionType}",
+                        context.Exception.GetType().Name);
+
                     return Task.CompletedTask;
                 },
                 OnTokenValidated = async context =>

@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Feezbow.Application.Common.Exceptions;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
@@ -10,7 +11,14 @@ using Feezbow.Infrastructure.Services;
 
 namespace Feezbow.Application.Features.Auth.RegisterUser;
 
-public class RegisterUserCommandHandler(IUserService userService, UserManager<User> userManager, IJwtTokenService jwtTokenService, ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IEmailService emailService)
+public class RegisterUserCommandHandler(
+    IUserService userService,
+    UserManager<User> userManager,
+    IJwtTokenService jwtTokenService,
+    ICurrentUserService currentUserService,
+    IUnitOfWork unitOfWork,
+    IEmailService emailService,
+    ILogger<RegisterUserCommandHandler> logger)
     : IRequestHandler<RegisterUserCommand, RegisterUserCommandResponse>
 {
     public async Task<RegisterUserCommandResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -21,12 +29,15 @@ public class RegisterUserCommandHandler(IUserService userService, UserManager<Us
 
         if (!result.Succeeded)
         {
+            logger.LogWarning("Registration failed for {Email}: {Errors}",
+                request.Email,
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+
             throw new ValidationException(result.Errors.Select(e => new ValidationFailure(e.Code, e.Description)));
         }
 
         await userManager.AddToRoleAsync(user, "User");
 
-  
         var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         // Tracking
@@ -48,8 +59,9 @@ public class RegisterUserCommandHandler(IUserService userService, UserManager<Us
             confirmationUrl,
             cancellationToken);
 
-        
         var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
+
+        logger.LogInformation("User {UserId} registered with email {Email}", user.Id, user.Email);
 
         return new RegisterUserCommandResponse(
             Token: token,

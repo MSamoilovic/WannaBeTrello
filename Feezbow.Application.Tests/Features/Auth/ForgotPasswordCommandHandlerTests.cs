@@ -1,5 +1,6 @@
 using Moq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging.Abstractions;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Application.Features.Auth.ForgotPassword;
 using Feezbow.Application.Tests.Utils;
@@ -33,7 +34,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -79,7 +81,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -149,7 +152,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -221,7 +225,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -286,7 +291,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(command, CancellationToken.None));
@@ -352,7 +358,8 @@ public class ForgotPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ForgotPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);

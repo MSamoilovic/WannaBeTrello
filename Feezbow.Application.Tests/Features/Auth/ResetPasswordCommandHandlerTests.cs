@@ -1,5 +1,6 @@
 using Moq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging.Abstractions;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Application.Features.Auth.ResetPassword;
 using Feezbow.Application.Tests.Utils;
@@ -36,7 +37,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(
@@ -81,7 +83,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(
@@ -138,7 +141,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(
@@ -206,7 +210,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -277,7 +282,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -332,7 +338,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<BusinessRuleValidationException>(
@@ -395,7 +402,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(command, CancellationToken.None));
@@ -460,7 +468,8 @@ public class ResetPasswordCommandHandlerTests
             userManagerMock.Object,
             emailServiceMock.Object,
             unitOfWorkMock.Object,
-            currentUserServiceMock.Object);
+            currentUserServiceMock.Object,
+            NullLogger<ResetPasswordCommandHandler>.Instance);
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);

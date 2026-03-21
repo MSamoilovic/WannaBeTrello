@@ -1,12 +1,19 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
 
 namespace Feezbow.Application.Features.Auth.ForgotPassword;
 
-public class ForgotPasswordCommandHandler(UserManager<User> userManager, IEmailService emailService, IUnitOfWork unitOfWork, ICurrentUserService currentUserService): IRequestHandler<ForgotPasswordCommand, ForgotPasswordCommandResponse>
+public class ForgotPasswordCommandHandler(
+    UserManager<User> userManager,
+    IEmailService emailService,
+    IUnitOfWork unitOfWork,
+    ICurrentUserService currentUserService,
+    ILogger<ForgotPasswordCommandHandler> logger)
+    : IRequestHandler<ForgotPasswordCommand, ForgotPasswordCommandResponse>
 {
     public async Task<ForgotPasswordCommandResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -16,6 +23,7 @@ public class ForgotPasswordCommandHandler(UserManager<User> userManager, IEmailS
 
         if(user == null || !user.IsActive)
         {
+            logger.LogDebug("Password reset requested for unknown or inactive email {Email}", request.Email);
             return successResponse;
         }
 
@@ -33,6 +41,8 @@ public class ForgotPasswordCommandHandler(UserManager<User> userManager, IEmailS
             user.DisplayName,
             resetUrl,
             cancellationToken);
+
+        logger.LogInformation("Password reset email sent for user {UserId}", user.Id);
 
         return successResponse;
     }

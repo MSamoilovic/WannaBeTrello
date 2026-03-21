@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
 using Feezbow.Application.Common.Interfaces;
@@ -6,11 +7,9 @@ using Feezbow.Infrastructure.Options;
 
 namespace Feezbow.Infrastructure.Services;
 
-public class EmailService : IEmailService
+public class EmailService(IOptions<EmailOptions> options, ILogger<EmailService> logger) : IEmailService
 {
-    private readonly EmailOptions _options;
-
-    public EmailService(IOptions<EmailOptions> options) => _options = options.Value;
+    private readonly EmailOptions _options = options.Value;
 
     public async Task SendPasswordResetConfirmationEmailAsync(string toEmail, string userName, CancellationToken cancellationToken = default)
     {
@@ -42,23 +41,35 @@ public class EmailService : IEmailService
         string body,
         CancellationToken cancellationToken)
     {
-        using var client = new SmtpClient(_options.SmtpHost, _options.SmtpPort)
+        logger.LogDebug("Sending email to {ToEmail}, subject: {Subject}", toEmail, subject);
+
+        try
         {
-            EnableSsl = true,
-            Credentials = new NetworkCredential(_options.SmtpUsername, _options.SmtpPassword)
-        };
+            using var client = new SmtpClient(_options.SmtpHost, _options.SmtpPort)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential(_options.SmtpUsername, _options.SmtpPassword)
+            };
 
-        var message = new MailMessage
+            var message = new MailMessage
+            {
+                From = new MailAddress(_options.FromEmail, _options.FromName),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+
+            message.To.Add(toEmail);
+
+            await client.SendMailAsync(message, cancellationToken);
+
+            logger.LogInformation("Email sent to {ToEmail}, subject: {Subject}", toEmail, subject);
+        }
+        catch (Exception ex)
         {
-            From = new MailAddress(_options.FromEmail, _options.FromName),
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = true
-        };
-
-        message.To.Add(toEmail);
-
-        await client.SendMailAsync(message, cancellationToken);
+            logger.LogError(ex, "Failed to send email to {ToEmail}, subject: {Subject}", toEmail, subject);
+            throw;
+        }
     }
 
 
