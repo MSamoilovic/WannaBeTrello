@@ -4,7 +4,7 @@ namespace Feezbow.Domain.Common;
 
 public static partial class MentionParser
 {
-    [GeneratedRegex(@"@([\w.-]+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"@(\w(?:[\w.-]*\w)?)", RegexOptions.IgnoreCase)]
     private static partial Regex MentionRegex();
 
     public static IReadOnlySet<string> ParseUsernames(string? content)
