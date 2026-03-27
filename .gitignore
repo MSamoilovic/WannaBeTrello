@@ -95,3 +95,6 @@ appsettings.json.user
 
 # Serilog log fajlovi
 logs/
+
+#
+.claude
