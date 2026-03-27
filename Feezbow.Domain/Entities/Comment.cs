@@ -1,4 +1,5 @@
-﻿using Feezbow.Domain.Events.Comment_Events;
+﻿using Feezbow.Domain.Common;
+using Feezbow.Domain.Events.Comment_Events;
 using Feezbow.Domain.Exceptions;
 
 namespace Feezbow.Domain.Entities;
@@ -29,7 +30,7 @@ public class Comment: AuditableEntity
         if (userId < 1)
             throw new BusinessRuleValidationException("Comment must have a valid author.");
 
-        return new Comment
+        var comment = new Comment
         {
             TaskId = taskId,
             UserId = userId,
@@ -37,6 +38,12 @@ public class Comment: AuditableEntity
             CreatedAt = DateTime.UtcNow,
             CreatedBy = userId
         };
+
+        var mentions = MentionParser.ParseUsernames(content);
+        if (mentions.Count > 0)
+            comment.AddDomainEvent(new UserMentionedInCommentEvent(taskId, userId, mentions));
+
+        return comment;
     }
 
     public void UpdateContent(string? newContent, long modifyingUserId)
@@ -52,18 +59,27 @@ public class Comment: AuditableEntity
         
         var oldValues = new Dictionary<string, object?>();
         var newValues = new Dictionary<string, object?>();
-        
-        
+
         oldValues[nameof(Content)] = Content;
+
+        var oldMentions = MentionParser.ParseUsernames(Content);
+        var newMentions = MentionParser.ParseUsernames(newContent);
+        var addedMentions = newMentions
+            .Except(oldMentions, StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         Content = newContent;
         newValues[nameof(Content)] = newContent;
-        
+
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifyingUserId;
         IsEdited = true;
         EditedAt = DateTime.UtcNow;
-        
+
         AddDomainEvent(new CommentUpdatedEvent(Id, TaskId, oldValues, newValues, modifyingUserId));
+
+        if (addedMentions.Count > 0)
+            AddDomainEvent(new UserMentionedInCommentEvent(TaskId, modifyingUserId, addedMentions));
     }
 
     public void Delete(long modifierUserId)

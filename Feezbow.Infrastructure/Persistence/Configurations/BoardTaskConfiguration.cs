@@ -45,5 +45,8 @@ public class BoardTaskConfiguration: IEntityTypeConfiguration<BoardTask>
             .WithOne(c => c.Task)
             .HasForeignKey(c => c.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Match Column's query filter so required navigation is never unexpectedly null
+        builder.HasQueryFilter(t => !t.Column.IsDeleted);
     }
 }

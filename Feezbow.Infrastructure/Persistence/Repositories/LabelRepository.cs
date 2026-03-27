@@ -16,7 +16,7 @@ public class LabelRepository(ApplicationDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Label?> GetByIdAsync(long labelId, CancellationToken cancellationToken = default)
+    public override async Task<Label?> GetByIdAsync(long labelId, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FirstOrDefaultAsync(l => l.Id == labelId, cancellationToken);
     }

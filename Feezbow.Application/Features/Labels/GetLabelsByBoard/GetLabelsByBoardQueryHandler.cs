@@ -21,6 +21,6 @@ public class GetLabelsByBoardQueryHandler(
             CacheExpiration.Short,
             cancellationToken);
 
-        return labels.Select(GetLabelsByBoardQueryResponse.FromEntity).ToList();
+        return (labels ?? []).Select(GetLabelsByBoardQueryResponse.FromEntity).ToList();
     }
 }

@@ -12,10 +12,10 @@ public class BoardsWithAdminRoleSpecification : BaseSpecification<Board>
     public BoardsWithAdminRoleSpecification(long userId) 
         : base(b => b.BoardMembers.Any(bm => bm.UserId == userId && bm.Role == BoardRole.Admin))
     {
-        AddInclude(b => b.Project);
+        AddInclude(b => b.Project!);
         AddInclude(b => b.BoardMembers);
         
-        ApplyOrderByDescending(b => b.LastModifiedAt ?? b.CreatedAt);
+        ApplyOrderByDescending(b => (object)(b.LastModifiedAt ?? b.CreatedAt));
     }
 }
 

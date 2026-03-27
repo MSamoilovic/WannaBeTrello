@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+        <_Parameter1>Feezbow.Application.Tests</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Feezbow.Domain\Feezbow.Domain.csproj" />
     </ItemGroup>
 

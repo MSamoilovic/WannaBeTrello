@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
 using Feezbow.Domain.Entities;
 
@@ -36,26 +38,31 @@ public class ActivityLogConfiguration: IEntityTypeConfiguration<ActivityLog>
                 .IsRequired();
 
             
-            var jsonOptions = new JsonSerializerOptions 
-            { 
+            var jsonOptions = new JsonSerializerOptions
+            {
                 WriteIndented = false,
                 PropertyNameCaseInsensitive = true
             };
-            
+
+            var dictConverter = new ValueConverter<Dictionary<string, object?>, string>(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<Dictionary<string, object?>>(v, jsonOptions) ?? new Dictionary<string, object?>()
+            );
+
+            var dictComparer = new ValueComparer<Dictionary<string, object?>>(
+                (c1, c2) => JsonSerializer.Serialize(c1, jsonOptions) == JsonSerializer.Serialize(c2, jsonOptions),
+                c => c == null ? 0 : JsonSerializer.Serialize(c, jsonOptions).GetHashCode(),
+                c => JsonSerializer.Deserialize<Dictionary<string, object?>>(JsonSerializer.Serialize(c, jsonOptions), jsonOptions) ?? new Dictionary<string, object?>()
+            );
+
             activity.Property(a => a.OldValue)
                 .HasColumnName("Activity_OldValue")
-                .HasConversion(
-                    v => JsonSerializer.Serialize(v, jsonOptions),
-                    v => JsonSerializer.Deserialize<Dictionary<string, object?>>(v, jsonOptions) ?? new Dictionary<string, object?>()
-                )
+                .HasConversion(dictConverter, dictComparer)
                 .HasColumnType("jsonb");
 
             activity.Property(a => a.NewValue)
                 .HasColumnName("Activity_NewValue")
-                .HasConversion(
-                    v => JsonSerializer.Serialize(v, jsonOptions),
-                    v => JsonSerializer.Deserialize<Dictionary<string, object?>>(v, jsonOptions) ?? new Dictionary<string, object?>()
-                )
+                .HasConversion(dictConverter, dictComparer)
                 .HasColumnType("jsonb");
             
             // Indexes on owned entity properties - must be inside OwnsOne block

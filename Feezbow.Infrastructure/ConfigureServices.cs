@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using StackExchange.Redis;
 using System.Security.Claims;
-using System.Text;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
@@ -159,6 +158,7 @@ public static class ConfigureServices
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddHostedService<DueTaskReminderService>();
 
         //Redis
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));

@@ -57,4 +57,20 @@ public class UserNotificationService(
                 ReactivatedBy = reactivatedByUserId
             })), cancellationToken);
     }
+
+    public async Task NotifyUserMentioned(
+        long mentionedUserId,
+        long taskId,
+        long mentionedByUserId,
+        CancellationToken cancellationToken)
+    {
+        await SendAsync(_ => new ValueTask(notificationHub.Clients
+            .Group($"User:{mentionedUserId}")
+            .UserMentioned(new UserMentionedNotification
+            {
+                MentionedUserId = mentionedUserId,
+                TaskId = taskId,
+                MentionedByUserId = mentionedByUserId
+            })), cancellationToken);
+    }
 }

@@ -8,7 +8,7 @@ public class GetUserProjectsSpecification : BaseSpecification<Project>
         : base(p => p.ProjectMembers.Any(pm => pm.UserId == userId))
     {
         // Include related entities
-        AddInclude(p => p.Owner);
+        AddInclude(p => p.Owner!);
         AddInclude(p => p.ProjectMembers);
         AddInclude(p => p.Boards);
         

@@ -43,7 +43,7 @@ public class GetTaskByBoardIdCommentResponse
         return new GetTaskByBoardIdCommentResponse
         {
             Id = comment.Id,
-            Content = comment.Content,
+            Content = comment.Content ?? string.Empty,
             CreatedAt = comment.CreatedAt,
             UserId = comment.UserId,
             

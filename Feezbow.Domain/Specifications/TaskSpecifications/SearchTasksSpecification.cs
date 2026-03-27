@@ -15,7 +15,7 @@ public class SearchTasksSpecification : BaseSpecification<BoardTask>
         AddInclude(t => t.Column.Board);
         AddInclude(t => t.Column.Board.BoardMembers);
         AddInclude(t => t.Comments);
-        AddInclude(t => t.Assignee);
+        AddInclude(t => t.Assignee!);
         
         // No tracking za bolje performanse kod search query-ja
         // AsNoTracking = true je default u BaseSpecification

@@ -15,7 +15,7 @@ public class GetBoardByIdQueryResponse
         public ICollection<ColumnResponse> Columns { get; set; } = [];
         public ICollection<BoardMemberResponse> BoardMembers { get; set; } = new List<BoardMemberResponse>();
         
-        public static GetBoardByIdQueryResponse FromEntity(Board? board)
+        public static GetBoardByIdQueryResponse FromEntity(Board board)
         {
             return new GetBoardByIdQueryResponse
             {
@@ -44,7 +44,7 @@ public class GetBoardByIdQueryResponse
             return new ColumnResponse
             {
                 Id = column.Id,
-                Name = column.Name,
+                Name = column.Name!,
                 Order = column.Order,
                 Tasks = column.Tasks?.Select(SearchTaskResponse.FromEntity).ToList() ?? []
             };
@@ -92,8 +92,8 @@ public class GetBoardByIdQueryResponse
             return new UserResponse
             {
                 Id = user.Id,
-                Username = user?.UserName!,
-                Email = user?.Email!
+                Username = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty
             };
         }
     }
@@ -111,10 +111,10 @@ public class GetBoardByIdQueryResponse
             return new CommentResponse
             {
                 Id = comment.Id,
-                Content = comment.Content,
+                Content = comment.Content ?? string.Empty,
                 CreatedAt = comment.CreatedAt,
                 UserId = comment.UserId,
-                User = UserResponse.FromEntity(comment.User)
+                User = UserResponse.FromEntity(comment.User!)
             };
         }
     }
@@ -130,8 +130,8 @@ public class GetBoardByIdQueryResponse
             return new BoardMemberResponse
             {
                 UserId = boardMember.UserId,
-                User = UserResponse.FromEntity(boardMember?.User!),
-                Role = boardMember!.Role
+                User = UserResponse.FromEntity(boardMember.User!),
+                Role = boardMember.Role
             };
         }
     }

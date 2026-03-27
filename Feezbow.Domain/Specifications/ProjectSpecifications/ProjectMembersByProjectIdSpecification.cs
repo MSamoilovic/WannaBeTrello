@@ -11,6 +11,6 @@ public class ProjectMembersByProjectIdSpecification : BaseSpecification<ProjectM
         : base(pm => pm.ProjectId == projectId)
     {
         AddInclude(pm => pm.User);
-        ApplyOrderBy(pm => pm.User.FirstName);
+        ApplyOrderBy(pm => pm.User.FirstName!);
     }
 }

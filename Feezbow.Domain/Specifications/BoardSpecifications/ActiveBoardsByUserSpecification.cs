@@ -12,11 +12,11 @@ public class ActiveBoardsByUserSpecification : BaseSpecification<Board>
         : base(b => !b.IsArchived && b.BoardMembers.Any(bm => bm.UserId == userId))
     {
         // Include project i board members
-        AddInclude(b => b.Project);
+        AddInclude(b => b.Project!);
         AddInclude(b => b.BoardMembers);
         
         // Sortiranje po poslednjoj modifikaciji (najaktivniji na vrhu)
-        ApplyOrderByDescending(b => b.LastModifiedAt ?? b.CreatedAt);
+        ApplyOrderByDescending(b => (object)(b.LastModifiedAt ?? b.CreatedAt));
     }
 }
 
