@@ -21,7 +21,7 @@ public class ApplicationDbContext(
     public DbSet<BoardTask> Tasks { get; init; } = null!;
     public DbSet<Column> Columns { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
-    public DbSet<User> Users { get; set; } = null!;
+    public new DbSet<User> Users { get; set; } = null!;
     public DbSet<Comment> Comments { get; set; } = null!;
     public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
     public DbSet<BoardMember> BoardMembers { get; set; } = null!;
@@ -65,13 +65,13 @@ public class ApplicationDbContext(
 
         var result = await base.SaveChangesAsync(cancellationToken);
 
-        if (mediator == null) return result;
-        
+        if (_mediator == null) return result;
+
         foreach (var entity in domainEntities)
         {
             foreach (var domainEvent in entity.DomainEvents.ToList())
             {
-                await mediator.Publish(domainEvent, cancellationToken);
+                await _mediator.Publish(domainEvent, cancellationToken);
             }
                 
             entity.ClearDomainEvents();

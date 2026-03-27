@@ -40,5 +40,8 @@ public class BoardConfiguration : IEntityTypeConfiguration<Board>
             .OnDelete(DeleteBehavior.Restrict); // Ne brisem projekat ako bord postoji
         
         builder.HasIndex(p => p.IsArchived);
+
+        // Match Project's query filter so required navigation is never unexpectedly null
+        builder.HasQueryFilter(b => !b.Project!.IsArchived);
     }
 }

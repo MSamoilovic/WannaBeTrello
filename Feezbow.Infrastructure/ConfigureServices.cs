@@ -159,6 +159,7 @@ public static class ConfigureServices
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddHostedService<DueTaskReminderService>();
 
         //Redis
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));

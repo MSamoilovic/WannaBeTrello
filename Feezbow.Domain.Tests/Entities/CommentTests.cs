@@ -308,13 +308,114 @@ public class CommentTests
         // Arrange
         var comment = Comment.Create(1L, "Original content", 10L);
         comment.UpdateContent("Updated content", 20L);
-        
+
         // Act - Delete
         comment.Delete(30L);
-        
+
         // Assert - Try to update deleted comment
         Assert.Throws<BusinessRuleValidationException>(() =>
             comment.UpdateContent("This should fail", 40L));
+    }
+
+    // --- Testovi za mention funkcionalnost ---
+
+    [Fact]
+    public void Create_WithMention_ShouldRaiseUserMentionedInCommentEvent()
+    {
+        // Act
+        var comment = Comment.Create(1L, "Hey @john, check this.", 10L);
+
+        // Assert
+        var mentionEvent = comment.DomainEvents
+            .OfType<UserMentionedInCommentEvent>()
+            .SingleOrDefault();
+
+        Assert.NotNull(mentionEvent);
+        Assert.Equal(1L, mentionEvent.TaskId);
+        Assert.Equal(10L, mentionEvent.MentionedByUserId);
+        Assert.Contains("john", mentionEvent.MentionedUsernames);
+    }
+
+    [Fact]
+    public void Create_WithMultipleMentions_ShouldRaiseEventWithAllUsernames()
+    {
+        // Act
+        var comment = Comment.Create(1L, "@alice and @bob please review.", 10L);
+
+        // Assert
+        var mentionEvent = comment.DomainEvents
+            .OfType<UserMentionedInCommentEvent>()
+            .Single();
+
+        Assert.Equal(2, mentionEvent.MentionedUsernames.Count);
+        Assert.Contains("alice", mentionEvent.MentionedUsernames);
+        Assert.Contains("bob", mentionEvent.MentionedUsernames);
+    }
+
+    [Fact]
+    public void Create_WithNoMentions_ShouldNotRaiseUserMentionedInCommentEvent()
+    {
+        // Act
+        var comment = Comment.Create(1L, "Just a normal comment.", 10L);
+
+        // Assert
+        var mentionEvents = comment.DomainEvents.OfType<UserMentionedInCommentEvent>();
+        Assert.Empty(mentionEvents);
+    }
+
+    [Fact]
+    public void UpdateContent_WithNewMention_ShouldRaiseUserMentionedInCommentEvent()
+    {
+        // Arrange
+        var comment = Comment.Create(1L, "Original content", 10L);
+        DomainTestUtils.InitializeDomainEvents(comment);
+
+        // Act
+        comment.UpdateContent("Updated content @alice", 20L);
+
+        // Assert
+        var mentionEvent = comment.DomainEvents
+            .OfType<UserMentionedInCommentEvent>()
+            .SingleOrDefault();
+
+        Assert.NotNull(mentionEvent);
+        Assert.Equal(20L, mentionEvent.MentionedByUserId);
+        Assert.Contains("alice", mentionEvent.MentionedUsernames);
+    }
+
+    [Fact]
+    public void UpdateContent_WithOnlyExistingMentions_ShouldNotRaiseUserMentionedInCommentEvent()
+    {
+        // Arrange — komentar već sadrži @alice
+        var comment = Comment.Create(1L, "Hey @alice check this.", 10L);
+        DomainTestUtils.InitializeDomainEvents(comment);
+
+        // Act — update ne dodaje nove mentione
+        comment.UpdateContent("Hey @alice, updated text.", 10L);
+
+        // Assert
+        var mentionEvents = comment.DomainEvents.OfType<UserMentionedInCommentEvent>();
+        Assert.Empty(mentionEvents);
+    }
+
+    [Fact]
+    public void UpdateContent_WithSomeMentionsAdded_ShouldRaiseEventWithOnlyNewMentions()
+    {
+        // Arrange — @alice je već bila mencionovana
+        var comment = Comment.Create(1L, "Hey @alice.", 10L);
+        DomainTestUtils.InitializeDomainEvents(comment);
+
+        // Act — dodajemo @bob, @alice ostaje
+        comment.UpdateContent("Hey @alice and @bob.", 10L);
+
+        // Assert — event treba sadržati samo @bob
+        var mentionEvent = comment.DomainEvents
+            .OfType<UserMentionedInCommentEvent>()
+            .Single();
+
+        Assert.Single(mentionEvent.MentionedUsernames);
+        Assert.Contains("bob", mentionEvent.MentionedUsernames);
+        Assert.DoesNotContain("alice", mentionEvent.MentionedUsernames);
     }
 }
 

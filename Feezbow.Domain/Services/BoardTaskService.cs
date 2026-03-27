@@ -141,7 +141,7 @@ public class BoardTaskService(
         var task = await boardTaskRepository.GetTaskDetailsByIdAsync(taskId, cancellationToken);
         if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
 
-        var board = await boardRepository.GetBoardWithDetailsAsync(task.Column.BoardId, cancellationToken);
+        var board = await boardRepository.GetBoardWithDetailsAsync(task.Column!.BoardId, cancellationToken);
         if (board == null) throw new NotFoundException(nameof(Board), task.Column.BoardId);
 
         var performingMember = board.BoardMembers.FirstOrDefault(bm => bm.UserId == performingUserId);
