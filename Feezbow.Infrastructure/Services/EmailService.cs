@@ -35,6 +35,14 @@ public class EmailService(IOptions<EmailOptions> options, ILogger<EmailService> 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
 
+    public async Task SendTaskDueReminderEmailAsync(string toEmail, string userName, string taskTitle, DateTime dueDate, CancellationToken cancellationToken = default)
+    {
+        var subject = $"Task Due Tomorrow: {taskTitle} - Feezbow";
+        var body = BuildTaskDueReminderEmailBody(userName, taskTitle, dueDate);
+
+        await SendEmailAsync(toEmail, subject, body, cancellationToken);
+    }
+
     private async Task SendEmailAsync(
         string toEmail,
         string subject,
@@ -151,6 +159,45 @@ public class EmailService(IOptions<EmailOptions> options, ILogger<EmailService> 
                             <p>If you did not make this change, please contact our support team immediately.</p>
                         </div>
                         <p>For security reasons, all your existing sessions have been logged out. You will need to log in again with your new password.</p>
+                    </div>
+                    <div class=""footer"">
+                        <p>&copy; 2025 Feezbow. All rights reserved.</p>
+                        <p>This is an automated message, please do not reply.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
+    }
+
+    private static string BuildTaskDueReminderEmailBody(string userName, string taskTitle, DateTime dueDate)
+    {
+        var dueDateFormatted = dueDate.ToString("dddd, MMMM d, yyyy");
+        return $@"
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background-color: #FF9800; color: white; padding: 20px; text-align: center; }}
+                    .content {{ background-color: #f9f9f9; padding: 30px; border-radius: 5px; }}
+                    .task-box {{ background-color: #fff3e0; border-left: 4px solid #FF9800; padding: 12px 16px; margin: 20px 0; }}
+                    .footer {{ text-align: center; margin-top: 20px; font-size: 12px; color: #777; }}
+                </style>
+            </head>
+            <body>
+                <div class=""container"">
+                    <div class=""header"">
+                        <h1>Task Due Tomorrow</h1>
+                    </div>
+                    <div class=""content"">
+                        <p>Hello {userName},</p>
+                        <p>This is a reminder that the following task is due tomorrow:</p>
+                        <div class=""task-box"">
+                            <strong>{taskTitle}</strong><br/>
+                            Due: {dueDateFormatted}
+                        </div>
+                        <p>Log in to Feezbow to review and complete your task on time.</p>
                     </div>
                     <div class=""footer"">
                         <p>&copy; 2025 Feezbow. All rights reserved.</p>
