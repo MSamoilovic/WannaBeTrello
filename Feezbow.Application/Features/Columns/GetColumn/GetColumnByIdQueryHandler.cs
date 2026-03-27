@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
+using Feezbow.Domain.Entities;
+using Feezbow.Domain.Exceptions;
 using Feezbow.Domain.Interfaces.Repositories;
 using Feezbow.Domain.Interfaces.Services;
 
@@ -26,6 +28,9 @@ public class GetColumnByIdQueryHandler(
            CacheExpiration.Short,
            cancellationToken
        );
+
+       if (column is null)
+           throw new NotFoundException(nameof(Column), request.ColumnId);
 
        return GetColumnByIdQueryResponse.FromEntity(column);
     }

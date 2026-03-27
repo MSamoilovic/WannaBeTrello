@@ -18,4 +18,11 @@ public interface IEmailService
         string userName,
         string confirmationUrl,
         CancellationToken cancellationToken = default);
+
+    Task SendTaskDueReminderEmailAsync(
+        string toEmail,
+        string userName,
+        string taskTitle,
+        DateTime dueDate,
+        CancellationToken cancellationToken = default);
 }

@@ -15,8 +15,14 @@ public interface IUserNotificationService
         CancellationToken cancellationToken);
     
     Task NotifyUserReactivated(
-        long userId, 
-        long reactivatedByUserId, 
+        long userId,
+        long reactivatedByUserId,
+        CancellationToken cancellationToken);
+
+    Task NotifyUserMentioned(
+        long mentionedUserId,
+        long taskId,
+        long mentionedByUserId,
         CancellationToken cancellationToken);
 }
 

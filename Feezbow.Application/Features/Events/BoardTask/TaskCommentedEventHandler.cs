@@ -23,7 +23,7 @@ internal class TaskCommentedEventHandler(
             notification.BoardId,
             notification.CommentId,
             notification.CommentAuthorId,
-            comment.Content,
+            comment.Content ?? string.Empty,
             cancellationToken);
     }
 }

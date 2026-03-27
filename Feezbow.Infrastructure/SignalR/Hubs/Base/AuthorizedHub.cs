@@ -43,8 +43,8 @@ public abstract class AuthorizedHub<TClient>(
 
         if (Context.UserIdentifier is not null)
         {
-            await connectionManager.AddConnectionAsync(Context.UserIdentifier, Context.ConnectionId);
-            await presenceTracker.UserConnectedAsync(Context.UserIdentifier, Context.ConnectionId);
+            await ConnectionManager.AddConnectionAsync(Context.UserIdentifier, Context.ConnectionId);
+            await PresenceTracker.UserConnectedAsync(Context.UserIdentifier, Context.ConnectionId);
         }
 
         await base.OnConnectedAsync();
@@ -65,12 +65,12 @@ public abstract class AuthorizedHub<TClient>(
                 Context.ConnectionId, GetType().Name);
         }
 
-        await groupManager.ClearGroupMembershipsAsync(Context.ConnectionId);
+        await GroupManager.ClearGroupMembershipsAsync(Context.ConnectionId);
 
         if (Context.UserIdentifier is not null)
         {
-            await connectionManager.RemoveConnectionAsync(Context.ConnectionId);
-            await presenceTracker.UserDisconnectedAsync(Context.UserIdentifier, Context.ConnectionId);
+            await ConnectionManager.RemoveConnectionAsync(Context.ConnectionId);
+            await PresenceTracker.UserDisconnectedAsync(Context.UserIdentifier, Context.ConnectionId);
         }
 
         await base.OnDisconnectedAsync(exception);

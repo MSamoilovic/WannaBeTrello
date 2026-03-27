@@ -10,7 +10,7 @@ public class GetColumnsByBoardIdQueryResponse
     public int? WipLimit { get; set; }
     public List<TaskResponse>? Tasks { get; set; }
     
-    public static List<GetColumnsByBoardIdQueryResponse> FromEntity(IReadOnlyList<Column?> column)
+    public static List<GetColumnsByBoardIdQueryResponse> FromEntity(IReadOnlyList<Column> column)
     {
         return [.. column.Select(col => new GetColumnsByBoardIdQueryResponse
         {
