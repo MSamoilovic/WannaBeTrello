@@ -56,4 +56,12 @@ public class UserRepository(ApplicationDbContext dbContext) : Repository<User>(d
 
         return await query.ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Comments
+            .Where(c => c.UserId == userId && !c.IsDeleted)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

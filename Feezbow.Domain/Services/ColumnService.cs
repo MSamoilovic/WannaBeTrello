@@ -26,8 +26,10 @@ public class ColumnService(
         if (boardMember is not { Role: BoardRole.Admin })
             throw new AccessDeniedException("Only Board Admin can create a Column");
         
-        //TODO: implement change order logic in case there is already a column with the same order
-        
+        var existingColumns = await columnRepository.GetColumnsByBoardIdAsync(boardId, cancellationToken);
+        if (existingColumns.Any(c => c.Order == order))
+            order = existingColumns.Max(c => c.Order) + 1;
+
         var column = new Column(name, boardId, order, userId);
 
         await columnRepository.AddAsync(column);

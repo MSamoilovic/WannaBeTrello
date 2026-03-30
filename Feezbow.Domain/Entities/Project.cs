@@ -159,6 +159,30 @@ public class Project : AuditableEntity
         AddDomainEvent(new ProjectArchivedEvent(Id, Name, archiverUserId));
     }
 
+    public void Restore(long restorerUserId)
+    {
+        var member = ProjectMembers.FirstOrDefault(pm => pm.UserId == restorerUserId);
+        if (member == null || (member.Role != ProjectRole.Owner && member.Role != ProjectRole.Admin))
+            throw new UnauthorizedAccessException("Only Owner or Admin can restore this project.");
+
+        if (!IsArchived) return;
+
+        IsArchived = false;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = restorerUserId;
+
+        var activity = new Activity(
+            ActivityType.ProjectRestored,
+            $"Project '{Name}' was restored",
+            restorerUserId,
+            oldValue: new Dictionary<string, object?> { [nameof(IsArchived)] = true },
+            newValue: new Dictionary<string, object?> { [nameof(IsArchived)] = false }
+        );
+
+        AddActivity(activity);
+        AddDomainEvent(new ProjectRestoredEvent(Id, Name, restorerUserId));
+    }
+
     public void AddMember(long newMemberId, ProjectRole role, long inviterUserId)
     {
         var inviter = ProjectMembers.FirstOrDefault(pm => pm.UserId == inviterUserId);

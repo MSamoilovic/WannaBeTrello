@@ -58,8 +58,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 
     public Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken)
     {
-        //TODO:
-        throw new NotImplementedException();
+        return userRepository.GetUserCommentsAsync(userId, cancellationToken);
     }
 
     public Task<IReadOnlyList<Project>> GetUserOwnedProjectsAsync(long userId, CancellationToken cancellationToken)
@@ -95,12 +94,25 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
             throw new BusinessRuleValidationException("First name cannot exceed 100 characters");
 
         if (!string.IsNullOrWhiteSpace(lastName) && lastName.Length > 300)
-            throw new BusinessRuleValidationException("Last name cannot exceed 100 characters");
+            throw new BusinessRuleValidationException("Last name cannot exceed 300 characters");
 
         if (!string.IsNullOrWhiteSpace(bio) && bio.Length > 500)
             throw new BusinessRuleValidationException("Bio cannot exceed 500 characters");
 
-        //TODO: Add validation for profile picture
+        if (!string.IsNullOrWhiteSpace(profilePictureUrl))
+        {
+            if (profilePictureUrl.Length > 2048)
+                throw new BusinessRuleValidationException("Profile picture URL cannot exceed 2048 characters.");
+
+            if (!Uri.TryCreate(profilePictureUrl, UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+                throw new BusinessRuleValidationException("Profile picture URL must be a valid HTTP or HTTPS URL.");
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var extension = Path.GetExtension(uri.AbsolutePath).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+                throw new BusinessRuleValidationException("Profile picture must be a JPG, PNG, GIF, or WebP image.");
+        }
 
         user.UpdateProfile(firstName, lastName, bio, profilePictureUrl, modifiedBy);
         await unitOfWork.CompleteAsync(cancellationToken);
