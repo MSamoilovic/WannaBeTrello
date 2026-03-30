@@ -13,7 +13,7 @@ using Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
 
 namespace Feezbow.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailConfirmed")]
 [ApiController]
 [Route("api/[controller]")]
 public class ProjectController(IMediator mediator) : ControllerBase

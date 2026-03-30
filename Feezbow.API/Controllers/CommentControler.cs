@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Comments.DeleteComment;
 using Feezbow.Application.Features.Comments.RestoreComment;
@@ -7,6 +8,7 @@ using Feezbow.Application.Features.Comments.UpdateCommentContent;
 namespace Feezbow.Controllers;
 
 [ApiController]
+[Authorize(Policy = "EmailConfirmed")]
 [Route("api/[controller]")]
 public class CommentsController(IMediator mediator): ControllerBase
 {

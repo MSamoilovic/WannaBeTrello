@@ -1,3 +1,3 @@
 ﻿namespace Feezbow.Application.Features.Auth.RegisterUser;
 
-public record RegisterUserCommandResponse(string Token, string Email, bool EmailConfirmed, string RefreshToken, DateTime RefreshTokenExpiresAt);
+public record RegisterUserCommandResponse(string Email, bool EmailConfirmed);

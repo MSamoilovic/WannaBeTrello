@@ -7,14 +7,12 @@ using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
 using Feezbow.Domain.Interfaces.Services;
-using Feezbow.Infrastructure.Services;
 
 namespace Feezbow.Application.Features.Auth.RegisterUser;
 
 public class RegisterUserCommandHandler(
     IUserService userService,
     UserManager<User> userManager,
-    IJwtTokenService jwtTokenService,
     ICurrentUserService currentUserService,
     IUnitOfWork unitOfWork,
     IEmailService emailService,
@@ -40,10 +38,6 @@ public class RegisterUserCommandHandler(
 
         var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        // Tracking
-        var refreshToken = jwtTokenService.GenerateRefreshToken();
-        user.SetRefreshToken(refreshToken, jwtTokenService.GetRefreshTokenExpiry());
-
         //TODO: Transfer to user service to request EmailCofirmation
         var ipAddress = currentUserService.UserIPAddress;
         user.RequestEmailConfirmation(ipAddress);
@@ -59,16 +53,11 @@ public class RegisterUserCommandHandler(
             confirmationUrl,
             cancellationToken);
 
-        var token = await jwtTokenService.GenerateTokenAsync(user, cancellationToken);
-
         logger.LogInformation("User {UserId} registered with email {Email}", user.Id, user.Email);
 
         return new RegisterUserCommandResponse(
-            Token: token,
             Email: user.Email!,
-            EmailConfirmed: user.EmailConfirmed,
-            RefreshToken: refreshToken,
-            RefreshTokenExpiresAt: user.RefreshTokenExpiresAt!.Value);
+            EmailConfirmed: user.EmailConfirmed);
     }
 
     private static string BuildConfirmationUrl(string email, string token)
