@@ -8,7 +8,7 @@ namespace Feezbow.Application.Features.Auth.LoginUser;
 
 public class LoginUserCommandHandler(
     UserManager<User> userManager,
-    SignInManager<User> signInManager,
+    IPasswordSignInService passwordSignInService,
     IJwtTokenService jwtTokenService,
     ILogger<LoginUserCommandHandler> logger)
     : IRequestHandler<LoginUserCommand, LoginUserCommandResponse>
@@ -24,7 +24,7 @@ public class LoginUserCommandHandler(
 
         user.EnsureActive();
 
-        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        var result = await passwordSignInService.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
         {
             logger.LogWarning("Login failed: invalid password for user {UserId}", user.Id);
