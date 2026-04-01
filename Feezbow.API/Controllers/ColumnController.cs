@@ -8,7 +8,7 @@ using Feezbow.Application.Features.Columns.UpdateColumn;
 
 namespace Feezbow.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailConfirmed")]
 [ApiController]
 [Route("api/[controller]")]
 public class ColumnController(IMediator mediator): ControllerBase

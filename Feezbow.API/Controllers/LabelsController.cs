@@ -10,7 +10,7 @@ using Feezbow.Application.Features.Labels.UpdateLabel;
 
 namespace Feezbow.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailConfirmed")]
 [ApiController]
 [Route("api/[controller]")]
 public class LabelsController(IMediator mediator) : ControllerBase

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Activities.GetActivityByBoard;
 using Feezbow.Application.Features.Activities.GetActivityByProject;
@@ -8,6 +9,7 @@ using Feezbow.Application.Features.Activities.GetActivityByUser;
 namespace Feezbow.Controllers;
 
 [ApiController]
+[Authorize(Policy = "EmailConfirmed")]
 [Route("api/[controller]")]
 public class ActivityController(IMediator mediator): ControllerBase
 {

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Tasks.AddCommentToTask;
 using Feezbow.Application.Features.Tasks.ArchiveTask;
@@ -15,6 +16,7 @@ using Feezbow.Application.Features.Tasks.UpdateTask;
 namespace Feezbow.Controllers
 {
     [ApiController]
+    [Authorize(Policy = "EmailConfirmed")]
     [Route("api/[controller]")]
     public class TasksController(IMediator mediator) : ControllerBase
     {

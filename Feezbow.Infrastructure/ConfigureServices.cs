@@ -157,6 +157,7 @@ public static class ConfigureServices
         services.AddScoped<ILabelRepository, LabelRepository>();
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IPasswordSignInService, PasswordSignInService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddHostedService<DueTaskReminderService>();
 

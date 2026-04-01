@@ -11,7 +11,7 @@ using Feezbow.Application.Features.Columns.ReorderColumn;
 
 namespace Feezbow.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailConfirmed")]
 [ApiController]
 [Route("api/[controller]")]
 public class BoardsController(IMediator mediator) : ControllerBase

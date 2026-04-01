@@ -5,6 +5,7 @@ public enum ActivityType
     ProjectCreated,
     ProjectUpdated,
     ProjectArchived,
+    ProjectRestored,
     ProjectMemberAdded,
     ProjectMemberRoleUpdated,
     ProjectMemberRemoved,

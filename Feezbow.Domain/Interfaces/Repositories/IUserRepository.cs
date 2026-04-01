@@ -11,4 +11,5 @@ public interface IUserRepository: IRepository<User>
     Task<IReadOnlyList<Project>> GetUserProjectsAsync(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Board>> GetUserBoardsAsync(long userId, CancellationToken cancellationToken);
     Task<IReadOnlyList<BoardTask>> GetUserAssignedTasksAsync(long userId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Comment>> GetUserCommentsAsync(long userId, CancellationToken cancellationToken);
 }

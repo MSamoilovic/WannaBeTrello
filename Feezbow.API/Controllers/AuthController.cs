@@ -79,7 +79,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Logout()
         => Ok(await mediator.Send(new LogoutCommand()));
 
-    [Authorize]
+    [Authorize(Policy = "EmailConfirmed")]
     [HttpPost("change-password")]
     [ProducesResponseType(typeof(ChangePasswordCommandResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

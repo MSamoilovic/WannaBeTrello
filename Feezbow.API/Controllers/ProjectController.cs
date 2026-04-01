@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Projects.GetBoardsByProjectId;
 using Feezbow.Application.Features.Projects.AddProjectMember;
 using Feezbow.Application.Features.Projects.ArchiveProject;
+using Feezbow.Application.Features.Projects.UnarchiveProject;
 using Feezbow.Application.Features.Projects.CreateProject;
 using Feezbow.Application.Features.Projects.GetProjectById;
 using Feezbow.Application.Features.Projects.GetProjectMembersById;
@@ -13,7 +14,7 @@ using Feezbow.Application.Features.Projects.UpdateProjectMemberRole;
 
 namespace Feezbow.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailConfirmed")]
 [ApiController]
 [Route("api/[controller]")]
 public class ProjectController(IMediator mediator) : ControllerBase
@@ -67,6 +68,16 @@ public class ProjectController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ArchiveProject(long id)
     {
         var response = await mediator.Send(new ArchiveProjectCommand(id));
+        return Ok(response);
+    }
+
+    [HttpPost("{id}/restore")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UnarchiveProject(long id)
+    {
+        var response = await mediator.Send(new UnarchiveProjectCommand(id));
         return Ok(response);
     }
 

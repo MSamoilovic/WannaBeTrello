@@ -73,7 +73,18 @@ public class ProjectService(
         return project.Id;
     }
 
-    //TODO: Dodaj za Unarchive funkcionalnost
+    public async Task<long> UnarchiveProjectAsync(long id, long currentUserId, CancellationToken cancellationToken)
+    {
+        var project = await projectRepository.GetByIdAsync(id);
+        if (project is null)
+            throw new NotFoundException(nameof(Project), id);
+
+        project.Restore(currentUserId);
+
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync(cancellationToken);
+        return project.Id;
+    }
 
     public async Task<long> AddProjectMember(long projectId, long newMemberId, ProjectRole role, long inviterUserId, CancellationToken cancellationToken)
     {
