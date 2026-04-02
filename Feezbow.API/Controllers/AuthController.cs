@@ -103,10 +103,28 @@ public class AuthController(IMediator mediator) : ControllerBase
         => Ok(await mediator.Send(command));
 
     /// <summary>
-    /// Confirm email address using token
+    /// Confirm email address using token (called from email link)
     /// </summary>
-    /// <param name="command">Email confirmation request</param>
-    /// <returns>JWT token if successful</returns>
+    [HttpGet("confirm-email")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ConfirmEmailCommandResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmailGet([FromQuery] string email, [FromQuery] string token)
+    {
+        try
+        {
+            var response = await mediator.Send(new ConfirmEmailCommand(email, token));
+            return Ok(response);
+        }
+        catch (BusinessRuleValidationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Confirm email address using token (JSON body)
+    /// </summary>
     [HttpPost("confirm-email")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ConfirmEmailCommandResponse), StatusCodes.Status200OK)]

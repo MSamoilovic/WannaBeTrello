@@ -8,16 +8,17 @@
 set -euo pipefail
 
 SERVICES="postgres redis"
-TOOLS_SERVICES="pgadmin"
+TOOLS_SERVICES="pgadmin mailpit"
 
 case "${1:-start}" in
   start)
-    echo "Starting dev infrastructure (postgres + redis + pgadmin)..."
+    echo "Starting dev infrastructure (postgres + redis + pgadmin + mailpit)..."
     docker compose up -d $SERVICES
     docker compose --profile tools up -d $TOOLS_SERVICES
     echo "Done."
     echo "  API:     dotnet run --project Feezbow.API"
     echo "  pgAdmin: http://localhost:${PGADMIN_PORT:-5050}"
+    echo "  Mailpit: http://localhost:${MAILPIT_UI_PORT:-8025}"
     ;;
   stop)
     docker compose --profile tools stop $TOOLS_SERVICES
