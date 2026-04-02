@@ -55,8 +55,10 @@ public class EmailService(IOptions<EmailOptions> options, ILogger<EmailService> 
         {
             using var client = new SmtpClient(_options.SmtpHost, _options.SmtpPort)
             {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(_options.SmtpUsername, _options.SmtpPassword)
+                EnableSsl = _options.EnableSsl,
+                Credentials = string.IsNullOrEmpty(_options.SmtpUsername)
+                    ? null
+                    : new NetworkCredential(_options.SmtpUsername, _options.SmtpPassword)
             };
 
             var message = new MailMessage

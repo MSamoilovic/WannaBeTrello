@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Feezbow.Application.Common.Exceptions;
 using Feezbow.Application.Common.Interfaces;
@@ -16,7 +17,8 @@ public class RegisterUserCommandHandler(
     ICurrentUserService currentUserService,
     IUnitOfWork unitOfWork,
     IEmailService emailService,
-    ILogger<RegisterUserCommandHandler> logger)
+    ILogger<RegisterUserCommandHandler> logger,
+    IConfiguration configuration)
     : IRequestHandler<RegisterUserCommand, RegisterUserCommandResponse>
 {
     public async Task<RegisterUserCommandResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -60,10 +62,9 @@ public class RegisterUserCommandHandler(
             EmailConfirmed: user.EmailConfirmed);
     }
 
-    private static string BuildConfirmationUrl(string email, string token)
+    private string BuildConfirmationUrl(string email, string token)
     {
-        // TODO: Dodati FRONTENDURL u konfiguraciju
-        var frontendUrl = ""; // configuration["FrontendUrl"]
+        var frontendUrl = configuration["FrontendUrl"]?.TrimEnd('/') ?? "";
         var encodedEmail = Uri.EscapeDataString(email);
         var encodedToken = Uri.EscapeDataString(token);
 

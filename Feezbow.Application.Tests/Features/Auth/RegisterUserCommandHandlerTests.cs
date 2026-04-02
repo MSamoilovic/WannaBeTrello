@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Feezbow.Application.Common.Interfaces;
@@ -68,7 +69,8 @@ public class RegisterUserCommandHandlerTests
             currentUserServiceMock.Object,
             unitOfWorkMock.Object,
             emailServiceMock.Object,
-            NullLogger<RegisterUserCommandHandler>.Instance);
+            NullLogger<RegisterUserCommandHandler>.Instance,
+            Mock.Of<IConfiguration>());
 
         // Act & Assert
         await Assert.ThrowsAsync<Feezbow.Application.Common.Exceptions.ValidationException>(
@@ -127,7 +129,8 @@ public class RegisterUserCommandHandlerTests
             currentUserServiceMock.Object,
             unitOfWorkMock.Object,
             emailServiceMock.Object,
-            NullLogger<RegisterUserCommandHandler>.Instance);
+            NullLogger<RegisterUserCommandHandler>.Instance,
+            Mock.Of<IConfiguration>());
 
         // Act
         var response = await handler.Handle(command, CancellationToken.None);
@@ -184,7 +187,8 @@ public class RegisterUserCommandHandlerTests
             currentUserServiceMock.Object,
             unitOfWorkMock.Object,
             emailServiceMock.Object,
-            NullLogger<RegisterUserCommandHandler>.Instance);
+            NullLogger<RegisterUserCommandHandler>.Instance,
+            Mock.Of<IConfiguration>());
 
         // Act
         await handler.Handle(command, CancellationToken.None);

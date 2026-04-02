@@ -14,12 +14,7 @@ public class EmailOptionsValidator : IValidateOptions<EmailOptions>
         if (options.SmtpPort < 1 || options.SmtpPort > 65535)
             errors.Add($"{nameof(EmailOptions.SmtpPort)} must be between 1 and 65535");
 
-        if (string.IsNullOrWhiteSpace(options.SmtpUsername))
-            errors.Add($"{nameof(EmailOptions.SmtpUsername)} is required");
-
-        if (string.IsNullOrWhiteSpace(options.SmtpPassword))
-            errors.Add($"{nameof(EmailOptions.SmtpPassword)} is required");
-
+        // SmtpUsername i SmtpPassword su opcionalni (npr. Mailpit ne zahtijeva autentikaciju)
         if (string.IsNullOrWhiteSpace(options.FromEmail))
             errors.Add($"{nameof(EmailOptions.FromEmail)} is required");
 
