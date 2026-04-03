@@ -1,10 +1,11 @@
+using Asp.Versioning;
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Boards.ArchiveBoard;
 using Feezbow.Application.Features.Boards.CreateBoard;
 using Feezbow.Application.Features.Boards.GetBoardById;
-using Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+using Feezbow.Application.Features.Boards.GetColumnsByBoardId;
 using Feezbow.Application.Features.Boards.RestoreBoard;
 using Feezbow.Application.Features.Boards.UpdateBoard;
 using Feezbow.Application.Features.Columns.ReorderColumn;
@@ -13,7 +14,8 @@ namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class BoardsController(IMediator mediator) : ControllerBase
 {
     /// <summary>

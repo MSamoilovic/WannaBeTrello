@@ -41,7 +41,7 @@ public class BoardConfiguration : IEntityTypeConfiguration<Board>
         
         builder.HasIndex(p => p.IsArchived);
 
-        // Match Project's query filter so required navigation is never unexpectedly null
-        builder.HasQueryFilter(b => !b.Project!.IsArchived);
+        // Exclude archived boards and boards whose project is also archived
+        builder.HasQueryFilter(b => !b.IsArchived && !b.Project!.IsArchived);
     }
 }

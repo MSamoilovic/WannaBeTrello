@@ -1,6 +1,6 @@
 ﻿using Feezbow.Domain.Entities;
 
-namespace Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+namespace Feezbow.Application.Features.Boards.GetColumnsByBoardId;
 
 public class GetColumnsByBoardIdQueryResponse
 {

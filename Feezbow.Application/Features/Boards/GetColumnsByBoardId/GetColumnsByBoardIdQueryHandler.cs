@@ -4,7 +4,7 @@ using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Exceptions;
 using Feezbow.Domain.Interfaces.Services;
 
-namespace Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+namespace Feezbow.Application.Features.Boards.GetColumnsByBoardId;
 
 public class GetColumnsByBoardIdQueryHandler(IBoardService boardService, ICurrentUserService currentUserService, ICacheService cacheService)
     : IRequestHandler<GetColumnsByBoardIdQuery, List<GetColumnsByBoardIdQueryResponse>>
