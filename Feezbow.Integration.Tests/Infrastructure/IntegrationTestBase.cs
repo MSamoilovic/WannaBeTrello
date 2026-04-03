@@ -1,6 +1,6 @@
 using DotNet.Testcontainers.Builders;
+using Feezbow.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -37,8 +37,10 @@ public class IntegrationTestBase : IAsyncLifetime
             {
                 builder.ConfigureServices(services =>
                 {
-                    // Override connection strings with test containers
-                    services.Configure<Microsoft.Extensions.Options.IOptions<object>>(_ => { });
+                    // Replace real email service with no-op to prevent SMTP calls in tests
+                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
+                    if (descriptor != null) services.Remove(descriptor);
+                    services.AddScoped<IEmailService, FakeEmailService>();
                 });
 
                 builder.UseSetting("ConnectionStrings:DefaultConnection", _postgres.GetConnectionString());
@@ -49,11 +51,11 @@ public class IntegrationTestBase : IAsyncLifetime
                 builder.UseSetting("Jwt:Issuer", "feezbow-test");
                 builder.UseSetting("Jwt:Audience", "feezbow-test");
                 builder.UseSetting("Jwt:ExpiryMinutes", "60");
-                builder.UseSetting("Email:Host", "localhost");
-                builder.UseSetting("Email:Port", "25");
-                builder.UseSetting("Email:Username", "test");
-                builder.UseSetting("Email:Password", "test");
-                builder.UseSetting("Email:From", "test@feezbow.test");
+                builder.UseSetting("Email:SmtpHost", "localhost");
+                builder.UseSetting("Email:SmtpPort", "25");
+                builder.UseSetting("Email:SmtpUsername", "test");
+                builder.UseSetting("Email:SmtpPassword", "test");
+                builder.UseSetting("Email:FromEmail", "test@feezbow.test");
             });
 
         Client = _factory.CreateClient();
