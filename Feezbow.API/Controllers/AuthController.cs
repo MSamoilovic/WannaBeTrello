@@ -1,3 +1,4 @@
+using Asp.Versioning;
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,8 @@ using Feezbow.Domain.Exceptions;
 namespace Feezbow.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("register")]

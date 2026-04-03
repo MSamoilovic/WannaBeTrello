@@ -1,6 +1,6 @@
 ﻿using Moq;
 using Feezbow.Application.Common.Interfaces;
-using Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+using Feezbow.Application.Features.Boards.GetColumnsByBoardId;
 using Feezbow.Application.Tests.Utils;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Exceptions;

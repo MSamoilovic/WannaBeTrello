@@ -46,7 +46,7 @@ public class BoardTaskConfiguration: IEntityTypeConfiguration<BoardTask>
             .HasForeignKey(c => c.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Match Column's query filter so required navigation is never unexpectedly null
-        builder.HasQueryFilter(t => !t.Column.IsDeleted);
+        // Exclude archived tasks and tasks on deleted columns
+        builder.HasQueryFilter(t => !t.IsArchived && !t.Column.IsDeleted);
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.RateLimiting;
+﻿using System.IO.Compression;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -27,6 +29,17 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .Enrich.WithEnvironmentName()
         .Enrich.WithThreadId();
 });
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+    options.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    options.Level = CompressionLevel.Fastest);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -175,6 +188,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseResponseCompression();
+
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
@@ -182,6 +197,21 @@ app.UseSerilogRequestLogging(options =>
 });
 
 app.UseRouting();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    if (!app.Environment.IsDevelopment())
+    {
+        context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'");
+    }
+    await next();
+});
 
 app.UseCors("Default");
 
@@ -198,5 +228,5 @@ app.MapHub<NotificationHub>("/hubs/notifications").RequireAuthorization();
 app.MapHub<PresenceHub>("/hubs/presence").RequireAuthorization();
 app.Run();
 
-
-
+// Expose Program for WebApplicationFactory in integration tests
+public partial class Program { }

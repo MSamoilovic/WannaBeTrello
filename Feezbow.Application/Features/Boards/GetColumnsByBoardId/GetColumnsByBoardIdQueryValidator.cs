@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Feezbow.Application.Features.Boards.GetColumnsByBoardIId;
+namespace Feezbow.Application.Features.Boards.GetColumnsByBoardId;
 
 public class GetColumnsByBoardIdQueryValidator : AbstractValidator<GetColumnsByBoardIdQuery>
 {

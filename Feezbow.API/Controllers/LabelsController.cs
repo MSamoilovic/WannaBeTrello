@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class LabelsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("board/{boardId:long}")]

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,8 @@ namespace Feezbow.Controllers;
 
 [ApiController]
 [Authorize(Policy = "EmailConfirmed")]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class ActivityController(IMediator mediator): ControllerBase
 {
 
