@@ -77,8 +77,13 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddHealthChecks();
 
+var rateLimitingEnabled = builder.Configuration.GetValue<bool>("RateLimiting:Enabled", defaultValue: true);
+
 builder.Services.AddRateLimiter(options =>
 {
+    var globalPermitLimit = rateLimitingEnabled ? 100 : int.MaxValue;
+    var authPermitLimit = rateLimitingEnabled ? 10 : int.MaxValue;
+
     // Global limiter: 100 req/min per user (authenticated) or per IP (anonymous)
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
     {
@@ -88,7 +93,7 @@ builder.Services.AddRateLimiter(options =>
 
         return RateLimitPartition.GetSlidingWindowLimiter(key, _ => new SlidingWindowRateLimiterOptions
         {
-            PermitLimit = 100,
+            PermitLimit = globalPermitLimit,
             Window = TimeSpan.FromMinutes(1),
             SegmentsPerWindow = 6,
             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
@@ -99,7 +104,7 @@ builder.Services.AddRateLimiter(options =>
     // Strict policy for auth endpoints (login, register, forgot-password, etc.)
     options.AddSlidingWindowLimiter("auth", opt =>
     {
-        opt.PermitLimit = 10;
+        opt.PermitLimit = authPermitLimit;
         opt.Window = TimeSpan.FromMinutes(1);
         opt.SegmentsPerWindow = 6;
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
