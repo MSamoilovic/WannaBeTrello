@@ -8,10 +8,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Feezbow.Integration.Tests.Infrastructure;
 
-public abstract class IntegrationTestBase(IntegrationTestFixture fixture)
+public abstract class IntegrationTestBase
 {
-    protected HttpClient Client { get; } = fixture.CreateClient();
-    protected IServiceProvider Services { get; } = fixture.Services;
+    protected HttpClient Client { get; }
+    protected IServiceProvider Services { get; }
+
+    protected IntegrationTestBase(IntegrationTestFixture fixture)
+    {
+        Client = fixture.CreateClient();
+        Services = fixture.Services;
+    }
 
     protected T GetService<T>() where T : notnull =>
         Services.CreateScope().ServiceProvider.GetRequiredService<T>();
