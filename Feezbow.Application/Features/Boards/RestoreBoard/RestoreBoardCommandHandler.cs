@@ -20,13 +20,11 @@ public class RestoreBoardCommandHandler(
             throw new UnauthorizedAccessException("User is not authenticated");
         }
         
-        var board = await boardService.GetBoardWithDetailsAsync(request.BoardId, cancellationToken);
         var boardId = await boardService.RestoreBoardAsync(request.BoardId, currentUserService.UserId.Value, cancellationToken);
-        
-        if (board is not null)
-        {
-            await InvalidateCacheAsync(request.BoardId, board.ProjectId, cancellationToken);
-        }
+
+        // Fetch board AFTER restoring — global filter (!IsArchived) now allows the query.
+        var board = await boardService.GetBoardWithDetailsAsync(boardId, cancellationToken);
+        await InvalidateCacheAsync(boardId, board.ProjectId, cancellationToken);
         
         var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now restored.");
         

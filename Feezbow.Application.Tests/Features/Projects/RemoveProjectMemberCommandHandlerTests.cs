@@ -85,7 +85,7 @@ public class RemoveProjectMemberCommandHandlerTests
 
         var projectRepoMock = new Mock<IProjectRepository>();
         projectRepoMock
-            .Setup(x => x.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetProjectWithMembersAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Project?)null);
 
         var userRepoMock = new Mock<IUserRepository>();
@@ -109,7 +109,7 @@ public class RemoveProjectMemberCommandHandlerTests
         await Assert.ThrowsAsync<NotFoundException>(
             () => handler.Handle(command, CancellationToken.None));
 
-        projectRepoMock.Verify(x => x.GetByIdAsync(projectId, It.IsAny<CancellationToken>()), Times.Once);
+        projectRepoMock.Verify(x => x.GetProjectWithMembersAsync(projectId, It.IsAny<CancellationToken>()), Times.Once);
         cacheServiceMock.Verify(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -142,7 +142,7 @@ public class RemoveProjectMemberCommandHandlerTests
 
         var projectRepoMock = new Mock<IProjectRepository>();
         projectRepoMock
-            .Setup(x => x.GetByIdAsync(projectId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetProjectWithMembersAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);
         projectRepoMock.Setup(x => x.Update(project));
 

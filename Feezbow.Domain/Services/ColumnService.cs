@@ -15,14 +15,14 @@ public class ColumnService(
     public async Task<Column> CreateColumnAsync(long boardId, string? name, int order, long userId,
         CancellationToken cancellationToken)
     {
-        var board = await boardRepository.GetByIdAsync(boardId);
+        var board = await boardRepository.GetBoardWithDetailsAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
 
         if (board.IsArchived)
             throw new InvalidOperationException($"Board {boardId} is already archived");
 
-        var boardMember = board.BoardMembers.FirstOrDefault(x => x.BoardId == boardId);
+        var boardMember = board.BoardMembers.FirstOrDefault(x => x.UserId == userId);
         if (boardMember is not { Role: BoardRole.Admin })
             throw new AccessDeniedException("Only Board Admin can create a Column");
         
