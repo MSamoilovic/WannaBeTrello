@@ -32,7 +32,7 @@ public class ProjectService(
     public async Task<Project> UpdateProjectAsync(long id, string? name, string? description, ProjectStatus status,
         ProjectVisibility visibility, bool archived, long creatorUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(id, cancellationToken);
+        var project = await projectRepository.GetProjectWithMembersAsync(id, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), id);
 
@@ -51,7 +51,7 @@ public class ProjectService(
 
     public async Task<Project> GetProjectByIdAsync(long id, long currentUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(id, cancellationToken);
+        var project = await projectRepository.GetProjectWithMembersAsync(id, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), id);
 
@@ -62,7 +62,7 @@ public class ProjectService(
 
     public async Task<long> ArchiveProjectAsync(long id, long currentUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(id);
+        var project = await projectRepository.GetProjectWithMembersAsync(id, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), id);
 
@@ -75,7 +75,7 @@ public class ProjectService(
 
     public async Task<long> UnarchiveProjectAsync(long id, long currentUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(id);
+        var project = await projectRepository.GetArchivedProjectWithMembersAsync(id, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), id);
 
@@ -88,7 +88,7 @@ public class ProjectService(
 
     public async Task<long> AddProjectMember(long projectId, long newMemberId, ProjectRole role, long inviterUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
 
@@ -108,7 +108,7 @@ public class ProjectService(
 
     public async Task RemoveProjectMember(long projectId, long removedUserId, long removerUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
 
@@ -120,7 +120,7 @@ public class ProjectService(
 
     public async Task UpdateProjectMember(long projectId, long updateMemberId, ProjectRole role, long inviterUserId, CancellationToken cancellationToken)
     {
-        var project = await projectRepository.GetByIdAsync(projectId);
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project is null)
             throw new NotFoundException(nameof(Project), projectId);
 

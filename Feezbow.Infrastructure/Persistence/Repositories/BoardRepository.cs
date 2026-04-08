@@ -26,6 +26,21 @@ public class BoardRepository: Repository<Board>, IBoardRepository
             .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
     }
 
+    public async Task<Board?> GetBoardWithMembersTrackingAsync(long boardId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(b => b.BoardMembers)
+            .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
+    }
+
+    public async Task<Board?> GetArchivedBoardWithMembersAsync(long boardId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .IgnoreQueryFilters()
+            .Include(b => b.BoardMembers)
+            .FirstOrDefaultAsync(b => b.Id == boardId, cancellationToken);
+    }
+
     public async Task<Board?> GetBoardWithColumnsAsync(long boardId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

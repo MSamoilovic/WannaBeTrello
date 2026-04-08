@@ -19,6 +19,14 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
         return await GetSingleAsync(spec, cancellationToken);
     }
 
+    public async Task<Project?> GetArchivedProjectWithMembersAsync(long projectId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .IgnoreQueryFilters()
+            .Include(p => p.ProjectMembers)
+            .FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Project>> GetActiveProjectsByUserAsync(long userId, CancellationToken cancellationToken = default)
     {
         var spec = new ActiveProjectsByUserSpecification(userId);
