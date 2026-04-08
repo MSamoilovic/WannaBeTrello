@@ -26,6 +26,13 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
         return ApplySpecification(specification);
     }
 
+    public async Task<BoardTask?> GetArchivedTaskAsync(long taskId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(t => t.Id == taskId, cancellationToken);
+    }
+
     public async Task<long> GetBoardIdByTaskIdAsync(long taskId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Set<BoardTask>()

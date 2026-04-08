@@ -109,7 +109,7 @@ public class RestoreBoardCommandHandlerTests
 
         var boardServiceMock = new Mock<IBoardService>();
         boardServiceMock
-            .Setup(s => s.GetBoardWithDetailsAsync(nonExistentBoardId, It.IsAny<CancellationToken>()))
+            .Setup(s => s.RestoreBoardAsync(nonExistentBoardId, userId, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException(nameof(Domain.Entities.Board), nonExistentBoardId));
 
         var cacheServiceMock = new Mock<ICacheService>();

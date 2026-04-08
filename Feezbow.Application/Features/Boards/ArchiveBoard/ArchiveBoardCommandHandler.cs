@@ -20,26 +20,25 @@ public class ArchiveBoardCommandHandler(
             throw new UnauthorizedAccessException("User is not authenticated");
         }
 
+        // Fetch board details BEFORE archiving so we have the projectId for cache invalidation.
+        // After archiving, the global query filter (!b.IsArchived) would exclude the board.
+        var board = await boardService.GetBoardWithDetailsAsync(request.BoardId, cancellationToken);
+
         var boardId =
             await boardService.ArchiveBoardAsync(request.BoardId, currentUserService.UserId.Value, cancellationToken);
-        
-        await InvalidateCacheAsync(request.BoardId, cancellationToken);
-        
+
+        await InvalidateCacheAsync(board.ProjectId, boardId, cancellationToken);
+
         var result = Result<long>.Success(boardId, $"Board {request.BoardId} is now archived.");
 
         return new ArchiveBoardCommandResponse(result);
     }
-    
-    private async Task InvalidateCacheAsync(long boardId, CancellationToken ct)
+
+    private async Task InvalidateCacheAsync(long projectId, long boardId, CancellationToken ct)
     {
-        var board = await boardService.GetBoardWithDetailsAsync(boardId, ct);
-        
-        if (board is not null)
-        {
-            await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
-            await cacheService.RemoveAsync(CacheKeys.ProjectBoards(board.ProjectId), ct);
-            await cacheService.RemoveAsync(CacheKeys.BoardColumns(boardId), ct);
-            await cacheService.RemoveAsync(CacheKeys.BoardTasks(boardId), ct);
-        }
+        await cacheService.RemoveAsync(CacheKeys.Board(boardId), ct);
+        await cacheService.RemoveAsync(CacheKeys.ProjectBoards(projectId), ct);
+        await cacheService.RemoveAsync(CacheKeys.BoardColumns(boardId), ct);
+        await cacheService.RemoveAsync(CacheKeys.BoardTasks(boardId), ct);
     }
 }

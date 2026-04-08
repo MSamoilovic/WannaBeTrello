@@ -17,11 +17,12 @@ public class UnarchiveProjectCommandHandler(
         if (!currentUserService.IsAuthenticated || !currentUserService.UserId.HasValue)
             throw new UnauthorizedAccessException("User is not authenticated");
 
-        var project = await service.GetProjectByIdAsync(request.ProjectId, currentUserService.UserId.Value, cancellationToken);
-
         var projectId = await service.UnarchiveProjectAsync(request.ProjectId, currentUserService.UserId.Value, cancellationToken);
 
-        await InvalidateCacheAsync(request.ProjectId, project.OwnerId, cancellationToken);
+        // Fetch project AFTER restoring — global filter (!IsArchived) now allows the query.
+        var project = await service.GetProjectByIdAsync(projectId, currentUserService.UserId.Value, cancellationToken);
+
+        await InvalidateCacheAsync(projectId, project.OwnerId, cancellationToken);
 
         var result = Result<long>.Success(projectId, $"Project {request.ProjectId} is now restored.");
 

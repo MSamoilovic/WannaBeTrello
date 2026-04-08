@@ -29,8 +29,8 @@ public class BoardService(
         if (user == null)
             throw new NotFoundException(nameof(User), createdByUserId);
 
-        // Validacija da li projekat postoji
-        var project = await projectRepository.GetByIdAsync(projectId);
+        // Validacija da li projekat postoji (sa učitanim članovima radi provjere pristupa)
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project == null)
             throw new NotFoundException(nameof(Project), projectId);
 
@@ -92,11 +92,11 @@ public class BoardService(
         return true;
     }
 
-    public async Task<IReadOnlyList<Board>> GetBoardsByProjectAsync(long projectId, long userId, 
+    public async Task<IReadOnlyList<Board>> GetBoardsByProjectAsync(long projectId, long userId,
         CancellationToken cancellationToken = default)
     {
-        // Provera da li projekat postoji
-        var project = await projectRepository.GetByIdAsync(projectId);
+        // Provera da li projekat postoji (sa učitanim članovima radi provjere pristupa)
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project == null)
             throw new NotFoundException(nameof(Project), projectId);
 
@@ -112,8 +112,7 @@ public class BoardService(
 
     public async Task<long> ArchiveBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om
-        var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
+        var board = await boardRepository.GetBoardWithMembersTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
 
@@ -129,8 +128,7 @@ public class BoardService(
 
     public async Task<long> RestoreBoardAsync(long boardId, long userId, CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om
-        var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
+        var board = await boardRepository.GetArchivedBoardWithMembersAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
         
@@ -145,8 +143,7 @@ public class BoardService(
     public async Task AddBoardMemberAsync(long boardId, long userId, BoardRole role, long inviterUserId,
         CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om
-        var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
+        var board = await boardRepository.GetBoardWithMembersTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
 
@@ -172,8 +169,7 @@ public class BoardService(
     public async Task RemoveBoardMemberAsync(long boardId, long userIdToRemove, long removerUserId,
         CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om
-        var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
+        var board = await boardRepository.GetBoardWithMembersTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
 
@@ -192,8 +188,7 @@ public class BoardService(
     public async Task UpdateBoardMemberRoleAsync(long boardId, long userId, BoardRole newRole, long updaterUserId,
         CancellationToken cancellationToken = default)
     {
-        // Dohvatanje board-a sa tracking-om
-        var board = await boardRepository.GetByIdWithTrackingAsync(boardId, cancellationToken);
+        var board = await boardRepository.GetBoardWithMembersTrackingAsync(boardId, cancellationToken);
         if (board == null)
             throw new NotFoundException(nameof(Board), boardId);
 
@@ -281,8 +276,8 @@ public class BoardService(
     public async Task<IReadOnlyList<Board>> GetBoardByProjectIdAsync(long projectId, long userId,
         CancellationToken cancellationToken = default)
     {
-        // Provera da li projekat postoji
-        var project = await projectRepository.GetByIdAsync(projectId);
+        // Provera da li projekat postoji (sa učitanim članovima radi provjere pristupa)
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken);
         if (project == null)
             throw new NotFoundException(nameof(Project), projectId);
 

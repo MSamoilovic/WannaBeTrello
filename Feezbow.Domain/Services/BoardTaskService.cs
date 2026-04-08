@@ -25,7 +25,8 @@ public class BoardTaskService(
 
 
         var board = await boardRepository.GetBoardWithDetailsAsync(column.BoardId, cancellationToken);
-        if (board == null || !board.BoardMembers.Any(bm => bm.UserId == creatorUserId && bm.Role == BoardRole.Editor))
+        if (board == null || !board.BoardMembers.Any(bm => bm.UserId == creatorUserId &&
+                (bm.Role == BoardRole.Editor || bm.Role == BoardRole.Admin)))
         {
             throw new AccessDeniedException("You don't have permission to create tasks on this board.");
         }
@@ -80,7 +81,8 @@ public class BoardTaskService(
 
 
         var board = task.Column.Board;
-        if (!board.BoardMembers.Any(bm => bm.UserId == modifierUserId && bm.Role == BoardRole.Editor))
+        if (!board.BoardMembers.Any(bm => bm.UserId == modifierUserId &&
+                (bm.Role == BoardRole.Editor || bm.Role == BoardRole.Admin)))
         {
             throw new AccessDeniedException("You don't have a permission to update this task.");
         }
@@ -93,7 +95,7 @@ public class BoardTaskService(
 
     public async Task RestoreTaskAsync(long taskId, long modifierUserId, CancellationToken cancellationToken)
     {
-        var task = await boardTaskRepository.GetByIdAsync(taskId, cancellationToken);
+        var task = await boardTaskRepository.GetArchivedTaskAsync(taskId, cancellationToken);
         if (task == null) throw new NotFoundException(nameof(BoardTask), taskId);
         
         task.Restore(modifierUserId);
@@ -124,7 +126,8 @@ public class BoardTaskService(
 
         var board = await boardRepository.GetBoardWithDetailsAsync(oldColumn.BoardId, cancellationToken);
         if (board == null ||
-            !board.BoardMembers.Any(bm => bm.UserId == performingUserId && bm.Role == BoardRole.Editor))
+            !board.BoardMembers.Any(bm => bm.UserId == performingUserId &&
+                (bm.Role == BoardRole.Editor || bm.Role == BoardRole.Admin)))
         {
             throw new AccessDeniedException("You don't have permission to move this task.");
         }
@@ -145,7 +148,8 @@ public class BoardTaskService(
         if (board == null) throw new NotFoundException(nameof(Board), task.Column.BoardId);
 
         var performingMember = board.BoardMembers.FirstOrDefault(bm => bm.UserId == performingUserId);
-        if (performingMember is null || performingMember.Role != BoardRole.Editor)
+        if (performingMember is null ||
+            (performingMember.Role != BoardRole.Editor && performingMember.Role != BoardRole.Admin))
         {
             throw new AccessDeniedException("You don't have permission to assign this task.");
         }
