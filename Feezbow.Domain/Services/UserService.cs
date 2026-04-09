@@ -93,8 +93,8 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         if (!string.IsNullOrWhiteSpace(firstName) && firstName.Length > 100)
             throw new BusinessRuleValidationException("First name cannot exceed 100 characters");
 
-        if (!string.IsNullOrWhiteSpace(lastName) && lastName.Length > 300)
-            throw new BusinessRuleValidationException("Last name cannot exceed 300 characters");
+        if (!string.IsNullOrWhiteSpace(lastName) && lastName.Length > 100)
+            throw new BusinessRuleValidationException("Last name cannot exceed 100 characters");
 
         if (!string.IsNullOrWhiteSpace(bio) && bio.Length > 500)
             throw new BusinessRuleValidationException("Bio cannot exceed 500 characters");

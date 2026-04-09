@@ -7,7 +7,7 @@ using Feezbow.Domain.Interfaces.Services;
 namespace Feezbow.Application.Features.Columns.CreateColumn;
 
 public class CreateColumnCommandHandler(
-    IColumnService boardService, 
+    IColumnService boardService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<CreateColumnCommand, CreateColumnCommandResponse>
@@ -18,17 +18,17 @@ public class CreateColumnCommandHandler(
         {
             throw new UnauthorizedAccessException("User is not authenticated");
         }
-        
+
         var column = await boardService.CreateColumnAsync(
             request.BoardId,
-            request.Name!,
+            request.Name,
             request.Order,
-            currentUserService!.UserId ?? 0,
+            currentUserService.UserId ?? 0,
             cancellationToken
         );
-        
+
         await InvalidateCacheAsync(request.BoardId, column.Id, cancellationToken);
-        
+
         var result =  Result<long>.Success(column.Id, "Column created successfully");
         return new CreateColumnCommandResponse(result);
     }

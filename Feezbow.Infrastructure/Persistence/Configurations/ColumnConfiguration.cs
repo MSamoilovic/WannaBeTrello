@@ -17,6 +17,10 @@ public class ColumnConfiguration : IEntityTypeConfiguration<Column>
         builder.Property(c => c.Order)
             .IsRequired();
 
+        builder.HasIndex(c => new { c.BoardId, c.Order })
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
+
         
         builder.HasOne(c => c.Board)
             .WithMany(b => b.Columns)
