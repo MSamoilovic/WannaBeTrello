@@ -30,11 +30,16 @@ public sealed class HubRateLimitingFilter(
         var userId = invocationContext.Context.UserIdentifier
                      ?? invocationContext.Context.ConnectionId;
         var method = invocationContext.HubMethodName;
-        var key = $"rl:{userId}:{method}";
 
-        if (!rateLimiter.IsAllowed(key, _rateLimitOptions.MaxRequestsPerSecond, TimeSpan.FromSeconds(1)))
+        if (!rateLimiter.IsAllowed($"rl:s:{userId}:{method}", _rateLimitOptions.MaxRequestsPerSecond, TimeSpan.FromSeconds(1)))
         {
-            logger.LogWarning("Rate limit exceeded for user {UserId} on hub method {HubMethod}", userId, method);
+            logger.LogWarning("Per-second rate limit exceeded for user {UserId} on hub method {HubMethod}", userId, method);
+            throw new HubException("Rate limit exceeded. Please slow down.");
+        }
+
+        if (!rateLimiter.IsAllowed($"rl:m:{userId}:{method}", _rateLimitOptions.MaxRequestsPerMinute, TimeSpan.FromMinutes(1)))
+        {
+            logger.LogWarning("Per-minute rate limit exceeded for user {UserId} on hub method {HubMethod}", userId, method);
             throw new HubException("Rate limit exceeded. Please slow down.");
         }
 

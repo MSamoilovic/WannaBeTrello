@@ -1,5 +1,7 @@
-﻿using Feezbow.Domain.Interfaces.Repositories;
+﻿using Feezbow.Domain.Exceptions;
 using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Feezbow.Infrastructure.Persistence.Repositories;
 
@@ -24,7 +26,14 @@ public class UnitOfWork(ApplicationDbContext dbContext,
 
     public async Task<int> CompleteAsync(CancellationToken cancellationToken)
     {
-        return await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            return await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            throw new InvalidOperationDomainException("A record with the same unique value already exists.");
+        }
     }
 
     public void Dispose()
