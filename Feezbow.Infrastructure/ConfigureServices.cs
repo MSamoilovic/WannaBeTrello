@@ -155,6 +155,7 @@ public static class ConfigureServices
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
         services.AddScoped<ILabelRepository, LabelRepository>();
+        services.AddScoped<IHouseholdRepository, HouseholdRepository>();
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordSignInService, PasswordSignInService>();
@@ -188,6 +189,7 @@ public static class ConfigureServices
            
         }
 
+        services.AddHostedService<RecurringTaskGeneratorJob>();
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
         services.AddScoped<IProjectNotificationService, ProjectNotificationService>();

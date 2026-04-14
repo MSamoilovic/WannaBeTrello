@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IUserRepository Users { get; }
     ICommentRepository Comments { get; }
     IActivityLogRepository ActivityLogs { get; }
+    IHouseholdRepository Households { get; }
     
     Task<int> CompleteAsync(CancellationToken cancellationToken = default); // Čuva promene u bazi podataka
 }

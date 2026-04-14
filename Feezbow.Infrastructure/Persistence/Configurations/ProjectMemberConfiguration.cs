@@ -23,7 +23,11 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
         
         builder.Property(pm => pm.Role)
             .IsRequired()
-            .HasConversion<string>(); // Čuva enum kao string u bazi
+            .HasConversion<string>();
+
+        builder.Property(pm => pm.HouseholdRole)
+            .HasConversion<string>()
+            .IsRequired(false);
 
         // Match Project's query filter so required navigation is never unexpectedly null
         builder.HasQueryFilter(pm => !pm.Project.IsArchived);

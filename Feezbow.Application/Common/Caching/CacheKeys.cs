@@ -22,4 +22,6 @@ public static class CacheKeys
     public static string Column(long columnId) => $"column:{columnId}";
 
     public static string BoardLabels(long boardId) => $"board:{boardId}:labels";
+
+    public static string HouseholdProfile(long projectId) => $"household:{projectId}:profile";
 }
