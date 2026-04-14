@@ -3,6 +3,7 @@ using System;
 using Feezbow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Feezbow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260410101943_AddHouseholdProfile")]
+    partial class AddHouseholdProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,24 +167,12 @@ namespace Feezbow.Infrastructure.Migrations
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("NextOccurrence")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("ParentTaskId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Position")
                         .HasColumnType("integer");
 
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("TaskType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("General");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -193,8 +184,6 @@ namespace Feezbow.Infrastructure.Migrations
                     b.HasIndex("AssigneeId");
 
                     b.HasIndex("ColumnId");
-
-                    b.HasIndex("ParentTaskId");
 
                     b.ToTable("Tasks");
                 });
@@ -871,51 +860,9 @@ namespace Feezbow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Feezbow.Domain.Entities.BoardTask", "ParentTask")
-                        .WithMany()
-                        .HasForeignKey("ParentTaskId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.OwnsOne("Feezbow.Domain.ValueObjects.RecurrenceRule", "Recurrence", b1 =>
-                        {
-                            b1.Property<long>("BoardTaskId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("DaysOfWeek")
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("Recurrence_DaysOfWeek");
-
-                            b1.Property<DateTime?>("EndDate")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("Recurrence_EndDate");
-
-                            b1.Property<string>("Frequency")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Recurrence_Frequency");
-
-                            b1.Property<int>("Interval")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasDefaultValue(1)
-                                .HasColumnName("Recurrence_Interval");
-
-                            b1.HasKey("BoardTaskId");
-
-                            b1.ToTable("Tasks");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BoardTaskId");
-                        });
-
                     b.Navigation("Assignee");
 
                     b.Navigation("Column");
-
-                    b.Navigation("ParentTask");
-
-                    b.Navigation("Recurrence");
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.BoardTaskLabel", b =>

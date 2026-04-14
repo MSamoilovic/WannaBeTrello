@@ -11,6 +11,7 @@ public class BoardTask : AuditableEntity
     public string? Description { get; private set; }
     public int Position { get; private set; }
     public TaskPriority Priority { get; private set; } = TaskPriority.Medium;
+    public TaskType TaskType { get; private set; } = TaskType.General;
     public DateTime? DueDate { get; private set; }
 
     public long ColumnId { get; private set; }
@@ -20,6 +21,16 @@ public class BoardTask : AuditableEntity
     public User? Assignee { get; private set; }
 
     public bool IsArchived { get; private set; }
+
+    // --- Recurring task fields ---
+    public RecurrenceRule? Recurrence { get; private set; }
+    public DateTime? NextOccurrence { get; private set; }
+
+    /// <summary>ID of the original task this was generated from. Null for root tasks.</summary>
+    public long? ParentTaskId { get; private set; }
+    public BoardTask? ParentTask { get; private set; }
+
+    public bool IsRecurring => Recurrence is not null;
 
     public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
 
@@ -34,7 +45,7 @@ public class BoardTask : AuditableEntity
     }
 
     public static BoardTask Create(string title, string? description, TaskPriority priority, DateTime? dueDate,
-        int position, long columnId, long? assigneeId, long creatorUserId)
+        int position, long columnId, long? assigneeId, long creatorUserId, TaskType taskType = TaskType.General)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new BusinessRuleValidationException("Task title cannot be empty.");
@@ -53,6 +64,7 @@ public class BoardTask : AuditableEntity
             Title = title,
             Description = description,
             Priority = priority,
+            TaskType = taskType,
             DueDate = dueDate,
             Position = position,
             ColumnId = columnId,
@@ -303,6 +315,82 @@ public class BoardTask : AuditableEntity
         _taskLabels.Remove(taskLabel);
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = userId;
+    }
+
+    public void SetRecurrence(RecurrenceRule rule, DateTime? firstOccurrence, long modifierUserId)
+    {
+        Recurrence = rule ?? throw new ArgumentNullException(nameof(rule));
+        NextOccurrence = firstOccurrence;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+
+        var activity = new Activity(
+            ActivityType.TaskUpdated,
+            $"Recurrence set to {rule.Frequency} (every {rule.Interval})",
+            modifierUserId,
+            newValue: new Dictionary<string, object?>
+            {
+                ["Frequency"] = rule.Frequency.ToString(),
+                ["Interval"] = rule.Interval,
+                ["NextOccurrence"] = firstOccurrence
+            });
+
+        AddActivity(activity);
+    }
+
+    public void ClearRecurrence(long modifierUserId)
+    {
+        if (Recurrence is null) return;
+
+        Recurrence = null;
+        NextOccurrence = null;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+
+        AddActivity(new Activity(
+            ActivityType.TaskUpdated,
+            "Recurrence removed",
+            modifierUserId,
+            oldValue: new Dictionary<string, object?> { ["Recurrence"] = "cleared" }));
+    }
+
+    public void ScheduleNextOccurrence(DateTime nextDate, long systemUserId)
+    {
+        NextOccurrence = nextDate;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = systemUserId;
+    }
+
+    /// <summary>
+    /// Creates a new one-time occurrence of this recurring task in the same column.
+    /// The new task inherits all properties but has no recurrence of its own.
+    /// </summary>
+    public BoardTask SpawnOccurrence(long systemUserId)
+    {
+        if (Recurrence is null)
+            throw new InvalidOperationDomainException("Cannot spawn occurrence from a non-recurring task.");
+
+        var occurrence = new BoardTask
+        {
+            Title = Title,
+            Description = Description,
+            Priority = Priority,
+            TaskType = TaskType,
+            DueDate = NextOccurrence,
+            Position = Position,
+            ColumnId = ColumnId,
+            AssigneeId = AssigneeId,
+            ParentTaskId = Id,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = systemUserId
+        };
+
+        occurrence.AddActivity(new Activity(
+            ActivityType.TaskCreated,
+            $"Recurring occurrence generated from task '{Title}'",
+            systemUserId));
+
+        return occurrence;
     }
 
     public void AddActivity(Activity activity)

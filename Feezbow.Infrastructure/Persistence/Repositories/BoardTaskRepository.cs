@@ -60,4 +60,20 @@ public class BoardTaskRepository(ApplicationDbContext dbContext)
                      && t.DueDate.Value < to)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<BoardTask>> GetRecurringTasksDueAsync(DateTime upTo, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(t => t.Recurrence != null
+                     && t.NextOccurrence.HasValue
+                     && t.NextOccurrence.Value.Date <= upTo.Date)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<BoardTask>> GetRecurringTasksByBoardAsync(long boardId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(t => t.Column.BoardId == boardId && t.Recurrence != null)
+            .ToListAsync(cancellationToken);
+    }
 }

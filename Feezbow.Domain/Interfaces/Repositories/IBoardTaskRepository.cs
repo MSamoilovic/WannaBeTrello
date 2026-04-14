@@ -11,4 +11,6 @@ public interface IBoardTaskRepository: IRepository<BoardTask>
     Task<long> GetBoardIdByTaskIdAsync(long taskId, CancellationToken cancellationToken = default);
     Task<BoardTask?> GetTaskWithLabelsAsync(long taskId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<BoardTask>> GetTasksDueSoonAsync(DateTime from, DateTime to, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<BoardTask>> GetRecurringTasksDueAsync(DateTime upTo, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<BoardTask>> GetRecurringTasksByBoardAsync(long boardId, CancellationToken cancellationToken = default);
 }
