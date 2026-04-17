@@ -24,4 +24,7 @@ public static class CacheKeys
     public static string BoardLabels(long boardId) => $"board:{boardId}:labels";
 
     public static string HouseholdProfile(long projectId) => $"household:{projectId}:profile";
+
+    public static string ProjectShoppingLists(long projectId) => $"project:{projectId}:shopping-lists";
+    public static string ShoppingList(long listId) => $"shopping-list:{listId}";
 }
