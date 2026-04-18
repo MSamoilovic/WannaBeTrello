@@ -1,3 +1,4 @@
+using Feezbow.Domain.Enums;
 using Feezbow.Domain.Events.Household_Events;
 using Feezbow.Domain.Exceptions;
 
@@ -94,5 +95,51 @@ public class HouseholdProfile : AuditableEntity
         LastModifiedBy = updatedBy;
 
         AddDomainEvent(new HouseholdProfileUpdatedEvent(Id, ProjectId, updatedBy, oldValues, newValues));
+    }
+
+    public void AssignMemberRole(ProjectMember member, HouseholdRole role, long assignedBy)
+    {
+        if (member is null)
+            throw new BusinessRuleValidationException("Member cannot be null.");
+
+        if (assignedBy <= 0)
+            throw new BusinessRuleValidationException("AssignedBy must be a positive number.");
+
+        if (member.ProjectId != ProjectId)
+            throw new BusinessRuleValidationException("Member does not belong to this household's project.");
+
+        var previousRole = member.HouseholdRole;
+        if (previousRole == role) return;
+
+        member.SetHouseholdRole(role);
+
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = assignedBy;
+
+        AddDomainEvent(new HouseholdMemberRoleAssignedEvent(
+            ProjectId, member.UserId!.Value, role, previousRole, assignedBy));
+    }
+
+    public void RemoveMemberRole(ProjectMember member, long removedBy)
+    {
+        if (member is null)
+            throw new BusinessRuleValidationException("Member cannot be null.");
+
+        if (removedBy <= 0)
+            throw new BusinessRuleValidationException("RemovedBy must be a positive number.");
+
+        if (member.ProjectId != ProjectId)
+            throw new BusinessRuleValidationException("Member does not belong to this household's project.");
+
+        if (member.HouseholdRole is null) return;
+
+        var previousRole = member.HouseholdRole.Value;
+        member.SetHouseholdRole(null);
+
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = removedBy;
+
+        AddDomainEvent(new HouseholdMemberRoleRemovedEvent(
+            ProjectId, member.UserId!.Value, previousRole, removedBy));
     }
 }

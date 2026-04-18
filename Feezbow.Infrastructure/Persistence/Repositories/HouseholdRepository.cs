@@ -15,6 +15,15 @@ public class HouseholdRepository(ApplicationDbContext dbContext) : IHouseholdRep
             .FirstOrDefaultAsync(h => h.ProjectId == projectId, cancellationToken);
     }
 
+    public async Task<HouseholdProfile?> GetByProjectIdWithMembersAsync(long projectId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(h => h.Project)
+            .ThenInclude(p => p.ProjectMembers)
+            .ThenInclude(pm => pm.User)
+            .FirstOrDefaultAsync(h => h.ProjectId == projectId, cancellationToken);
+    }
+
     public async Task AddAsync(HouseholdProfile profile, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddAsync(profile, cancellationToken);
