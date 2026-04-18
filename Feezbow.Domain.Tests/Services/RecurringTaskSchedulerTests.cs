@@ -124,7 +124,7 @@ public class RecurringTaskSchedulerTests
     [Trait("Category", "Domain")]
     public void CalculateNext_NextExceedsEndDate_ReturnsNull()
     {
-        var from = new DateTime(2026, 4, 14);
+        var from = DateTime.UtcNow.Date.AddYears(1);
         var rule = RecurrenceRule.Create(
             RecurrenceFrequency.Weekly,
             1,
