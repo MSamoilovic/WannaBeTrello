@@ -26,6 +26,9 @@ public static class CacheKeys
     public static string HouseholdProfile(long projectId) => $"household:{projectId}:profile";
     public static string HouseholdMembers(long projectId) => $"household:{projectId}:members";
 
+    public static string ProjectChores(long projectId) => $"project:{projectId}:chores";
+    public static string Chore(long choreId) => $"chore:{choreId}";
+
     public static string ProjectShoppingLists(long projectId) => $"project:{projectId}:shopping-lists";
     public static string ShoppingList(long listId) => $"shopping-list:{listId}";
 }

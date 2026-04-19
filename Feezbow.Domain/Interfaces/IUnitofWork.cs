@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable
     IActivityLogRepository ActivityLogs { get; }
     IHouseholdRepository Households { get; }
     IShoppingListRepository ShoppingLists { get; }
-    
+    IHouseholdChoreRepository Chores { get; }
+
     Task<int> CompleteAsync(CancellationToken cancellationToken = default); // Čuva promene u bazi podataka
 }
