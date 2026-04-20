@@ -158,6 +158,7 @@ public static class ConfigureServices
         services.AddScoped<IHouseholdRepository, HouseholdRepository>();
         services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
         services.AddScoped<IHouseholdChoreRepository, HouseholdChoreRepository>();
+        services.AddScoped<IBillRepository, BillRepository>();
         
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordSignInService, PasswordSignInService>();

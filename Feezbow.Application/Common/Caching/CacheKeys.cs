@@ -31,4 +31,7 @@ public static class CacheKeys
 
     public static string ProjectShoppingLists(long projectId) => $"project:{projectId}:shopping-lists";
     public static string ShoppingList(long listId) => $"shopping-list:{listId}";
+
+    public static string ProjectBills(long projectId) => $"project:{projectId}:bills";
+    public static string Bill(long billId) => $"bill:{billId}";
 }
