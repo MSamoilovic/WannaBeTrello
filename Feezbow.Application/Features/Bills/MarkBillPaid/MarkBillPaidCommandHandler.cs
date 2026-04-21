@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Bills.MarkBillPaid;
 
 public class MarkBillPaidCommandHandler(
-    IUnitOfWork unitOfWork,
+    IBillService billService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<MarkBillPaidCommand, MarkBillPaidCommandResponse>
@@ -21,26 +20,9 @@ public class MarkBillPaidCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var bill = await unitOfWork.Bills.GetByIdAsync(request.BillId, cancellationToken)
-            ?? throw new NotFoundException("Bill", request.BillId);
+        var (projectId, nextBillId) = await billService.MarkBillPaidAsync(request.BillId, userId, cancellationToken);
 
-        if (!bill.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        var nextBill = bill.MarkFullyPaid(userId);
-
-        long? nextBillId = null;
-        if (nextBill is not null)
-        {
-            await unitOfWork.Bills.AddAsync(nextBill, cancellationToken);
-        }
-
-        await unitOfWork.CompleteAsync(cancellationToken);
-
-        if (nextBill is not null)
-            nextBillId = nextBill.Id;
-
-        await cacheService.RemoveAsync(CacheKeys.ProjectBills(bill.ProjectId), cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
 
         var message = nextBillId.HasValue
             ? $"Bill paid. Next occurrence created (ID: {nextBillId.Value})."

@@ -1,15 +1,13 @@
 using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
-using Feezbow.Domain.Entities;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.ShoppingLists.CreateShoppingList;
 
 public class CreateShoppingListCommandHandler(
-    IUnitOfWork unitOfWork,
+    IShoppingListService shoppingListService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<CreateShoppingListCommand, CreateShoppingListCommandResponse>
@@ -22,16 +20,11 @@ public class CreateShoppingListCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var project = await unitOfWork.Projects.GetProjectWithMembersAsync(request.ProjectId, cancellationToken)
-            ?? throw new NotFoundException("Project", request.ProjectId);
-
-        if (!project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        var list = ShoppingList.Create(request.ProjectId, request.Name, userId);
-
-        await unitOfWork.ShoppingLists.AddAsync(list, cancellationToken);
-        await unitOfWork.CompleteAsync(cancellationToken);
+        var list = await shoppingListService.CreateListAsync(
+            request.ProjectId,
+            request.Name,
+            userId,
+            cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectShoppingLists(request.ProjectId), cancellationToken);
 

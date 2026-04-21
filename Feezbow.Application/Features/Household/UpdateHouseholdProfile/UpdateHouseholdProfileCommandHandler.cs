@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Household.UpdateHouseholdProfile;
 
 public class UpdateHouseholdProfileCommandHandler(
-    IUnitOfWork unitOfWork,
+    IHouseholdService householdService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<UpdateHouseholdProfileCommand, UpdateHouseholdProfileCommandResponse>
@@ -21,15 +20,15 @@ public class UpdateHouseholdProfileCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var profile = await unitOfWork.Households.GetByProjectIdAsync(request.ProjectId, cancellationToken)
-            ?? throw new NotFoundException("HouseholdProfile", request.ProjectId);
+        var profile = await householdService.UpdateProfileAsync(
+            request.ProjectId,
+            userId,
+            request.Address,
+            request.City,
+            request.Timezone,
+            request.ShoppingDay,
+            cancellationToken);
 
-        if (!profile.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        profile.Update(request.Address, request.City, request.Timezone, request.ShoppingDay, userId);
-
-        await unitOfWork.CompleteAsync(cancellationToken);
         await cacheService.RemoveAsync(CacheKeys.HouseholdProfile(request.ProjectId), cancellationToken);
 
         var result = Result<long>.Success(profile.Id, "Household profile updated successfully.");

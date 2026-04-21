@@ -4,67 +4,51 @@ using Feezbow.Application.Common.Interfaces;
 using Feezbow.Application.Features.Household.UpdateHouseholdProfile;
 using Feezbow.Application.Tests.Utils;
 using Feezbow.Domain.Entities;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
-using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Tests.Features.Household;
 
 public class UpdateHouseholdProfileCommandHandlerTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IHouseholdRepository> _householdRepositoryMock = new();
+    private readonly Mock<IHouseholdService> _householdServiceMock = new();
     private readonly Mock<ICurrentUserService> _currentUserServiceMock = new();
     private readonly Mock<ICacheService> _cacheServiceMock = new();
 
-    public UpdateHouseholdProfileCommandHandlerTests()
-    {
-        _unitOfWorkMock.Setup(u => u.Households).Returns(_householdRepositoryMock.Object);
-    }
-
     private UpdateHouseholdProfileCommandHandler CreateHandler() => new(
-        _unitOfWorkMock.Object,
+        _householdServiceMock.Object,
         _currentUserServiceMock.Object,
         _cacheServiceMock.Object);
 
-    private static HouseholdProfile BuildProfile(long projectId, long memberUserId)
+    private static HouseholdProfile BuildProfile(long id, long projectId)
     {
-        var project = ApplicationTestUtils.CreateInstanceWithoutConstructor<Project>();
-        ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.Id), projectId);
-        var member = ApplicationTestUtils.CreateInstanceWithoutConstructor<ProjectMember>();
-        ApplicationTestUtils.SetPrivatePropertyValue(member, nameof(ProjectMember.UserId), memberUserId);
-        ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.ProjectMembers), new List<ProjectMember> { member });
-
-        var profile = HouseholdProfile.Create(projectId, memberUserId, "Old", "OldCity", "Europe/Belgrade", DayOfWeek.Saturday);
-        ApplicationTestUtils.SetPrivatePropertyValue(profile, nameof(HouseholdProfile.Project), project);
+        var profile = ApplicationTestUtils.CreateInstanceWithoutConstructor<HouseholdProfile>();
+        ApplicationTestUtils.SetPrivatePropertyValue(profile, nameof(HouseholdProfile.Id), id);
+        ApplicationTestUtils.SetPrivatePropertyValue(profile, nameof(HouseholdProfile.ProjectId), projectId);
         return profile;
     }
 
     [Fact]
-    public async Task Handle_WhenValidRequest_ShouldUpdateProfileAndInvalidateCache()
+    public async Task Handle_WhenValidRequest_DelegatesToServiceAndInvalidatesCache()
     {
         const long userId = 10L;
         const long projectId = 42L;
-        var profile = BuildProfile(projectId, userId);
+        const long profileId = 7L;
 
         _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(profile);
-
         var command = new UpdateHouseholdProfileCommand(projectId, "New address", "Novi Sad", "Europe/Belgrade", DayOfWeek.Sunday);
+
+        _householdServiceMock
+            .Setup(s => s.UpdateProfileAsync(projectId, userId, command.Address, command.City,
+                command.Timezone, command.ShoppingDay, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BuildProfile(profileId, projectId));
 
         var response = await CreateHandler().Handle(command, CancellationToken.None);
 
         Assert.NotNull(response);
         Assert.True(response.Result.IsSuccess);
-        Assert.Equal("New address", profile.Address);
-        Assert.Equal("Novi Sad", profile.City);
-        Assert.Equal(DayOfWeek.Sunday, profile.ShoppingDay);
-
-        _unitOfWorkMock.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Equal(profileId, response.Result.Value);
         _cacheServiceMock.Verify(c => c.RemoveAsync(CacheKeys.HouseholdProfile(projectId), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -76,42 +60,9 @@ public class UpdateHouseholdProfileCommandHandlerTests
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
             CreateHandler().Handle(command, CancellationToken.None));
-    }
 
-    [Fact]
-    public async Task Handle_WhenProfileNotFound_ShouldThrowNotFoundException()
-    {
-        _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
-        _currentUserServiceMock.Setup(s => s.UserId).Returns(1L);
-
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((HouseholdProfile?)null);
-
-        var command = new UpdateHouseholdProfileCommand(99L, null, null, null, null);
-
-        await Assert.ThrowsAsync<NotFoundException>(() =>
-            CreateHandler().Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenUserNotMember_ShouldThrowAccessDeniedException()
-    {
-        const long projectId = 42L;
-        var profile = BuildProfile(projectId, memberUserId: 999L);
-
-        _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
-        _currentUserServiceMock.Setup(s => s.UserId).Returns(10L);
-
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(profile);
-
-        var command = new UpdateHouseholdProfileCommand(projectId, "x", null, null, null);
-
-        await Assert.ThrowsAsync<AccessDeniedException>(() =>
-            CreateHandler().Handle(command, CancellationToken.None));
-
-        _unitOfWorkMock.Verify(u => u.CompleteAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _householdServiceMock.Verify(s => s.UpdateProfileAsync(
+            It.IsAny<long>(), It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<string?>(),
+            It.IsAny<string?>(), It.IsAny<DayOfWeek?>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

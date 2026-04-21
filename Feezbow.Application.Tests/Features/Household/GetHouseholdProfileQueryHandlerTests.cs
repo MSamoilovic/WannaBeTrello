@@ -5,21 +5,18 @@ using Feezbow.Application.Features.Household.GetHouseholdProfile;
 using Feezbow.Application.Tests.Utils;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
-using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Tests.Features.Household;
 
 public class GetHouseholdProfileQueryHandlerTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IHouseholdRepository> _householdRepositoryMock = new();
+    private readonly Mock<IHouseholdService> _householdServiceMock = new();
     private readonly Mock<ICurrentUserService> _currentUserServiceMock = new();
     private readonly Mock<ICacheService> _cacheServiceMock = new();
 
     public GetHouseholdProfileQueryHandlerTests()
     {
-        _unitOfWorkMock.Setup(u => u.Households).Returns(_householdRepositoryMock.Object);
         _cacheServiceMock
             .Setup(c => c.GetOrSetAsync(
                 It.IsAny<string>(),
@@ -31,26 +28,23 @@ public class GetHouseholdProfileQueryHandlerTests
     }
 
     private GetHouseholdProfileQueryHandler CreateHandler() => new(
-        _unitOfWorkMock.Object,
+        _householdServiceMock.Object,
         _currentUserServiceMock.Object,
         _cacheServiceMock.Object);
 
-    private static HouseholdProfile BuildProfile(long projectId, long memberUserId)
+    private static HouseholdProfile BuildProfile(long projectId)
     {
         var project = ApplicationTestUtils.CreateInstanceWithoutConstructor<Project>();
         ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.Id), projectId);
         ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.Name), "Home");
-        var member = ApplicationTestUtils.CreateInstanceWithoutConstructor<ProjectMember>();
-        ApplicationTestUtils.SetPrivatePropertyValue(member, nameof(ProjectMember.UserId), memberUserId);
-        ApplicationTestUtils.SetPrivatePropertyValue(project, nameof(Project.ProjectMembers), new List<ProjectMember> { member });
 
-        var profile = HouseholdProfile.Create(projectId, memberUserId, "Addr", "City", "Europe/Belgrade", DayOfWeek.Monday);
+        var profile = HouseholdProfile.Create(projectId, 1L, "Addr", "City", "Europe/Belgrade", DayOfWeek.Monday);
         ApplicationTestUtils.SetPrivatePropertyValue(profile, nameof(HouseholdProfile.Project), project);
         return profile;
     }
 
     [Fact]
-    public async Task Handle_WhenProfileExistsAndUserIsMember_ShouldReturnResponse()
+    public async Task Handle_WhenProfileExists_ShouldReturnResponse()
     {
         const long userId = 10L;
         const long projectId = 42L;
@@ -58,9 +52,9 @@ public class GetHouseholdProfileQueryHandlerTests
         _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
 
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BuildProfile(projectId, userId));
+        _householdServiceMock
+            .Setup(s => s.GetProfileAsync(projectId, userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(BuildProfile(projectId));
 
         var response = await CreateHandler().Handle(new GetHouseholdProfileQuery(projectId), CancellationToken.None);
 
@@ -88,28 +82,15 @@ public class GetHouseholdProfileQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenProfileNotFound_ShouldThrowNotFoundException()
-    {
-        _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
-        _currentUserServiceMock.Setup(s => s.UserId).Returns(1L);
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((HouseholdProfile?)null);
-
-        await Assert.ThrowsAsync<NotFoundException>(() =>
-            CreateHandler().Handle(new GetHouseholdProfileQuery(99L), CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenUserNotMember_ShouldThrowAccessDeniedException()
+    public async Task Handle_WhenServiceThrowsAccessDenied_PropagatesException()
     {
         const long projectId = 42L;
         _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
         _currentUserServiceMock.Setup(s => s.UserId).Returns(10L);
 
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BuildProfile(projectId, memberUserId: 999L));
+        _householdServiceMock
+            .Setup(s => s.GetProfileAsync(projectId, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AccessDeniedException("Not a member"));
 
         await Assert.ThrowsAsync<AccessDeniedException>(() =>
             CreateHandler().Handle(new GetHouseholdProfileQuery(projectId), CancellationToken.None));

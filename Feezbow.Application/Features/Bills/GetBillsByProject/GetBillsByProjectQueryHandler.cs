@@ -1,13 +1,12 @@
 using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Bills.GetBillsByProject;
 
 public class GetBillsByProjectQueryHandler(
-    IUnitOfWork unitOfWork,
+    IBillService billService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<GetBillsByProjectQuery, IReadOnlyList<BillDto>>
@@ -20,15 +19,9 @@ public class GetBillsByProjectQueryHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var project = await unitOfWork.Projects.GetProjectWithMembersAsync(request.ProjectId, cancellationToken)
-            ?? throw new NotFoundException("Project", request.ProjectId);
-
-        if (!project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
         if (request.IncludePaid)
         {
-            var all = await unitOfWork.Bills.GetByProjectAsync(request.ProjectId, true, cancellationToken);
+            var all = await billService.GetByProjectAsync(request.ProjectId, userId, true, cancellationToken);
             return all.Select(BillDto.FromEntity).ToList();
         }
 
@@ -36,7 +29,7 @@ public class GetBillsByProjectQueryHandler(
             CacheKeys.ProjectBills(request.ProjectId),
             async () =>
             {
-                var bills = await unitOfWork.Bills.GetByProjectAsync(request.ProjectId, false, cancellationToken);
+                var bills = await billService.GetByProjectAsync(request.ProjectId, userId, false, cancellationToken);
                 return bills.Select(BillDto.FromEntity).ToList();
             },
             CacheExpiration.Medium,

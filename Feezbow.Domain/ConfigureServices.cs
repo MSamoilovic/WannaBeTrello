@@ -15,7 +15,10 @@ public static class ConfigureServices
         services.AddScoped<IBoardTaskService, BoardTaskService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IUserService , UserService>();
-        
+        services.AddScoped<IHouseholdService, HouseholdService>();
+        services.AddScoped<IBillService, BillService>();
+        services.AddScoped<IShoppingListService, ShoppingListService>();
+
         return services;
     }
 }

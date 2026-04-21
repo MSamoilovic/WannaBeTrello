@@ -1,16 +1,13 @@
 using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
-using Feezbow.Domain.Entities;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
-using Feezbow.Domain.ValueObjects;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Bills.CreateBill;
 
 public class CreateBillCommandHandler(
-    IUnitOfWork unitOfWork,
+    IBillService billService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<CreateBillCommand, CreateBillCommandResponse>
@@ -23,46 +20,21 @@ public class CreateBillCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var project = await unitOfWork.Projects.GetProjectWithMembersAsync(request.ProjectId, cancellationToken)
-            ?? throw new NotFoundException("Project", request.ProjectId);
-
-        if (!project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        RecurrenceRule? recurrence = null;
-        if (request.RecurrenceFrequency.HasValue)
-        {
-            recurrence = RecurrenceRule.Create(
-                request.RecurrenceFrequency.Value,
-                request.RecurrenceInterval,
-                request.RecurrenceDaysOfWeek,
-                request.RecurrenceEndDate);
-        }
-
-        var bill = Bill.Create(
+        var bill = await billService.CreateBillAsync(
             request.ProjectId,
+            userId,
             request.Title,
             request.Amount,
             request.DueDate,
-            userId,
             request.Currency,
             request.Description,
             request.Category,
-            recurrence);
-
-        if (request.SplitUserIds is { Count: > 0 })
-        {
-            foreach (var splitUserId in request.SplitUserIds)
-            {
-                if (!project.IsMember(splitUserId))
-                    throw new BusinessRuleValidationException($"User {splitUserId} is not a member of this project.");
-            }
-
-            bill.SetEqualSplit(request.SplitUserIds, userId);
-        }
-
-        await unitOfWork.Bills.AddAsync(bill, cancellationToken);
-        await unitOfWork.CompleteAsync(cancellationToken);
+            request.SplitUserIds,
+            request.RecurrenceFrequency,
+            request.RecurrenceInterval,
+            request.RecurrenceDaysOfWeek,
+            request.RecurrenceEndDate,
+            cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(request.ProjectId), cancellationToken);
 

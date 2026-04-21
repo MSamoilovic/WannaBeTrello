@@ -1,13 +1,12 @@
 using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.ShoppingLists.GetShoppingListById;
 
 public class GetShoppingListByIdQueryHandler(
-    IUnitOfWork unitOfWork,
+    IShoppingListService shoppingListService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<GetShoppingListByIdQuery, GetShoppingListByIdQueryResponse>
@@ -24,12 +23,7 @@ public class GetShoppingListByIdQueryHandler(
             CacheKeys.ShoppingList(request.ShoppingListId),
             async () =>
             {
-                var list = await unitOfWork.ShoppingLists.GetByIdWithItemsAsync(request.ShoppingListId, cancellationToken)
-                    ?? throw new NotFoundException(nameof(Domain.Entities.ShoppingList), request.ShoppingListId);
-
-                if (!list.Project.IsMember(userId))
-                    throw new AccessDeniedException("You are not a member of this project.");
-
+                var list = await shoppingListService.GetByIdAsync(request.ShoppingListId, userId, cancellationToken);
                 return GetShoppingListByIdQueryResponse.FromEntity(list);
             },
             CacheExpiration.Medium,

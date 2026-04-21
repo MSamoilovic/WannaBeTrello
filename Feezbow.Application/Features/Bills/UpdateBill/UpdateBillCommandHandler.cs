@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Bills.UpdateBill;
 
 public class UpdateBillCommandHandler(
-    IUnitOfWork unitOfWork,
+    IBillService billService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<UpdateBillCommand, UpdateBillCommandResponse>
@@ -21,17 +20,17 @@ public class UpdateBillCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var bill = await unitOfWork.Bills.GetByIdAsync(request.BillId, cancellationToken)
-            ?? throw new NotFoundException("Bill", request.BillId);
+        var projectId = await billService.UpdateBillAsync(
+            request.BillId,
+            userId,
+            request.Title,
+            request.Description,
+            request.Category,
+            request.Amount,
+            request.DueDate,
+            cancellationToken);
 
-        if (!bill.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        bill.Update(request.Title, request.Description, request.Category, request.Amount, request.DueDate, userId);
-
-        await unitOfWork.CompleteAsync(cancellationToken);
-
-        await cacheService.RemoveAsync(CacheKeys.ProjectBills(bill.ProjectId), cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
 
         return new UpdateBillCommandResponse(Result<bool>.Success(true, "Bill updated successfully."));
     }
