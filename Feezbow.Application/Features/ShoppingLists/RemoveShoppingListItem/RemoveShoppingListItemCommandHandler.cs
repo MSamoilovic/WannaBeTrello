@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.ShoppingLists.RemoveShoppingListItem;
 
 public class RemoveShoppingListItemCommandHandler(
-    IUnitOfWork unitOfWork,
+    IShoppingListService shoppingListService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<RemoveShoppingListItemCommand, Result<long>>
@@ -20,17 +19,14 @@ public class RemoveShoppingListItemCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var list = await unitOfWork.ShoppingLists.GetByIdWithItemsAsync(request.ShoppingListId, cancellationToken)
-            ?? throw new NotFoundException(nameof(Domain.Entities.ShoppingList), request.ShoppingListId);
+        var projectId = await shoppingListService.RemoveItemAsync(
+            request.ShoppingListId,
+            request.ItemId,
+            userId,
+            cancellationToken);
 
-        if (!list.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        list.RemoveItem(request.ItemId, userId);
-        await unitOfWork.CompleteAsync(cancellationToken);
-
-        await cacheService.RemoveAsync(CacheKeys.ShoppingList(list.Id), cancellationToken);
-        await cacheService.RemoveAsync(CacheKeys.ProjectShoppingLists(list.ProjectId), cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.ShoppingList(request.ShoppingListId), cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.ProjectShoppingLists(projectId), cancellationToken);
 
         return Result<long>.Success(request.ItemId, "Item removed successfully.");
     }

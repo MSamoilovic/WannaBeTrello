@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.ShoppingLists.AddShoppingListItem;
 
 public class AddShoppingListItemCommandHandler(
-    IUnitOfWork unitOfWork,
+    IShoppingListService shoppingListService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<AddShoppingListItemCommand, Result<long>>
@@ -20,18 +19,18 @@ public class AddShoppingListItemCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var list = await unitOfWork.ShoppingLists.GetByIdWithItemsAsync(request.ShoppingListId, cancellationToken)
-            ?? throw new NotFoundException(nameof(Domain.Entities.ShoppingList), request.ShoppingListId);
+        var (projectId, itemId) = await shoppingListService.AddItemAsync(
+            request.ShoppingListId,
+            request.Name,
+            request.Quantity,
+            request.Unit,
+            request.Notes,
+            userId,
+            cancellationToken);
 
-        if (!list.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
+        await cacheService.RemoveAsync(CacheKeys.ShoppingList(request.ShoppingListId), cancellationToken);
+        await cacheService.RemoveAsync(CacheKeys.ProjectShoppingLists(projectId), cancellationToken);
 
-        var item = list.AddItem(request.Name, request.Quantity, request.Unit, request.Notes, userId);
-        await unitOfWork.CompleteAsync(cancellationToken);
-
-        await cacheService.RemoveAsync(CacheKeys.ShoppingList(list.Id), cancellationToken);
-        await cacheService.RemoveAsync(CacheKeys.ProjectShoppingLists(list.ProjectId), cancellationToken);
-
-        return Result<long>.Success(item.Id, "Item added successfully.");
+        return Result<long>.Success(itemId, "Item added successfully.");
     }
 }

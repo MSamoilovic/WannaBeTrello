@@ -14,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IHouseholdRepository Households { get; }
     IShoppingListRepository ShoppingLists { get; }
     IHouseholdChoreRepository Chores { get; }
+    IBillRepository Bills { get; }
 
     Task<int> CompleteAsync(CancellationToken cancellationToken = default); // Čuva promene u bazi podataka
 }

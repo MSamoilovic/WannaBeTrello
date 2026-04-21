@@ -2,13 +2,12 @@ using MediatR;
 using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities.Common;
-using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Features.Household.RemoveHouseholdRole;
 
 public class RemoveHouseholdRoleCommandHandler(
-    IUnitOfWork unitOfWork,
+    IHouseholdService householdService,
     ICurrentUserService currentUserService,
     ICacheService cacheService)
     : IRequestHandler<RemoveHouseholdRoleCommand, RemoveHouseholdRoleCommandResponse>
@@ -21,18 +20,11 @@ public class RemoveHouseholdRoleCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var profile = await unitOfWork.Households.GetByProjectIdWithMembersAsync(request.ProjectId, cancellationToken)
-            ?? throw new NotFoundException("HouseholdProfile", request.ProjectId);
-
-        if (!profile.Project.IsMember(userId))
-            throw new AccessDeniedException("You are not a member of this project.");
-
-        var member = profile.Project.ProjectMembers.FirstOrDefault(pm => pm.UserId == request.MemberId)
-            ?? throw new NotFoundException("ProjectMember", request.MemberId);
-
-        profile.RemoveMemberRole(member, userId);
-
-        await unitOfWork.CompleteAsync(cancellationToken);
+        await householdService.RemoveRoleAsync(
+            request.ProjectId,
+            request.MemberId,
+            userId,
+            cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.HouseholdMembers(request.ProjectId), cancellationToken);
 

@@ -1,27 +1,21 @@
 using Moq;
+using Feezbow.Application.Common.Caching;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Application.Features.Household.GetHouseholdMembers;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Exceptions;
-using Feezbow.Domain.Interfaces;
-using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 
 namespace Feezbow.Application.Tests.Features.Household;
 
 public class GetHouseholdMembersQueryHandlerTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IHouseholdRepository> _householdRepositoryMock = new();
+    private readonly Mock<IHouseholdService> _householdServiceMock = new();
     private readonly Mock<ICurrentUserService> _currentUserServiceMock = new();
     private readonly Mock<ICacheService> _cacheServiceMock = new();
 
-    public GetHouseholdMembersQueryHandlerTests()
-    {
-        _unitOfWorkMock.Setup(u => u.Households).Returns(_householdRepositoryMock.Object);
-    }
-
     private GetHouseholdMembersQueryHandler CreateHandler() => new(
-        _unitOfWorkMock.Object,
+        _householdServiceMock.Object,
         _currentUserServiceMock.Object,
         _cacheServiceMock.Object);
 
@@ -49,9 +43,9 @@ public class GetHouseholdMembersQueryHandlerTests
             .Returns<string, Func<Task<GetHouseholdMembersQueryResponse>>, TimeSpan?, CancellationToken>(
                 (_, factory, _, _) => factory());
 
-        _householdRepositoryMock
-            .Setup(r => r.GetByProjectIdWithMembersAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((HouseholdProfile?)null);
+        _householdServiceMock
+            .Setup(s => s.GetMembersAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new NotFoundException(nameof(HouseholdProfile), 99L));
 
         await Assert.ThrowsAsync<NotFoundException>(() =>
             CreateHandler().Handle(new GetHouseholdMembersQuery(99L), CancellationToken.None));

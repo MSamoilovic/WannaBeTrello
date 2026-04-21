@@ -15,7 +15,8 @@ public class UnitOfWork(ApplicationDbContext dbContext,
     IActivityLogRepository activityTrackerRepository,
     IHouseholdRepository householdRepository,
     IShoppingListRepository shoppingListRepository,
-    IHouseholdChoreRepository householdChoreRepository) : IUnitOfWork, IDisposable
+    IHouseholdChoreRepository householdChoreRepository,
+    IBillRepository billRepository) : IUnitOfWork, IDisposable
 {
 
     // Svojstva za svaki interfejs repozitorijuma
@@ -29,6 +30,7 @@ public class UnitOfWork(ApplicationDbContext dbContext,
     public IHouseholdRepository Households { get; } = householdRepository;
     public IShoppingListRepository ShoppingLists { get; } = shoppingListRepository;
     public IHouseholdChoreRepository Chores { get; } = householdChoreRepository;
+    public IBillRepository Bills { get; } = billRepository;
 
     public async Task<int> CompleteAsync(CancellationToken cancellationToken)
     {
