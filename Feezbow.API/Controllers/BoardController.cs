@@ -1,5 +1,5 @@
 using Asp.Versioning;
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Boards.ArchiveBoard;

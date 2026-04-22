@@ -121,7 +121,7 @@ public class BillService(
         return await billRepository.GetByProjectAsync(projectId, includePaid, cancellationToken);
     }
 
-    public async Task<(long ProjectId, long? NextBillId)> MarkBillPaidAsync(
+    public async Task<long> MarkBillPaidAsync(
         long billId,
         long userId,
         CancellationToken cancellationToken = default)
@@ -132,14 +132,66 @@ public class BillService(
         if (!bill.Project.IsMember(userId))
             throw new AccessDeniedException("You are not a member of this project.");
 
-        var nextBill = bill.MarkFullyPaid(userId);
-
-        if (nextBill is not null)
-            await billRepository.AddAsync(nextBill, cancellationToken);
+        bill.MarkFullyPaid(userId);
 
         await unitOfWork.CompleteAsync(cancellationToken);
 
-        return (bill.ProjectId, nextBill?.Id);
+        return bill.ProjectId;
+    }
+
+    public async Task<IReadOnlyList<Bill>> GetRecurringBillsAsync(
+        long projectId,
+        long userId,
+        CancellationToken cancellationToken = default)
+    {
+        var project = await projectRepository.GetProjectWithMembersAsync(projectId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Project), projectId);
+
+        if (!project.IsMember(userId))
+            throw new AccessDeniedException("You are not a member of this project.");
+
+        return await billRepository.GetRecurringBillsByProjectAsync(projectId, cancellationToken);
+    }
+
+    public async Task<long> UpdateBillRecurrenceAsync(
+        long billId,
+        long userId,
+        RecurrenceFrequency frequency,
+        int interval,
+        IEnumerable<DayOfWeek>? daysOfWeek,
+        DateTime? endDate,
+        CancellationToken cancellationToken = default)
+    {
+        var bill = await billRepository.GetByIdAsync(billId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Bill), billId);
+
+        if (!bill.Project.IsMember(userId))
+            throw new AccessDeniedException("You are not a member of this project.");
+
+        var rule = RecurrenceRule.Create(frequency, interval, daysOfWeek, endDate);
+        bill.SetRecurrence(rule, firstOccurrence: null, userId);
+
+        await unitOfWork.CompleteAsync(cancellationToken);
+
+        return bill.ProjectId;
+    }
+
+    public async Task<long> CancelBillRecurrenceAsync(
+        long billId,
+        long userId,
+        CancellationToken cancellationToken = default)
+    {
+        var bill = await billRepository.GetByIdAsync(billId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Bill), billId);
+
+        if (!bill.Project.IsMember(userId))
+            throw new AccessDeniedException("You are not a member of this project.");
+
+        bill.ClearRecurrence(userId);
+
+        await unitOfWork.CompleteAsync(cancellationToken);
+
+        return bill.ProjectId;
     }
 
     public async Task<long> RecordSplitPaymentAsync(

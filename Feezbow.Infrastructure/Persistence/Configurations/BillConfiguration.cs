@@ -36,13 +36,23 @@ public class BillConfiguration : IEntityTypeConfiguration<Bill>
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(b => b.NextOccurrence)
+            .IsRequired(false);
+
         builder.HasIndex(b => b.ProjectId);
         builder.HasIndex(b => b.DueDate);
+        builder.HasIndex(b => b.NextOccurrence);
 
         builder.HasOne(b => b.Project)
             .WithMany()
             .HasForeignKey(b => b.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(b => b.ParentBill)
+            .WithMany()
+            .HasForeignKey(b => b.ParentBillId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(b => b.Splits)
             .WithOne()

@@ -1,4 +1,5 @@
 using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 
 namespace Feezbow.Application.Features.Bills.GetBillsByProject;
 
@@ -8,6 +9,12 @@ public record BillSplitDto(
     decimal Amount,
     bool IsPaid,
     DateTime? PaidAt);
+
+public record BillRecurrenceDto(
+    RecurrenceFrequency Frequency,
+    int Interval,
+    IReadOnlyList<DayOfWeek> DaysOfWeek,
+    DateTime? EndDate);
 
 public record BillDto(
     long Id,
@@ -21,6 +28,9 @@ public record BillDto(
     DateTime? PaidAt,
     long? PaidBy,
     bool IsRecurring,
+    DateTime? NextOccurrence,
+    long? ParentBillId,
+    BillRecurrenceDto? Recurrence,
     IReadOnlyList<BillSplitDto> Splits,
     DateTime CreatedAt)
 {
@@ -36,6 +46,13 @@ public record BillDto(
         bill.PaidAt,
         bill.PaidBy,
         bill.IsRecurring,
+        bill.NextOccurrence,
+        bill.ParentBillId,
+        bill.Recurrence is null ? null : new BillRecurrenceDto(
+            bill.Recurrence.Frequency,
+            bill.Recurrence.Interval,
+            bill.Recurrence.GetDaysOfWeek(),
+            bill.Recurrence.EndDate),
         bill.Splits.Select(s => new BillSplitDto(
             s.UserId,
             s.User is not null ? $"{s.User.FirstName} {s.User.LastName}".Trim() : null,

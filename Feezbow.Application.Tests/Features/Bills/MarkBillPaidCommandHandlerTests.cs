@@ -29,34 +29,13 @@ public class MarkBillPaidCommandHandlerTests
 
         _billServiceMock
             .Setup(s => s.MarkBillPaidAsync(billId, userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((projectId, (long?)null));
+            .ReturnsAsync(projectId);
 
         var response = await CreateHandler().Handle(new MarkBillPaidCommand(billId), CancellationToken.None);
 
         Assert.True(response.Result.IsSuccess);
-        Assert.Null(response.Result.Value);
+        Assert.Equal(billId, response.Result.Value);
         _cacheServiceMock.Verify(c => c.RemoveAsync(CacheKeys.ProjectBills(projectId), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_RecurringBill_ReturnsNextOccurrenceId()
-    {
-        const long userId = 10L;
-        const long billId = 1L;
-        const long projectId = 42L;
-        const long nextBillId = 101L;
-
-        _currentUserServiceMock.Setup(s => s.IsAuthenticated).Returns(true);
-        _currentUserServiceMock.Setup(s => s.UserId).Returns(userId);
-
-        _billServiceMock
-            .Setup(s => s.MarkBillPaidAsync(billId, userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((projectId, (long?)nextBillId));
-
-        var response = await CreateHandler().Handle(new MarkBillPaidCommand(billId), CancellationToken.None);
-
-        Assert.True(response.Result.IsSuccess);
-        Assert.Equal(nextBillId, response.Result.Value);
     }
 
     [Fact]

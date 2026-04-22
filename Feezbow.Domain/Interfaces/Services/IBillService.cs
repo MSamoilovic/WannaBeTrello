@@ -42,7 +42,26 @@ public interface IBillService
         bool includePaid,
         CancellationToken cancellationToken = default);
 
-    Task<(long ProjectId, long? NextBillId)> MarkBillPaidAsync(
+    Task<IReadOnlyList<Bill>> GetRecurringBillsAsync(
+        long projectId,
+        long userId,
+        CancellationToken cancellationToken = default);
+
+    Task<long> MarkBillPaidAsync(
+        long billId,
+        long userId,
+        CancellationToken cancellationToken = default);
+
+    Task<long> UpdateBillRecurrenceAsync(
+        long billId,
+        long userId,
+        RecurrenceFrequency frequency,
+        int interval,
+        IEnumerable<DayOfWeek>? daysOfWeek,
+        DateTime? endDate,
+        CancellationToken cancellationToken = default);
+
+    Task<long> CancelBillRecurrenceAsync(
         long billId,
         long userId,
         CancellationToken cancellationToken = default);

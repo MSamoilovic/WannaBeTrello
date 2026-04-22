@@ -6,6 +6,8 @@ public interface IBillRepository
 {
     Task<Bill?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Bill>> GetByProjectAsync(long projectId, bool includePaid, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Bill>> GetRecurringBillsByProjectAsync(long projectId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Bill>> GetRecurringBillsDueAsync(DateTime upTo, CancellationToken cancellationToken = default);
     Task AddAsync(Bill bill, CancellationToken cancellationToken = default);
     void Remove(Bill bill);
 }

@@ -13,8 +13,8 @@ namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[ApiVersion("2.0")]
-[Route("api/v{version:apiVersion}/households")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class HouseholdController(IMediator mediator) : ControllerBase
 {
     /// <summary>
