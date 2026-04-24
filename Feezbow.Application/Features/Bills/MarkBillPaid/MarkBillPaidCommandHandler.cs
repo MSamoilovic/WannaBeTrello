@@ -23,6 +23,7 @@ public class MarkBillPaidCommandHandler(
         var projectId = await billService.MarkBillPaidAsync(request.BillId, userId, cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
         return new MarkBillPaidCommandResponse(Result<long>.Success(request.BillId, "Bill paid."));
     }

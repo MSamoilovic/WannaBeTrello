@@ -30,6 +30,7 @@ public class SetBillSplitCommandHandler(
             cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
         return new SetBillSplitCommandResponse(Result<bool>.Success(true, "Bill split updated."));
     }
