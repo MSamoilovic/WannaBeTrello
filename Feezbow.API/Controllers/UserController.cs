@@ -17,7 +17,7 @@ namespace Feezbow.Controllers
     [ApiController]
     [Authorize(Policy = "EmailConfirmed")]
     [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class UserController(IMediator mediator) : ControllerBase
     {
         [HttpGet("{userId:long}")]

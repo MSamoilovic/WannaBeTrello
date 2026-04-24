@@ -31,6 +31,7 @@ public class UpdateBillCommandHandler(
             cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
         return new UpdateBillCommandResponse(Result<bool>.Success(true, "Bill updated successfully."));
     }

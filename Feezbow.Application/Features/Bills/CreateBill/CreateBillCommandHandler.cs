@@ -37,6 +37,7 @@ public class CreateBillCommandHandler(
             cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(request.ProjectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(request.ProjectId), cancellationToken);
 
         return new CreateBillCommandResponse(Result<long>.Success(bill.Id, "Bill created successfully."));
     }

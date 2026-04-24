@@ -2,20 +2,23 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Feezbow.Application.Features.Bills.CancelBillRecurrence;
 using Feezbow.Application.Features.Bills.CreateBill;
 using Feezbow.Application.Features.Bills.DeleteBill;
 using Feezbow.Application.Features.Bills.GetBillsByProject;
+using Feezbow.Application.Features.Bills.GetRecurringBills;
 using Feezbow.Application.Features.Bills.MarkBillPaid;
 using Feezbow.Application.Features.Bills.RecordSplitPayment;
 using Feezbow.Application.Features.Bills.SetBillSplit;
 using Feezbow.Application.Features.Bills.UpdateBill;
+using Feezbow.Application.Features.Bills.UpdateBillRecurrence;
 
 namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[ApiVersion("2.0")]
-[Route("api/v{version:apiVersion}/projects/{projectId:long}/bills")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class BillsController(IMediator mediator) : ControllerBase
 {
     /// <summary>
@@ -82,7 +85,7 @@ public class BillsController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
-    /// Marks the whole bill paid. If recurring, creates the next occurrence.
+    /// Marks the whole bill paid. Recurrence (if any) is driven by the background generator; paying here does not spawn next occurrence.
     /// </summary>
     [HttpPost("{billId:long}/pay")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,6 +93,41 @@ public class BillsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> MarkPaid(long projectId, long billId, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new MarkBillPaidCommand(billId), cancellationToken));
+    }
+
+    /// <summary>
+    /// Returns all active recurring bill templates for the project.
+    /// </summary>
+    [HttpGet("recurring")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetRecurring(long projectId, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetRecurringBillsQuery(projectId), cancellationToken));
+    }
+
+    /// <summary>
+    /// Sets or replaces the recurrence rule on an existing bill. NextOccurrence is reset to the next scheduled date.
+    /// </summary>
+    [HttpPut("{billId:long}/recurrence")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateRecurrence(long projectId, long billId,
+        [FromBody] UpdateBillRecurrenceCommand command, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(command with { BillId = billId }, cancellationToken));
+    }
+
+    /// <summary>
+    /// Cancels recurrence on a bill; the bill itself remains, but no further occurrences are generated.
+    /// </summary>
+    [HttpDelete("{billId:long}/recurrence")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelRecurrence(long projectId, long billId, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new CancelBillRecurrenceCommand(billId), cancellationToken));
     }
 
     /// <summary>

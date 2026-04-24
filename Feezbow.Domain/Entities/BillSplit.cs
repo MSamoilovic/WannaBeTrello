@@ -35,6 +35,29 @@ public class BillSplit : AuditableEntity
         };
     }
 
+    /// <summary>
+    /// Copies split metadata onto a freshly spawned bill occurrence.
+    /// Skips createdBy &gt; 0 guard because the generator job runs as system user (0).
+    /// </summary>
+    internal static BillSplit CopyForSpawn(long userId, decimal amount, long systemUserId)
+    {
+        if (userId <= 0)
+            throw new BusinessRuleValidationException("UserId must be a positive number.");
+
+        if (amount < 0)
+            throw new BusinessRuleValidationException("Split amount cannot be negative.");
+
+        return new BillSplit
+        {
+            BillId = 0,
+            UserId = userId,
+            Amount = amount,
+            IsPaid = false,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = systemUserId
+        };
+    }
+
     internal void MarkPaid(long paidBy)
     {
         if (paidBy <= 0)

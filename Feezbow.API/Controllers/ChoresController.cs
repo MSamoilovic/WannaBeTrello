@@ -13,8 +13,8 @@ namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[ApiVersion("2.0")]
-[Route("api/v{version:apiVersion}/projects/{projectId:long}/chores")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class ChoresController(IMediator mediator) : ControllerBase
 {
     /// <summary>

@@ -25,6 +25,13 @@ public class Bill : AuditableEntity
     public bool IsRecurring { get; private set; }
     public RecurrenceRule? Recurrence { get; private set; }
 
+    /// <summary>When the next occurrence should be spawned by the generator job. Null if not recurring or expired.</summary>
+    public DateTime? NextOccurrence { get; private set; }
+
+    /// <summary>ID of the recurring template bill this was spawned from. Null for templates / one-off bills.</summary>
+    public long? ParentBillId { get; private set; }
+    public Bill? ParentBill { get; private set; }
+
     private readonly List<BillSplit> _splits = [];
     public IReadOnlyCollection<BillSplit> Splits => _splits.AsReadOnly();
 
@@ -71,6 +78,7 @@ public class Bill : AuditableEntity
             IsPaid = false,
             IsRecurring = recurrence is not null,
             Recurrence = recurrence,
+            NextOccurrence = recurrence is null ? null : RecurringTaskScheduler.CalculateNext(dueDate, recurrence),
             CreatedAt = DateTime.UtcNow,
             CreatedBy = createdBy
         };
@@ -226,20 +234,20 @@ public class Bill : AuditableEntity
             MarkPaidInternal(paidBy);
     }
 
-    public Bill? MarkFullyPaid(long paidBy)
+    public void MarkFullyPaid(long paidBy)
     {
         if (paidBy <= 0)
             throw new BusinessRuleValidationException("PaidBy must be a positive number.");
 
-        if (IsPaid) return null;
+        if (IsPaid) return;
 
         foreach (var split in _splits)
             split.MarkPaid(paidBy);
 
-        return MarkPaidInternal(paidBy);
+        MarkPaidInternal(paidBy);
     }
 
-    private Bill? MarkPaidInternal(long paidBy)
+    private void MarkPaidInternal(long paidBy)
     {
         IsPaid = true;
         PaidAt = DateTime.UtcNow;
@@ -248,12 +256,75 @@ public class Bill : AuditableEntity
         LastModifiedBy = paidBy;
 
         AddDomainEvent(new BillPaidEvent(Id, ProjectId, Amount, paidBy));
+    }
 
-        if (!IsRecurring || Recurrence is null) return null;
+    public void SetRecurrence(RecurrenceRule rule, DateTime? firstOccurrence, long modifierUserId)
+    {
+        if (modifierUserId <= 0)
+            throw new BusinessRuleValidationException("ModifierUserId must be a positive number.");
 
-        var nextDue = RecurringTaskScheduler.CalculateNext(DueDate, Recurrence);
-        if (nextDue is null) return null;
+        Recurrence = rule ?? throw new ArgumentNullException(nameof(rule));
+        IsRecurring = true;
+        NextOccurrence = firstOccurrence ?? RecurringTaskScheduler.CalculateNext(DueDate, rule);
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+    }
 
-        return Create(ProjectId, Title, Amount, nextDue.Value, paidBy, Currency, Description, Category, Recurrence);
+    public void ClearRecurrence(long modifierUserId)
+    {
+        if (modifierUserId <= 0)
+            throw new BusinessRuleValidationException("ModifierUserId must be a positive number.");
+
+        if (Recurrence is null) return;
+
+        Recurrence = null;
+        IsRecurring = false;
+        NextOccurrence = null;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifierUserId;
+    }
+
+    public void ScheduleNextOccurrence(DateTime nextDate, long systemUserId)
+    {
+        NextOccurrence = nextDate;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = systemUserId;
+    }
+
+    /// <summary>
+    /// Creates a fresh, unpaid Bill instance based on this recurring template.
+    /// Splits are copied (same users, same amounts, all unpaid). The new bill carries
+    /// no recurrence of its own; ParentBillId points to this template.
+    /// </summary>
+    public Bill SpawnOccurrence(long systemUserId)
+    {
+        if (Recurrence is null || !NextOccurrence.HasValue)
+            throw new InvalidOperationDomainException("Cannot spawn occurrence from a non-recurring bill.");
+
+        var occurrence = new Bill
+        {
+            ProjectId = ProjectId,
+            Title = Title,
+            Description = Description,
+            Category = Category,
+            Amount = Amount,
+            Currency = Currency,
+            DueDate = NextOccurrence.Value,
+            IsPaid = false,
+            IsRecurring = false,
+            Recurrence = null,
+            NextOccurrence = null,
+            ParentBillId = Id,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = systemUserId
+        };
+
+        foreach (var split in _splits)
+            occurrence._splits.Add(BillSplit.CopyForSpawn(split.UserId, split.Amount, systemUserId));
+
+        occurrence.AddDomainEvent(new BillCreatedEvent(
+            occurrence.Id, occurrence.ProjectId, occurrence.Title, occurrence.Amount, occurrence.Currency, systemUserId));
+
+        return occurrence;
     }
 }

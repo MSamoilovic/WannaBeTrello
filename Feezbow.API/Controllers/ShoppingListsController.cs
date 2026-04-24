@@ -17,8 +17,8 @@ namespace Feezbow.Controllers;
 
 [Authorize(Policy = "EmailConfirmed")]
 [ApiController]
-[ApiVersion("2.0")]
-[Route("api/v{version:apiVersion}/projects/{projectId:long}/shopping-lists")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class ShoppingListsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

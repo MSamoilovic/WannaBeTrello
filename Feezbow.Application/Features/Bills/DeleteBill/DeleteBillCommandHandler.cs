@@ -23,6 +23,7 @@ public class DeleteBillCommandHandler(
         var projectId = await billService.DeleteBillAsync(request.BillId, userId, cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
         return new DeleteBillCommandResponse(Result<bool>.Success(true, "Bill deleted successfully."));
     }

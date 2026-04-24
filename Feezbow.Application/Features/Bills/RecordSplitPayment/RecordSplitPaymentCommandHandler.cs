@@ -27,6 +27,7 @@ public class RecordSplitPaymentCommandHandler(
             cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
         return new RecordSplitPaymentCommandResponse(Result<bool>.Success(true, "Payment recorded."));
     }

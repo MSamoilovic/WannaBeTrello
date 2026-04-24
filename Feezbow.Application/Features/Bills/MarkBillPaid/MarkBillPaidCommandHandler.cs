@@ -20,14 +20,11 @@ public class MarkBillPaidCommandHandler(
 
         var userId = currentUserService.UserId ?? 0;
 
-        var (projectId, nextBillId) = await billService.MarkBillPaidAsync(request.BillId, userId, cancellationToken);
+        var projectId = await billService.MarkBillPaidAsync(request.BillId, userId, cancellationToken);
 
         await cacheService.RemoveAsync(CacheKeys.ProjectBills(projectId), cancellationToken);
+        await cacheService.RemoveByPrefixAsync(CacheKeys.ProjectBudgetSummaryPrefix(projectId), cancellationToken);
 
-        var message = nextBillId.HasValue
-            ? $"Bill paid. Next occurrence created (ID: {nextBillId.Value})."
-            : "Bill paid.";
-
-        return new MarkBillPaidCommandResponse(Result<long?>.Success(nextBillId, message));
+        return new MarkBillPaidCommandResponse(Result<long>.Success(request.BillId, "Bill paid."));
     }
 }

@@ -193,6 +193,7 @@ public static class ConfigureServices
         }
 
         services.AddHostedService<RecurringTaskGeneratorJob>();
+        services.AddHostedService<RecurringBillGeneratorJob>();
         services.AddScoped<IBoardNotificationService, BoardNotificationService>();
         services.AddScoped<ITaskNotificationService, TaskNotificationService>();
         services.AddScoped<IProjectNotificationService, ProjectNotificationService>();

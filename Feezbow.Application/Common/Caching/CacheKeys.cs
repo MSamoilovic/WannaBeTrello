@@ -34,4 +34,19 @@ public static class CacheKeys
 
     public static string ProjectBills(long projectId) => $"project:{projectId}:bills";
     public static string Bill(long billId) => $"bill:{billId}";
+
+    public static string ProjectBudgetSummary(long projectId, DateTime from, DateTime to, int upcomingDays) =>
+        $"project:{projectId}:budget:summary:{from:yyyyMMdd}:{to:yyyyMMdd}:u{upcomingDays}";
+
+    public static string ProjectBudgetSummaryPrefix(long projectId) =>
+        $"project:{projectId}:budget:";
+
+    public static string ProjectBudgetTimeline(long projectId, DateTime from, DateTime to) =>
+        $"project:{projectId}:budget:timeline:{from:yyyyMMdd}:{to:yyyyMMdd}";
+
+    public static string UserBudgetSummary(long userId, DateTime from, DateTime to) =>
+        $"user:{userId}:budget:{from:yyyyMMdd}:{to:yyyyMMdd}";
+
+    public static string UserBudgetPrefix(long userId) =>
+        $"user:{userId}:budget:";
 }
