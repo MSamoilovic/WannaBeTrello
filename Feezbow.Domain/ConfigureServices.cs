@@ -18,6 +18,7 @@ public static class ConfigureServices
         services.AddScoped<IHouseholdService, HouseholdService>();
         services.AddScoped<IBillService, BillService>();
         services.AddScoped<IBudgetService, BudgetService>();
+        services.AddScoped<IAttachmentService, AttachmentService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
 
         return services;

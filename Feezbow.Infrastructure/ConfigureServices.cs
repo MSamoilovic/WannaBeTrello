@@ -15,6 +15,7 @@ using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
 using Feezbow.Domain.Interfaces.Repositories;
+using Feezbow.Domain.Interfaces.Services;
 using Feezbow.Infrastructure.Options;
 using Feezbow.Infrastructure.Options.Validators;
 using Feezbow.Infrastructure.Persistence;
@@ -159,7 +160,24 @@ public static class ConfigureServices
         services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
         services.AddScoped<IHouseholdChoreRepository, HouseholdChoreRepository>();
         services.AddScoped<IBillRepository, BillRepository>();
-        
+        services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+
+        // Storage
+        services.AddOptions<StorageOptions>()
+            .Bind(configuration.GetSection(StorageOptions.SectionName))
+            .ValidateOnStart();
+        services.AddSingleton<IValidateOptions<StorageOptions>, StorageOptionsValidator>();
+
+        services.AddOptions<Feezbow.Domain.Services.AttachmentPolicy>()
+            .Configure<IOptions<StorageOptions>>((policy, storageOptions) =>
+            {
+                var s = storageOptions.Value;
+                policy.MaxFileSizeBytes = (long)s.MaxFileSizeMb * 1024 * 1024;
+                policy.AllowedContentTypes = s.AllowedContentTypes;
+            });
+
+        services.AddSingleton<IStorageService, LocalFileStorageService>();
+
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordSignInService, PasswordSignInService>();
         services.AddScoped<IEmailService, EmailService>();
@@ -199,6 +217,11 @@ public static class ConfigureServices
         services.AddScoped<IProjectNotificationService, ProjectNotificationService>();
         services.AddScoped<IColumnNotificationService, ColumnNotificationService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
+        services.AddScoped<IBillNotificationService, BillNotificationService>();
+        services.AddScoped<IChoreNotificationService, ChoreNotificationService>();
+        services.AddScoped<IShoppingListNotificationService, ShoppingListNotificationService>();
+        services.AddScoped<IHouseholdNotificationService, HouseholdNotificationService>();
+        services.AddScoped<IAttachmentNotificationService, AttachmentNotificationService>();
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
