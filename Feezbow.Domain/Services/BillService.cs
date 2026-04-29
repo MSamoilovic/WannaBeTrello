@@ -100,6 +100,7 @@ public class BillService(
 
         var projectId = bill.ProjectId;
 
+        bill.MarkForDeletion(userId);
         billRepository.Remove(bill);
         await unitOfWork.CompleteAsync(cancellationToken);
 

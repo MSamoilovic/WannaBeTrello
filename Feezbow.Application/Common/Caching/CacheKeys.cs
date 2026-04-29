@@ -1,4 +1,6 @@
-﻿namespace Feezbow.Application.Common.Caching;
+﻿using Feezbow.Domain.Enums;
+
+namespace Feezbow.Application.Common.Caching;
 
 public static class CacheKeys
 {
@@ -49,4 +51,7 @@ public static class CacheKeys
 
     public static string UserBudgetPrefix(long userId) =>
         $"user:{userId}:budget:";
+
+    public static string AttachmentsByOwner(AttachmentOwnerType ownerType, long ownerId) =>
+        $"attachments:{ownerType.ToString().ToLowerInvariant()}:{ownerId}";
 }

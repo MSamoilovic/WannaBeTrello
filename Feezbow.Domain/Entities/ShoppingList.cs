@@ -95,7 +95,7 @@ public class ShoppingList : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = addedBy;
 
-        AddDomainEvent(new ShoppingListItemAddedEvent(Id, item.Id, item.Name, addedBy));
+        AddDomainEvent(new ShoppingListItemAddedEvent(Id, ProjectId, item.Id, item.Name, addedBy));
         return item;
     }
 
@@ -107,7 +107,7 @@ public class ShoppingList : AuditableEntity
         {
             LastModifiedAt = DateTime.UtcNow;
             LastModifiedBy = updatedBy;
-            AddDomainEvent(new ShoppingListItemUpdatedEvent(Id, item.Id, updatedBy, oldValues, newValues));
+            AddDomainEvent(new ShoppingListItemUpdatedEvent(Id, ProjectId, item.Id, updatedBy, oldValues, newValues));
         }
     }
 
@@ -122,7 +122,7 @@ public class ShoppingList : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = removedBy;
 
-        AddDomainEvent(new ShoppingListItemRemovedEvent(Id, itemId, removedBy));
+        AddDomainEvent(new ShoppingListItemRemovedEvent(Id, ProjectId, itemId, removedBy));
     }
 
     public void MarkItemPurchased(long itemId, long purchasedBy)
@@ -134,7 +134,7 @@ public class ShoppingList : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = purchasedBy;
 
-        AddDomainEvent(new ShoppingListItemPurchasedEvent(Id, itemId, purchasedBy));
+        AddDomainEvent(new ShoppingListItemPurchasedEvent(Id, ProjectId, itemId, purchasedBy));
     }
 
     public void MarkItemUnpurchased(long itemId, long updatedBy)
@@ -146,7 +146,7 @@ public class ShoppingList : AuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = updatedBy;
 
-        AddDomainEvent(new ShoppingListItemUnpurchasedEvent(Id, itemId, updatedBy));
+        AddDomainEvent(new ShoppingListItemUnpurchasedEvent(Id, ProjectId, itemId, updatedBy));
     }
 
     private ShoppingListItem FindItem(long itemId)

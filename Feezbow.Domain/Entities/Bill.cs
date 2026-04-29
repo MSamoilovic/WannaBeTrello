@@ -292,6 +292,18 @@ public class Bill : AuditableEntity
     }
 
     /// <summary>
+    /// Records the deletion intent so subscribers (e.g. attachment cleanup) can react.
+    /// Caller is still responsible for actually removing the entity via the repository.
+    /// </summary>
+    public void MarkForDeletion(long deletedBy)
+    {
+        if (deletedBy <= 0)
+            throw new BusinessRuleValidationException("DeletedBy must be a positive number.");
+
+        AddDomainEvent(new BillDeletedEvent(Id, ProjectId, deletedBy));
+    }
+
+    /// <summary>
     /// Creates a fresh, unpaid Bill instance based on this recurring template.
     /// Splits are copied (same users, same amounts, all unpaid). The new bill carries
     /// no recurrence of its own; ParentBillId points to this template.

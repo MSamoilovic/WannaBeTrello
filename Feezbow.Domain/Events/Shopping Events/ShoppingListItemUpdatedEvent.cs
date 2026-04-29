@@ -2,12 +2,14 @@ namespace Feezbow.Domain.Events.Shopping_Events;
 
 public class ShoppingListItemUpdatedEvent(
     long shoppingListId,
+    long projectId,
     long itemId,
     long updatedBy,
     IDictionary<string, object?> oldValues,
     IDictionary<string, object?> newValues) : DomainEvent
 {
     public long ShoppingListId => shoppingListId;
+    public long ProjectId => projectId;
     public long ItemId => itemId;
     public long UpdatedBy => updatedBy;
     public IDictionary<string, object?> OldValues => oldValues;
