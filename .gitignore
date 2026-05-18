@@ -1,6 +1,9 @@
 ﻿# Rider settings
 .idea/
 
+# Language server cache
+*.lscache
+
 # Build results
 bin/
 obj/
