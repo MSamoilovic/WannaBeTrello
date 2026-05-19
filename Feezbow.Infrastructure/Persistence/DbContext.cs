@@ -10,13 +10,13 @@ using Feezbow.Domain.Events;
 namespace Feezbow.Infrastructure.Persistence;
 
 public class ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options, 
+        DbContextOptions<ApplicationDbContext> options,
         IMediator? mediator = null,
         ICurrentUserService? currentUserService = null)
     : IdentityDbContext<User, IdentityRole<long>, long>(options)
 {
     private readonly IMediator? _mediator = mediator;
-    
+
     public DbSet<Board> Boards { get; set; } = null!;
     public DbSet<BoardTask> Tasks { get; init; } = null!;
     public DbSet<Column> Columns { get; set; } = null!;
@@ -30,28 +30,29 @@ public class ApplicationDbContext(
     public DbSet<BoardTaskLabel> BoardTaskLabels { get; set; } = null!;
     public DbSet<HouseholdEvent> HouseholdEvents { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
-    
+    public DbSet<AiAuditLog> AiAuditLogs { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         //Dodato zbog toga da bi MB koristio konfiguracije iz trenutnog Assembly
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        
-        modelBuilder.Ignore<DomainEvent>(); 
-        
+
+        modelBuilder.Ignore<DomainEvent>();
+
         base.OnModelCreating(modelBuilder);
     }
-    
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
         var domainEntities = ChangeTracker.Entries<AuditableEntity>()
             .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count != 0)
             .Select(x => x.Entity)
             .ToList();
-        
+
         foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
         {
-            
-            
+
+
             switch (entry.State)
             {
                 case EntityState.Added:
@@ -75,7 +76,7 @@ public class ApplicationDbContext(
             {
                 await _mediator.Publish(domainEvent, cancellationToken);
             }
-                
+
             entity.ClearDomainEvents();
         }
 
