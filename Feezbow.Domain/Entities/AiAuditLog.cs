@@ -5,7 +5,7 @@ public class AiAuditLog
     public long Id { get; private set; }
     public long UserId { get; private set; }
     public string AgentName { get; private set; } = string.Empty;
-    public string InputHash { get; private set; } = string.Empty;  // SHA-256 of input, not raw text
+    public string InputHash { get; private set; } = string.Empty; // SHA-256 of input, not raw text
     public int InputTokens { get; private set; }
     public int OutputTokens { get; private set; }
     public bool CacheHit { get; private set; }
@@ -17,9 +17,14 @@ public class AiAuditLog
     private AiAuditLog() { }
 
     public static AiAuditLog Create(
-        long userId, string agentName, string inputHash,
-        int inputTokens, int outputTokens, bool cacheHit)
-        => new()
+        long userId,
+        string agentName,
+        string inputHash,
+        int inputTokens,
+        int outputTokens,
+        bool cacheHit
+    ) =>
+        new()
         {
             UserId = userId,
             AgentName = agentName,
@@ -27,7 +32,7 @@ public class AiAuditLog
             InputTokens = inputTokens,
             OutputTokens = outputTokens,
             CacheHit = cacheHit,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
         };
 
     public void RecordFeedback(bool wasAccurate)
