@@ -17,7 +17,7 @@ public class AiAuditLog
     private AiAuditLog() { }
 
     public static AiAuditLog Create(
-        long userId,
+        long? userId,
         string agentName,
         string inputHash,
         int inputTokens,
@@ -26,7 +26,7 @@ public class AiAuditLog
     ) =>
         new()
         {
-            UserId = userId,
+            UserId = userId ?? 0,
             AgentName = agentName,
             InputHash = inputHash,
             InputTokens = inputTokens,
