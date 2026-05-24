@@ -1,29 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
-using StackExchange.Redis;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Anthropic.SDK;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
 using Feezbow.Domain.Interfaces.Repositories;
 using Feezbow.Domain.Interfaces.Services;
+using Feezbow.Infrastructure.AI;
 using Feezbow.Infrastructure.Options;
 using Feezbow.Infrastructure.Options.Validators;
 using Feezbow.Infrastructure.Persistence;
 using Feezbow.Infrastructure.Persistence.Repositories;
 using Feezbow.Infrastructure.Services;
 using Feezbow.Infrastructure.Services.Notifications;
-using Microsoft.Extensions.Logging;
-using Polly;
 using Feezbow.Infrastructure.SignalR.Authorization;
 using Feezbow.Infrastructure.SignalR.Configuration;
 using Feezbow.Infrastructure.SignalR.Filters;
@@ -31,25 +19,46 @@ using Feezbow.Infrastructure.SignalR.Hubs.Base;
 using Feezbow.Infrastructure.SignalR.Resilience;
 using Feezbow.Infrastructure.SignalR.Security;
 using Feezbow.Infrastructure.SignalR.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using Polly;
+using StackExchange.Redis;
 
 namespace Feezbow.Infrastructure;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, WebApplicationBuilder builder)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        WebApplicationBuilder builder
+    )
     {
-        
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
         dataSourceBuilder.EnableDynamicJson();
-        
+
         var dataSource = dataSourceBuilder.Build();
-        
+
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(dataSource, 
-                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-        
-        services.AddIdentity<User, IdentityRole<long>>(options => 
+            options.UseNpgsql(
+                dataSource,
+                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
+            )
+        );
+
+        services
+            .AddIdentity<User, IdentityRole<long>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
@@ -65,83 +74,92 @@ public static class ConfigureServices
 
                 // Konfiguracija korisničkog imena i emaila
                 options.User.RequireUniqueEmail = true;
-               
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>() 
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        //--- Registracija Option patterna -- 
-        services.Configure<EmailOptions>(
-            configuration.GetSection(EmailOptions.SectionName));
+        //--- Registracija Option patterna --
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.AddSingleton<IValidateOptions<EmailOptions>, EmailOptionsValidator>();
 
-        services.AddOptions<JwtOptions>()
+        services
+            .AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
             .ValidateOnStart();
         services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
 
         // --- JWT Bearer Authentication ---
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
+        services
+            .AddAuthentication(options =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            options.Events = new JwtBearerEvents
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
             {
-                OnAuthenticationFailed = context =>
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    var logger = context.HttpContext.RequestServices
-                        .GetRequiredService<ILogger<JwtBearerHandler>>();
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                };
 
-                    logger.LogWarning(context.Exception,
-                        "JWT authentication failed: {ExceptionType}",
-                        context.Exception.GetType().Name);
-
-                    return Task.CompletedTask;
-                },
-                OnTokenValidated = async context =>
+                options.Events = new JwtBearerEvents
                 {
-                    var userManager = context.HttpContext.RequestServices
-                        .GetRequiredService<UserManager<User>>();
-                    
-                    var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    if (long.TryParse(userId, out var id))
+                    OnAuthenticationFailed = context =>
                     {
-                        var user = await userManager.FindByIdAsync(id.ToString());
-                        if (user == null || !user.IsActive)
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<
+                            ILogger<JwtBearerHandler>
+                        >();
+
+                        logger.LogWarning(
+                            context.Exception,
+                            "JWT authentication failed: {ExceptionType}",
+                            context.Exception.GetType().Name
+                        );
+
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = async context =>
+                    {
+                        var userManager = context.HttpContext.RequestServices.GetRequiredService<
+                            UserManager<User>
+                        >();
+
+                        var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (long.TryParse(userId, out var id))
                         {
-                            context.Fail("User is not active");
+                            var user = await userManager.FindByIdAsync(id.ToString());
+                            if (user == null || !user.IsActive)
+                            {
+                                context.Fail("User is not active");
+                            }
                         }
-                    }
-                }
-            };
-        });
+                    },
+                };
+            });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("EmailConfirmed", policy =>
-                policy.RequireClaim("email_confirmed", "true"));
+            options.AddPolicy(
+                "EmailConfirmed",
+                policy => policy.RequireClaim("email_confirmed", "true")
+            );
 
-           
-            options.AddPolicy("EmailConfirmedOrAdmin", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireAssertion(context =>
-                    context.User.HasClaim("email_confirmed", "true") ||
-                    context.User.IsInRole("Admin"));
-            });
+            options.AddPolicy(
+                "EmailConfirmedOrAdmin",
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim("email_confirmed", "true")
+                        || context.User.IsInRole("Admin")
+                    );
+                }
+            );
         });
 
         // Post-configure JWT Bearer options with IOptions pattern
@@ -168,18 +186,22 @@ public static class ConfigureServices
         services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Storage
-        services.AddOptions<StorageOptions>()
+        services
+            .AddOptions<StorageOptions>()
             .Bind(configuration.GetSection(StorageOptions.SectionName))
             .ValidateOnStart();
         services.AddSingleton<IValidateOptions<StorageOptions>, StorageOptionsValidator>();
 
-        services.AddOptions<Feezbow.Domain.Services.AttachmentPolicy>()
-            .Configure<IOptions<StorageOptions>>((policy, storageOptions) =>
-            {
-                var s = storageOptions.Value;
-                policy.MaxFileSizeBytes = (long)s.MaxFileSizeMb * 1024 * 1024;
-                policy.AllowedContentTypes = s.AllowedContentTypes;
-            });
+        services
+            .AddOptions<Feezbow.Domain.Services.AttachmentPolicy>()
+            .Configure<IOptions<StorageOptions>>(
+                (policy, storageOptions) =>
+                {
+                    var s = storageOptions.Value;
+                    policy.MaxFileSizeBytes = (long)s.MaxFileSizeMb * 1024 * 1024;
+                    policy.AllowedContentTypes = s.AllowedContentTypes;
+                }
+            );
 
         services.AddSingleton<IStorageService, LocalFileStorageService>();
 
@@ -191,12 +213,12 @@ public static class ConfigureServices
         //Redis
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));
 
-        var redisOptions = configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>()
+        var redisOptions =
+            configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>()
             ?? new RedisOptions();
 
         if (redisOptions.Enabled)
         {
-
             var redisConnection = ConnectionMultiplexer.Connect(redisOptions.ConnectionString);
             services.AddSingleton<IConnectionMultiplexer>(redisConnection);
 
@@ -212,7 +234,6 @@ public static class ConfigureServices
         else
         {
             services.AddDistributedMemoryCache();
-           
         }
 
         services.AddHostedService<RecurringTaskGeneratorJob>();
@@ -236,7 +257,8 @@ public static class ConfigureServices
         // SignalR
         services.Configure<SignalROptions>(configuration.GetSection(SignalROptions.SectionName));
 
-        var signalROptions = configuration.GetSection(SignalROptions.SectionName).Get<SignalROptions>()
+        var signalROptions =
+            configuration.GetSection(SignalROptions.SectionName).Get<SignalROptions>()
             ?? new SignalROptions();
 
         services.AddSignalR(options =>
@@ -247,7 +269,8 @@ public static class ConfigureServices
             options.ClientTimeoutInterval = signalROptions.ClientTimeoutInterval;
             options.HandshakeTimeout = signalROptions.HandshakeTimeout;
             options.KeepAliveInterval = signalROptions.KeepAliveInterval;
-            options.MaximumParallelInvocationsPerClient = signalROptions.MaximumParallelInvocationsPerClient;
+            options.MaximumParallelInvocationsPerClient =
+                signalROptions.MaximumParallelInvocationsPerClient;
         });
 
         // Hub filter chain (outer → inner):
@@ -276,6 +299,29 @@ public static class ConfigureServices
                 .CreateLogger("SignalR.Notifications.Resilience");
             return NotificationResiliencePipelineFactory.Create(logger);
         });
+
+        services
+            .AddOptions<AnthropicOptions>()
+            .Bind(configuration.GetSection(AnthropicOptions.SectionName))
+            .ValidateOnStart();
+
+        services.AddSingleton(sp =>
+        {
+            var key = configuration["Anthropic:ApiKey"] ?? string.Empty;
+            return new AnthropicClient(new APIAuthentication(key));
+        });
+
+        services.AddScoped<IAIService, AnthropicAiService>();
+        services.AddScoped<IRecipeUrlFetcher, RecipeUrlFetcher>();
+
+        services.AddHttpClient(
+            "RecipeUrlFetcher",
+            c =>
+            {
+                c.Timeout = TimeSpan.FromSeconds(10);
+                c.DefaultRequestHeaders.Add("User-Agent", "Feezbow/1.0");
+            }
+        );
 
         return services;
     }
