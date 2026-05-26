@@ -51,6 +51,12 @@ public class AnthropicAiService(
     {
         opts ??= new AIRequestOptions();
 
+        if (!options.Value.Enabled)
+            throw new AIServiceException("AI service is disabled.");
+
+        if (opts.RequiresFeature == "RecipeParser" && !options.Value.RecipeParserEnabled)
+            throw new AIServiceException("Recipe parser feature is disabled.");
+
         // Token budget guard --- english => chars/4
         int estimatedTokens = (int)Math.Ceiling((systemPrompt.Length + userPrompt.Length) / 4.0);
         if (estimatedTokens > opts.MaxInputTokens)

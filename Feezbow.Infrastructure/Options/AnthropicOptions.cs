@@ -7,6 +7,8 @@ public class AnthropicOptions
     public string ApiKey { get; init; } = string.Empty;   // placeholder — set in .env
     public string DefaultModel { get; init; } = "claude-opus-4-6";
     public int MaxTokensDefault { get; init; } = 1_024;
+    public bool Enabled { get; init; } = true;
+    public bool RecipeParserEnabled { get; init; } = true;
     public bool PromptCachingEnabled { get; init; } = true;
 
     /// <summary>
