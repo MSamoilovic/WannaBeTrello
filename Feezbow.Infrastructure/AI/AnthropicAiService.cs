@@ -57,6 +57,9 @@ public class AnthropicAiService(
         if (opts.RequiresFeature == "RecipeParser" && !options.Value.RecipeParserEnabled)
             throw new AIServiceException("Recipe parser feature is disabled.");
 
+        if (opts.RequiresFeature == "TaskParser" && !options.Value.TaskParserEnabled)
+            throw new AIServiceException("Task parser feature is disabled.");
+
         // Token budget guard --- english => chars/4
         int estimatedTokens = (int)Math.Ceiling((systemPrompt.Length + userPrompt.Length) / 4.0);
         if (estimatedTokens > opts.MaxInputTokens)
