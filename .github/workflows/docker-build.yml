@@ -14,6 +14,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Run unit tests
+        run: |
+          dotnet test Feezbow.Application.Tests --no-restore --logger "console;verbosity=minimal"
+          dotnet test Feezbow.Domain.Tests --no-restore --logger "console;verbosity=minimal"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -26,10 +47,4 @@ jobs:
           tags: wannabetrello-api:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # Optional: run tests before build (uncomment if needed)
-      # - name: Restore & test
-      #   run: |
-      #     dotnet restore
-      #     dotnet test --no-build
 
